@@ -1,0 +1,56 @@
+.product {
+    ul {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        column-gap: 20px;
+        row-gap: 70px;
+        li {
+            img {
+                width: 100%;
+            }
+        }
+    }
+    &__figure {
+        font-size: 0;
+    }
+    &__title {
+        font-size: 14px;
+        font-weight: 400;
+    }
+
+    &__num {
+    }
+
+    &__desc {
+        strong {
+            display: inline-block;
+            font-size: 18px;
+            color: #000;
+        }
+        span {
+            display: inline-block;
+            color: #000;
+        }
+    }
+    &__config {
+        h4 {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #696969;
+        }
+        span {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 400;
+            color: #696969;
+        }
+    }
+    &__selling {
+        font-size: 0;
+        width: 0;
+        height: 0;
+        display: inline-block;
+        overflow: hidden;
+    }
+}

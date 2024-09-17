@@ -1,0 +1,74 @@
+{
+    "item01": {
+        "id": "dano_product_01",
+        "thumb": "dano_proudct_01_thumb.png",
+        "view": "dano_product_01.png",
+        "detail": "dano_proudct_01_detail.png"
+    },
+    "item02": {
+        "id": "dano_product_02",
+        "thumb": "dano_proudct_02_thumb.png",
+        "view": "dano_product_02.png",
+        "detail": "dano_proudct_02_detail.png"
+    },
+    "item03": {
+        "id": "dano_product_03",
+        "thumb": "dano_proudct_03_thumb.png",
+        "view": "dano_product_03.png",
+        "detail": "dano_proudct_03_detail.png"
+    },
+    "item04": {
+        "id": "dano_product_04",
+        "thumb": "dano_proudct_04_thumb.png",
+        "view": "dano_product_04.png",
+        "detail": "dano_proudct_04_detail.png"
+    },
+    "item05": {
+        "id": "dano_product_05",
+        "thumb": "dano_proudct_05_thumb.webp",
+        "view": "dano_product_05.webp",
+        "detail": "dano_proudct_05_detail.png"
+    },
+    "item06": {
+        "id": "dano_product_06",
+        "thumb": "dano_proudct_06_thumb.png",
+        "view": "dano_product_06.png",
+        "detail": "dano_proudct_06_detail.png"
+    },
+    "item07": {
+        "id": "dano_product_07",
+        "thumb": "dano_proudct_07_thumb.png",
+        "view": "dano_product_07.png",
+        "detail": "dano_proudct_07_detail.png"
+    },
+    "item08": {
+        "id": "dano_product_08",
+        "thumb": "dano_proudct_08_thumb.png",
+        "view": "dano_product_08.png",
+        "detail": "dano_proudct_08_detail.png"
+    },
+    "item09": {
+        "id": "dano_product_09",
+        "thumb": "dano_proudct_09_thumb.png",
+        "view": "dano_product_09.png",
+        "detail": "dano_proudct_09_detail.png"
+    },
+    "item10": {
+        "id": "dano_product_10",
+        "thumb": "dano_proudct_10_thumb.webp",
+        "view": "dano_product_10.png",
+        "detail": "dano_proudct_10_detail.png"
+    },
+    "item11": {
+        "id": "dano_product_11",
+        "thumb": "dano_proudct_11_thumb.png",
+        "view": "dano_product_11.png",
+        "detail": "dano_proudct_11_detail.png"
+    },
+    "item12": {
+        "id": "dano_product_12",
+        "thumb": "dano_proudct_12_thumb.png",
+        "view": "dano_product_12.png",
+        "detail": "dano_proudct_12_detail.png"
+    }
+}

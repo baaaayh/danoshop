@@ -55,7 +55,12 @@ function Header() {
                         <nav className="gnb">
                             <ul>
                                 <li>
-                                    <Link to="/product">전 상품</Link>
+                                    <Link
+                                        to="/product"
+                                        state={{ productType: "all" }}
+                                    >
+                                        전 상품
+                                    </Link>
                                 </li>
                                 <li>
                                     <Link to="/project">🔥습관성형 클럽🔥</Link>

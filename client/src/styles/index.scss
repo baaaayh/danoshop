@@ -12,6 +12,13 @@
     padding-top: 220px;
 }
 
+.section {
+    padding-bottom: 120px;
+    &:last-child {
+        padding-bottom: 0;
+    }
+}
+
 .dim {
     display: none;
     position: fixed;

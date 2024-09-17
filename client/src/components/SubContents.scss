@@ -1,0 +1,11 @@
+.contents {
+    max-width: 1680px;
+    width: 100%;
+    margin: 0 auto;
+    padding-bottom: 120px;
+    .product {
+        ul {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+}

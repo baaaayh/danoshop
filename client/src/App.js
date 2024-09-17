@@ -1,7 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import Main from "./pages/main/Main";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Main from "./pages/main/Main";
+import Product from "./pages/product/Product";
 import "./styles/index.scss";
 
 function App() {
@@ -11,10 +12,11 @@ function App() {
             <div className="wrap">
                 <Routes>
                     <Route exact path="/" element={<Main />} />
-                    <Route exact path="/join" />
-                    <Route exact path="/login" />
-                    <Route exact path="/inquiry" />
-                    <Route exact path="/recent" />
+                    <Route path="/join" />
+                    <Route path="/login" />
+                    <Route path="/inquiry" />
+                    <Route path="/recent" />
+                    <Route path="/product" element={<Product />} />
                 </Routes>
             </div>
             <Footer />
