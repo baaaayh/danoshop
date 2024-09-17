@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get("/api", (req, res) => {
-    res.send("Hello World!");
+    res.send({ text: "Hello World!" });
 });
 
 app.listen(PORT, () => {

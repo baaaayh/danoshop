@@ -1,0 +1,131 @@
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    z-index: 11;
+    &__inner {
+        max-width: 1680px;
+        width: 100%;
+        margin: 0 auto;
+    }
+    &__logo {
+        display: inline-block;
+        font-size: 0;
+        a {
+            display: block;
+            font-size: 0;
+        }
+        img {
+            height: 60px;
+        }
+    }
+    &__nav {
+        display: flex;
+        justify-content: flex-end;
+    }
+    &__menu {
+        padding-top: 30px;
+    }
+    &__top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+.menu-nav {
+    display: flex;
+    column-gap: 15px;
+    height: 50px;
+    li {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 0;
+        a {
+            display: inline-block;
+            font-size: 13px;
+            color: #666;
+        }
+    }
+}
+
+.user {
+    ul {
+        display: flex;
+        column-gap: 30px;
+        li {
+            font-size: 0;
+            a {
+                display: inline-block;
+                width: 24px;
+                height: 24px;
+                &.btn-user {
+                    background: url(../../public/images/icons/icon_user.svg)
+                        center / auto no-repeat;
+                }
+                &.btn-cart {
+                    background: url(../../public/images/icons/icon_bag.svg)
+                        center / auto no-repeat;
+                }
+            }
+            .btn-search {
+                display: inline-block;
+                width: 24px;
+                height: 24px;
+                background: url(../../public/images/icons/icon_search.svg)
+                    center / auto no-repeat;
+                font-size: 0;
+            }
+        }
+    }
+}
+
+.gnb {
+    > ul {
+        display: flex;
+        column-gap: 50px;
+        > li {
+            > a {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                height: 80px;
+                font-size: 16px;
+                color: #1a1a1a;
+                &::after {
+                    content: "";
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    display: inline-block;
+                    width: 0;
+                    height: 2px;
+                    background-color: #000;
+                    transition: 0.3s cubic-bezier(0.45, 0.46, 0.05, 0.96);
+                }
+                &:hover {
+                    &::after {
+                        width: 100%;
+                        right: auto;
+                        left: 0;
+                    }
+                }
+            }
+            .depth2 {
+                display: none;
+                ul {
+                    li {
+                        a {
+                            font-size: 14px;
+                            font-weight: 500;
+                            color: #333;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
