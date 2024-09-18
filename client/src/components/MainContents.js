@@ -1,8 +1,8 @@
 import React from "react";
-import "./MainContents.scss";
+import styles from "./MainContents.module.scss";
 
 function MainContents({ children }) {
-    return <div className="main-contents">{children}</div>;
+    return <div className={styles["main-contents"]}>{children}</div>;
 }
 
 export default MainContents;

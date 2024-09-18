@@ -1,8 +1,8 @@
 import React from "react";
-import "./SubContents.scss";
+import styles from "./SubContents.module.scss";
 
 function SubContents({ children }) {
-    return <div className="contents">{children}</div>;
+    return <div className={styles.contents}>{children}</div>;
 }
 
 export default SubContents;

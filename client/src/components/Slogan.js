@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./Slogan.scss";
+import styles from "./Slogan.module.scss";
 
 function Slogan() {
     return (
         <section className="section section--slogan">
             <div className="section__inner">
-                <div className="slogan">
+                <div className={styles.slogan}>
                     <h2>HEALTHY CAN BE EASY!</h2>
                     <p>
                         식단관리식은 어째서 비싸고, 맛없고, 양 적고

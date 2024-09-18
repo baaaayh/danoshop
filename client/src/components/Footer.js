@@ -1,17 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./Footer.scss";
+import styles from "./Footer.module.scss";
 
 function Footer() {
     return (
-        <footer className="footer">
-            <div className="footer__container">
-                <div className="footer__inner">
-                    <div className="footer__top">
-                        <div className="footer__logo">
+        <footer className={styles.footer}>
+            <div className={styles.footer__container}>
+                <div className={styles.footer__inner}>
+                    <div className={styles.footer__top}>
+                        <div className={styles.footer__logo}>
                             <img src="images/common/logo.png" alt="" />
                         </div>
-                        <nav className="footer__nav">
+                        <nav className={styles.footer__nav}>
                             <ul>
                                 <li>
                                     <Link to="">회사소개</Link>
@@ -28,12 +28,14 @@ function Footer() {
                             </ul>
                         </nav>
                     </div>
-                    <div className="footer__bottom">
-                        <div className="footer__info footer__info--left">
-                            <div className="footer__box">
+                    <div className={styles.footer__bottom}>
+                        <div
+                            className={`${styles.footer__info} ${styles["footer__info--left"]}`}
+                        >
+                            <div className={styles.footer__box}>
                                 <h2>고객센터 정보</h2>
                                 <ul>
-                                    <li className="row-box">
+                                    <li className={styles["row-box"]}>
                                         <span>상담/주문전화</span>
                                         <div>02-2135-1885</div>
                                     </li>
@@ -50,7 +52,7 @@ function Footer() {
                                     </li>
                                 </ul>
                             </div>
-                            <div className="footer__box">
+                            <div className={styles.footer__box}>
                                 <h2>결제 정보</h2>
                                 <ul>
                                     <li>
@@ -61,7 +63,7 @@ function Footer() {
                                     </li>
                                 </ul>
                             </div>
-                            <div className="footer__box">
+                            <div className={styles.footer__box}>
                                 <h2>입점/제휴 문의</h2>
                                 <ul>
                                     <li>
@@ -71,45 +73,47 @@ function Footer() {
                                 </ul>
                             </div>
                         </div>
-                        <div className="footer__info footer__info--right">
-                            <div className="footer__box">
+                        <div
+                            className={`${styles.footer__info} ${styles["footer__info--right"]}`}
+                        >
+                            <div className={styles.footer__box}>
                                 <h2>쇼핑몰 기본정보</h2>
                                 <ul>
-                                    <li className="row-box">
-                                        <div className="row-box">
+                                    <li className={styles["row-box"]}>
+                                        <div className={styles["row-box"]}>
                                             <span>상호명</span>
                                             <div>(주)다노</div>
                                         </div>
-                                        <div className="row-box">
+                                        <div className={styles["row-box"]}>
                                             <span>대표자명</span>
                                             <div>정범윤</div>
                                         </div>
                                     </li>
-                                    <li className="row-box">
+                                    <li className={styles["row-box"]}>
                                         <span>사업장 주소</span>
                                         <div>
                                             04038 서울특별시 마포구 월드컵북로
                                             98, 2층 202
                                         </div>
                                     </li>
-                                    <li className="row-box">
-                                        <div className="row-box">
+                                    <li className={styles["row-box"]}>
+                                        <div className={styles["row-box"]}>
                                             <span>대표 전화</span>
                                             <div>02-2135-1885</div>
                                         </div>
-                                        <div className="row-box">
+                                        <div className={styles["row-box"]}>
                                             <span>사업자 등록번호</span>
                                             <div>106-87-00202</div>
                                         </div>
                                     </li>
-                                    <li className="row-box">
+                                    <li className={styles["row-box"]}>
                                         <span>통신판매업 신고번호</span>
                                         <div>
                                             제2017-서울마포-0722
                                             [사업자정보확인]
                                         </div>
                                     </li>
-                                    <li className="row-box">
+                                    <li className={styles["row-box"]}>
                                         <span>개인정보보호책임자</span>
                                         <div>이지수</div>
                                     </li>
@@ -117,11 +121,11 @@ function Footer() {
                             </div>
                         </div>
                     </div>
-                    <div className="footer__sns">
+                    <div className={styles.footer__sns}>
                         <h2>SNS</h2>
                         <ul>
                             <li>
-                                <Link to="" className="instagram">
+                                <Link to="" className={styles.instagram}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="33"
@@ -154,7 +158,7 @@ function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link to="" className="youtube">
+                                <Link to="" className={styles.youtube}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="33"
@@ -182,7 +186,7 @@ function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link to="" className="facebook">
+                                <Link to="" className={styles.facebook}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="33"
@@ -210,7 +214,7 @@ function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <Link to="" className="blog">
+                                <Link to="" className={styles.blog}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="33"
@@ -240,7 +244,7 @@ function Footer() {
                             </li>
                         </ul>
                     </div>
-                    <div className="footer__copyright">
+                    <div className={styles.footer__copyright}>
                         Copyright © 다노샵. All Rights Reserved. Hosting by
                         Cafe24 Corp.
                     </div>

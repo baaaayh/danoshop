@@ -7,7 +7,7 @@ import "swiper/css/autoplay";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
-import "./SectionKV.scss";
+import styles from "./SectionKV.module.scss";
 
 function SectionKV() {
     const [kvList, setKvList] = useState([]);
@@ -27,7 +27,7 @@ function SectionKV() {
 
     return (
         <section className="section section--kv">
-            <div className="section__inner">
+            <div className={styles.section__inner}>
                 <Swiper
                     modules={[Autoplay, EffectFade, Pagination]}
                     effect={"fade"}
@@ -40,12 +40,12 @@ function SectionKV() {
                     spaceBetween={0}
                     slidesPerView={1}
                     loop={true}
-                    className="kv"
+                    className={styles.kv}
                 >
                     {kvList.map((kvInfo) => {
                         return (
                             <SwiperSlide
-                                className="swiper-slide"
+                                className={styles["swiper-slide"]}
                                 key={kvInfo.id}
                             >
                                 <img

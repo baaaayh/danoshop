@@ -1,12 +1,48 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
-import "./Header.scss";
+import styles from "./Header.module.scss";
 
 function Header() {
+    const [menuList, setMenuList] = useState({ menu: [] });
+    const [scrolled, setScrolled] = useState();
+
+    const getMenuList = async () => {
+        try {
+            const response = await axios.get("http://localhost:4000/api/menu");
+            setMenuList(response.data);
+        } catch (error) {
+            console.error("Error fetching product list:", error);
+        }
+    };
+
+    useEffect(() => {
+        getMenuList();
+
+        const handleScroll = () => {
+            if (window.scrollY > 0) {
+                setScrolled("active");
+            } else {
+                setScrolled();
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
+
     return (
-        <header className="header">
-            <div className="header__inner">
-                <div className="header__nav">
-                    <ul className="menu-nav">
+        <header
+            className={
+                scrolled ? `${styles.header} ${styles.active}` : styles.header
+            }
+        >
+            <div className={styles.header__inner}>
+                <div className={styles.header__nav}>
+                    <ul className={styles["menu-nav"]}>
                         <li>
                             <Link to="/join">회원가입</Link>
                         </li>
@@ -21,29 +57,29 @@ function Header() {
                         </li>
                     </ul>
                 </div>
-                <div className="header__menu">
-                    <div className="header__top">
-                        <h1 className="header__logo">
+                <div className={styles.header__menu}>
+                    <div className={styles.header__top}>
+                        <h1 className={styles.header__logo}>
                             <Link to="/">
-                                <img src="images/common/logo.png" alt="" />
+                                <img src="/images/common/logo.png" alt="" />
                             </Link>
                         </h1>
-                        <div className="user">
+                        <div className={styles.user}>
                             <ul>
                                 <li>
-                                    <Link to="" className="btn-user">
+                                    <Link to="" className={styles["btn-user"]}>
                                         마이페이지
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="" className="btn-cart">
+                                    <Link to="" className={styles["btn-cart"]}>
                                         장바구니
                                     </Link>
                                 </li>
                                 <li>
                                     <button
                                         type="button"
-                                        className="btn-search"
+                                        className={styles["btn-search"]}
                                     >
                                         검색
                                     </button>
@@ -51,78 +87,44 @@ function Header() {
                             </ul>
                         </div>
                     </div>
-                    <div className="header__bottom">
-                        <nav className="gnb">
+                    <div className={styles.header__bottom}>
+                        <nav className={styles.gnb}>
                             <ul>
-                                <li>
-                                    <Link
-                                        to="/product"
-                                        state={{ productType: "all" }}
-                                    >
-                                        전 상품
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link to="/project">🔥습관성형 클럽🔥</Link>
-                                </li>
-                                <li>
-                                    <Link to="/product">입맛 성형</Link>
-                                    <div className="depth2">
-                                        <ul>
-                                            <li>
-                                                <Link to="">간편식</Link>
-                                            </li>
-                                            <li>
-                                                <Link to="">베이커리</Link>
-                                            </li>
-                                            <li>
-                                                <Link to="">시리얼</Link>
-                                            </li>
-                                            <li>
-                                                <Link to="">
-                                                    디저트&amp;분식
-                                                </Link>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>
-                                <li>
-                                    <Link to="/product">운동습관 성형</Link>
-                                </li>
-                                <li>
-                                    <Link to="/project">멤버십 헤택</Link>
-                                </li>
-                                <li>
-                                    <Link to="/product">브랜드 전용관</Link>
-                                    <div className="depth2">
-                                        <ul>
-                                            <li>
-                                                <Link to="">
-                                                    디벨라, 칸나멜라,
-                                                    에드몬드팔롯, 셀렉티아
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link to="">알가팜텍</Link>
-                                            </li>
-                                            <li>
-                                                <Link to="">에그마켓</Link>
-                                            </li>
-                                            <li>
-                                                <Link to="">스키니피그</Link>
-                                            </li>
-                                            <li>
-                                                <Link to="">쇼크업쇼버</Link>
-                                            </li>
-                                            <li>
-                                                <Link to="">클래씨</Link>
-                                            </li>
-                                            <li>
-                                                <Link to="">데일리유즈</Link>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </li>
+                                {menuList.menu?.map((item, index) => (
+                                    <li key={index}>
+                                        <Link
+                                            to={`/${item.pageType}/${item.category}`}
+                                            state={{
+                                                title: [item.depth1],
+                                            }}
+                                        >
+                                            {item.depth1}
+                                        </Link>
+                                        {item.depth2.length > 0 && (
+                                            <div className={styles.depth2}>
+                                                <ul>
+                                                    {item.depth2.map((dep2) => {
+                                                        return (
+                                                            <li key={dep2.name}>
+                                                                <Link
+                                                                    to={`/${item.pageType}/${item.category}/${dep2.type}`}
+                                                                    state={{
+                                                                        title: [
+                                                                            item.depth1,
+                                                                            dep2.name,
+                                                                        ],
+                                                                    }}
+                                                                >
+                                                                    {dep2.name}
+                                                                </Link>
+                                                            </li>
+                                                        );
+                                                    })}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </li>
+                                ))}
                             </ul>
                         </nav>
                     </div>

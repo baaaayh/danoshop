@@ -12,10 +12,34 @@
     padding-top: 220px;
 }
 
+.product {
+    ul {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        column-gap: 20px;
+        row-gap: 70px;
+        li {
+            img {
+                width: 100%;
+            }
+        }
+    }
+}
+
 .section {
     padding-bottom: 120px;
+    &--kv {
+        padding-bottom: 0;
+    }
     &:last-child {
         padding-bottom: 0;
+    }
+    &--product {
+        .product {
+            ul {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
     }
 }
 

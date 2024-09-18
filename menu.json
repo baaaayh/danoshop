@@ -1,0 +1,50 @@
+{
+    "_id": {
+        "$oid": "66ea638ed43389959a885b90"
+    },
+    "menu": [
+        {
+            "depth1": "전 상품",
+            "category": "all"
+        },
+        {
+            "depth1": "🔥습관성형 클럽🔥",
+            "category": "club"
+        },
+        {
+            "depth1": "입맛 형성",
+            "category": "taste",
+            "depth2": [
+                { "name": "간편식", "type": "convenient" },
+                { "name": "베이커리", "type": "bakery" },
+                { "name": "시리얼", "type": "cereal" },
+                { "name": "닭가슴살", "type": "chickenbreast" },
+                { "name": "디저트&분식", "type": "dessert" }
+            ]
+        },
+        {
+            "depth1": "운동습관 형성",
+            "category": "traning"
+        },
+        {
+            "depth1": "멤버십 혜택",
+            "category": "membership"
+        },
+        {
+            "depth1": "브랜드 전용관",
+            "category": "brand",
+            "depth2": [
+                {
+                    "name": "디벨라-칸나멜라-에드몬드팔롯-셀렉티아",
+                    "type": "brand01"
+                },
+                { "name": "알가팜텍", "type": "brand02" },
+                { "name": "에그마켓", "type": "brand03" },
+                { "name": "스키니피그", "type": "brand04" },
+                { "name": "쇼크업쇼버", "type": "brand05" },
+                { "name": "클래씨", "type": "brand06" },
+                { "name": "데일리유즈", "type": "brand07" }
+            ]
+        }
+    ]
+}

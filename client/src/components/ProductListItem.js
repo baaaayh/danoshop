@@ -1,61 +1,81 @@
 import { useState, useEffect } from "react";
+import { Link, useParams, useLocation } from "react-router-dom";
+import styles from "./ProductListItem.module.scss";
 
-function ProductListItem({ productList, type }) {
-    const [list, setList] = useState(productList);
+function ProductListItem({ productList = [], type }) {
+    const { category, type: paramType } = useParams();
+    const { pathname } = useLocation();
+    const [list, setList] = useState([]);
 
     useEffect(() => {
-        if (type === "all") {
-            setList(productList);
-        } else {
-            if (productList) {
-                const filteredList = productList.filter((item) => {
-                    return item.type === type;
-                });
-                const exposeList = filteredList.filter((item) => {
-                    return item.mainExpose === "true";
-                });
-                setList(exposeList);
+        if (productList.length === 0) return;
+
+        let filteredList = productList;
+
+        if (pathname === "/") {
+            filteredList = filteredList.filter(
+                (item) => item.type === type && item.mainExpose === "true"
+            );
+        } else if (category !== "all") {
+            if (paramType === undefined) {
+                filteredList = filteredList.filter(
+                    (item) => item.category === category
+                );
+            } else {
+                filteredList = filteredList.filter(
+                    (item) => item.type === paramType
+                );
             }
         }
-    }, [productList, type]);
+
+        setList(filteredList);
+    }, [productList, type, paramType, pathname, category]);
 
     return (
         <>
-            {list &&
-                list.map((item) => {
-                    return (
-                        <li className="product__item" key={item.id}>
-                            <div className="product__inner">
-                                <div className="product__figure">
-                                    <img
-                                        src={`uploads/product/${item.thumb}`}
-                                        alt=""
-                                    />
-                                </div>
-                                <div className="product__desc">
-                                    <h3 className="product__title">
-                                        {item.title}
-                                    </h3>
-                                    <div className="product__config">
-                                        <h4>구성 : </h4>
-                                        <span className="product__num"></span>
-                                        <span>개</span>
-                                    </div>
-                                </div>
-                                <div className="product__desc">
-                                    <h4 className="product__selling">판매가</h4>
-                                    <strong>
-                                        <span className="proudct__price"></span>
-                                        <span>원</span>
-                                    </strong>
-                                </div>
-                                <div className="product__icon">
-                                    <span>품절</span>
-                                </div>
+            {list.map((item) => (
+                <li className={styles.product__item} key={item.id}>
+                    <Link
+                        to={`/product/detail/${item.id}`}
+                        className={styles.product__inner}
+                    >
+                        <div className={styles.product__figure}>
+                            <img
+                                src={`/uploads/product/${item.thumb}`}
+                                alt={item.title}
+                            />
+                        </div>
+                        <div className={styles.product__desc}>
+                            <h3 className={styles.product__title}>
+                                {item.title}
+                            </h3>
+                            <div className={styles.product__config}>
+                                <h4>구성 :</h4>
+                                <span className={styles.product__num}>
+                                    {item.config}
+                                </span>
                             </div>
-                        </li>
-                    );
-                })}
+                        </div>
+                        <div className={styles.product__desc}>
+                            <h4 className={styles.product__selling}>판매가</h4>
+                            <strong>
+                                <span className={styles.product__price}>
+                                    {item.price
+                                        .toLocaleString()
+                                        .replace(
+                                            /\B(?=(\d{3})+(?!\d))/g,
+                                            ","
+                                        )}{" "}
+                                    원
+                                </span>
+                            </strong>
+                        </div>
+                        <div className={styles.product__icon}>
+                            <span>품절</span>
+                        </div>
+                    </Link>
+                </li>
+            ))}
         </>
     );
 }
