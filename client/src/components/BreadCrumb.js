@@ -1,25 +1,15 @@
 import { useState, useEffect } from "react";
 import React from "react";
-import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 import styles from "./BreadCrumb.module.scss";
 
-function BreadCrumb({ title, path }) {
+function BreadCrumb({ menu, title, path }) {
     const params = useParams();
     const [menuList, setMenuList] = useState({ menu: [] });
 
-    const getMenuList = async () => {
-        try {
-            const response = await axios.get("http://localhost:4000/api/menu");
-            setMenuList(response.data);
-        } catch (error) {
-            console.error("Error fetching product list:", error);
-        }
-    };
-
     useEffect(() => {
-        getMenuList();
-    }, []);
+        setMenuList(menu);
+    }, [menu]);
 
     return (
         <div className={styles.breadcrumb}>
@@ -28,40 +18,40 @@ function BreadCrumb({ title, path }) {
                     <li>
                         <Link to="/">홈</Link>
                     </li>
-                    {menuList.menu.map((item, index) => {
-                        // 1뎁스 카테고리 매칭 확인
-                        if (params.category === item.category) {
-                            return (
-                                <React.Fragment key={`fragment-${index}`}>
-                                    <li key={`depth1-${index}`}>
-                                        <Link
-                                            to={`/${item.pageType}/${item.category}`}
-                                            state={{
-                                                title: title,
-                                            }}
-                                        >
-                                            {item.depth1}
-                                        </Link>
-                                    </li>
-                                    {path.type ? (
-                                        <li
-                                            key={`depth2-${index}-${path.type}`}
-                                        >
+                    {menuList &&
+                        menuList.menu.map((item, index) => {
+                            if (params.category === item.category) {
+                                return (
+                                    <React.Fragment key={`fragment-${index}`}>
+                                        <li key={`depth1-${index}`}>
                                             <Link
-                                                to={`/${item.pageType}/${path.category}/${path.type}`}
+                                                to={`/${item.pageType}/${item.category}`}
                                                 state={{
-                                                    title: title,
+                                                    title: [title[0]],
                                                 }}
                                             >
-                                                {title[title.length - 1]}
+                                                {item.depth1}
                                             </Link>
                                         </li>
-                                    ) : null}
-                                </React.Fragment>
-                            );
-                        }
-                        return null;
-                    })}
+                                        {path.type ? (
+                                            <li
+                                                key={`depth2-${index}-${path.type}`}
+                                            >
+                                                <Link
+                                                    to={`/${item.pageType}/${path.category}/${path.type}`}
+                                                    state={{
+                                                        title: [...title],
+                                                    }}
+                                                >
+                                                    {title[1]}
+                                                </Link>
+                                            </li>
+                                        ) : null}
+                                    </React.Fragment>
+                                );
+                            }
+                            return null;
+                        })}
                 </ul>
             </nav>
         </div>

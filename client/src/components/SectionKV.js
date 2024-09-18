@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
+import axios from "axios";
 import "swiper/css";
 import "swiper/css/autoplay";
 import "swiper/css/pagination";
@@ -15,14 +15,14 @@ function SectionKV() {
     const getKVList = async () => {
         try {
             const response = await axios.get("http://localhost:4000/api/kv");
-            setKvList(response.data); // Correctly access response data
+            setKvList(response.data);
         } catch (error) {
             console.error("Error fetching KV list:", error);
         }
     };
 
     useEffect(() => {
-        getKVList(); // 컴포넌트가 마운트될 때 데이터 가져오기
+        getKVList();
     }, []);
 
     return (
@@ -39,6 +39,7 @@ function SectionKV() {
                     pagination={{ clickable: true }}
                     spaceBetween={0}
                     slidesPerView={1}
+                    slidesPerGroup={1}
                     loop={true}
                     className={styles.kv}
                 >

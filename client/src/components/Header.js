@@ -1,24 +1,12 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import styles from "./Header.module.scss";
 
-function Header() {
+function Header({ menu }) {
     const [menuList, setMenuList] = useState({ menu: [] });
     const [scrolled, setScrolled] = useState();
 
-    const getMenuList = async () => {
-        try {
-            const response = await axios.get("http://localhost:4000/api/menu");
-            setMenuList(response.data);
-        } catch (error) {
-            console.error("Error fetching product list:", error);
-        }
-    };
-
     useEffect(() => {
-        getMenuList();
-
         const handleScroll = () => {
             if (window.scrollY > 0) {
                 setScrolled("active");
@@ -33,6 +21,10 @@ function Header() {
             window.removeEventListener("scroll", handleScroll);
         };
     }, []);
+
+    useEffect(() => {
+        setMenuList(menu);
+    }, [menu]);
 
     return (
         <header
@@ -90,41 +82,50 @@ function Header() {
                     <div className={styles.header__bottom}>
                         <nav className={styles.gnb}>
                             <ul>
-                                {menuList.menu?.map((item, index) => (
-                                    <li key={index}>
-                                        <Link
-                                            to={`/${item.pageType}/${item.category}`}
-                                            state={{
-                                                title: [item.depth1],
-                                            }}
-                                        >
-                                            {item.depth1}
-                                        </Link>
-                                        {item.depth2.length > 0 && (
-                                            <div className={styles.depth2}>
-                                                <ul>
-                                                    {item.depth2.map((dep2) => {
-                                                        return (
-                                                            <li key={dep2.name}>
-                                                                <Link
-                                                                    to={`/${item.pageType}/${item.category}/${dep2.type}`}
-                                                                    state={{
-                                                                        title: [
-                                                                            item.depth1,
-                                                                            dep2.name,
-                                                                        ],
-                                                                    }}
-                                                                >
-                                                                    {dep2.name}
-                                                                </Link>
-                                                            </li>
-                                                        );
-                                                    })}
-                                                </ul>
-                                            </div>
-                                        )}
-                                    </li>
-                                ))}
+                                {menuList &&
+                                    menuList.menu?.map((item, index) => (
+                                        <li key={index}>
+                                            <Link
+                                                to={`/${item.pageType}/${item.category}`}
+                                                state={{
+                                                    title: [item.depth1],
+                                                }}
+                                            >
+                                                {item.depth1}
+                                            </Link>
+                                            {item.depth2.length > 0 && (
+                                                <div className={styles.depth2}>
+                                                    <ul>
+                                                        {item.depth2.map(
+                                                            (dep2) => {
+                                                                return (
+                                                                    <li
+                                                                        key={
+                                                                            dep2.name
+                                                                        }
+                                                                    >
+                                                                        <Link
+                                                                            to={`/${item.pageType}/${item.category}/${dep2.type}`}
+                                                                            state={{
+                                                                                title: [
+                                                                                    item.depth1,
+                                                                                    dep2.name,
+                                                                                ],
+                                                                            }}
+                                                                        >
+                                                                            {
+                                                                                dep2.name
+                                                                            }
+                                                                        </Link>
+                                                                    </li>
+                                                                );
+                                                            }
+                                                        )}
+                                                    </ul>
+                                                </div>
+                                            )}
+                                        </li>
+                                    ))}
                             </ul>
                         </nav>
                     </div>
