@@ -1,0 +1,25 @@
+.btn {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.btn-square {
+    width: 100%;
+    border: 1px solid #bcbcbc;
+    background-color: transparent;
+    &__text {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 64px;
+        color: #000;
+    }
+
+    &--black {
+        border: 1px solid #000;
+        background-color: #000;
+        .btn-square__text {
+            color: #fff;
+        }
+    }
+}

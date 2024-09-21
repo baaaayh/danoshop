@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import styles from "./Header.module.scss";
 
-function Header({ menu }) {
+function Header() {
     const [menuList, setMenuList] = useState({ menu: [] });
+    const menuListData = useSelector((state) => state.menu.menuList);
     const [scrolled, setScrolled] = useState();
 
     useEffect(() => {
@@ -23,8 +25,8 @@ function Header({ menu }) {
     }, []);
 
     useEffect(() => {
-        setMenuList(menu);
-    }, [menu]);
+        setMenuList(menuListData[0]);
+    }, [menuListData]);
 
     return (
         <header
@@ -83,7 +85,7 @@ function Header({ menu }) {
                         <nav className={styles.gnb}>
                             <ul>
                                 {menuList &&
-                                    menuList.menu?.map((item, index) => (
+                                    menuList.menu.map((item, index) => (
                                         <li key={index}>
                                             <Link
                                                 to={`/${item.pageType}/${item.category}`}
@@ -97,29 +99,27 @@ function Header({ menu }) {
                                                 <div className={styles.depth2}>
                                                     <ul>
                                                         {item.depth2.map(
-                                                            (dep2) => {
-                                                                return (
-                                                                    <li
-                                                                        key={
+                                                            (dep2) => (
+                                                                <li
+                                                                    key={
+                                                                        dep2.name
+                                                                    }
+                                                                >
+                                                                    <Link
+                                                                        to={`/${item.pageType}/${item.category}/${dep2.type}`}
+                                                                        state={{
+                                                                            title: [
+                                                                                item.depth1,
+                                                                                dep2.name,
+                                                                            ],
+                                                                        }}
+                                                                    >
+                                                                        {
                                                                             dep2.name
                                                                         }
-                                                                    >
-                                                                        <Link
-                                                                            to={`/${item.pageType}/${item.category}/${dep2.type}`}
-                                                                            state={{
-                                                                                title: [
-                                                                                    item.depth1,
-                                                                                    dep2.name,
-                                                                                ],
-                                                                            }}
-                                                                        >
-                                                                            {
-                                                                                dep2.name
-                                                                            }
-                                                                        </Link>
-                                                                    </li>
-                                                                );
-                                                            }
+                                                                    </Link>
+                                                                </li>
+                                                            )
                                                         )}
                                                     </ul>
                                                 </div>

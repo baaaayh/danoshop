@@ -41,7 +41,13 @@ app.get("/api/kv", async (req, res) => {
 
 app.get("/api/product", async (req, res) => {
     try {
-        const productItems = await Product.find();
+        const { id } = req.query;
+        let productItems;
+        if (id) {
+            productItems = await Product.find({ id });
+        } else {
+            productItems = await Product.find();
+        }
         res.json(productItems);
     } catch (error) {
         console.error("Error fetching main product items:", error); // Log detailed error

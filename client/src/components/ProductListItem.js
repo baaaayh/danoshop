@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
 import styles from "./ProductListItem.module.scss";
 
-function ProductListItem({ productList = [], type }) {
+function ProductListItem({ productList = [], type, title, prevPage }) {
     const { category, type: paramType } = useParams();
+
     const { pathname } = useLocation();
     const [list, setList] = useState([]);
 
@@ -36,7 +37,16 @@ function ProductListItem({ productList = [], type }) {
             {list.map((item) => (
                 <li className={styles.product__item} key={item.id}>
                     <Link
-                        to={`/product/detail/${item.id}`}
+                        to={`/product/detail${
+                            prevPage
+                                ? `/${prevPage.category}`
+                                : `/${item.category}`
+                        }${
+                            prevPage && prevPage.type
+                                ? `/${prevPage.type}`
+                                : `/${item.type}`
+                        }/${item.id}`}
+                        state={{ title: title }}
                         className={styles.product__inner}
                     >
                         <div className={styles.product__figure}>
