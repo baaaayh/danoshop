@@ -66,7 +66,10 @@ function Header() {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="" className={styles["btn-cart"]}>
+                                    <Link
+                                        to="/order/cart"
+                                        className={styles["btn-cart"]}
+                                    >
                                         장바구니
                                     </Link>
                                 </li>

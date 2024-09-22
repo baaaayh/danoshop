@@ -6,6 +6,8 @@ import Footer from "./components/Footer";
 import Main from "./pages/main/Main";
 import Product from "./pages/product/Product";
 import View from "./pages/product/View";
+import Cart from "./pages/order/Cart";
+
 import "./styles/index.scss";
 
 import { useDispatch } from "react-redux";
@@ -55,6 +57,7 @@ function App() {
                         path="/product/detail/:category/:type/:id"
                         element={<View />}
                     />
+                    <Route path="/order/cart" element={<Cart />} />
                 </Routes>
             </div>
             <Footer />

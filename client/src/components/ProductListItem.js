@@ -36,26 +36,40 @@ function ProductListItem({ productList = [], type, title, prevPage }) {
         <>
             {list.map((item) => (
                 <li className={styles.product__item} key={item.id}>
-                    <Link
-                        to={`/product/detail${
-                            prevPage
-                                ? `/${prevPage.category}`
-                                : `/${item.category}`
-                        }${
-                            prevPage && prevPage.type
-                                ? `/${prevPage.type}`
-                                : `/${item.type}`
-                        }/${item.id}`}
-                        state={{ title: title }}
-                        className={styles.product__inner}
-                    >
-                        <div className={styles.product__figure}>
+                    <div className={styles.product__figure}>
+                        <Link
+                            to={`/product/detail${
+                                prevPage
+                                    ? `/${prevPage.category}`
+                                    : `/${item.category}`
+                            }${
+                                prevPage && prevPage.type
+                                    ? `/${prevPage.type}`
+                                    : `/${item.type}`
+                            }/${item.id}`}
+                            state={{ title: title }}
+                            className={styles.product__inner}
+                        >
                             <img
                                 src={`/uploads/product/${item.thumb}`}
                                 alt={item.title}
                             />
-                        </div>
-                        <div className={styles.product__desc}>
+                        </Link>
+                    </div>
+                    <div className={styles.product__desc}>
+                        <Link
+                            to={`/product/detail${
+                                prevPage
+                                    ? `/${prevPage.category}`
+                                    : `/${item.category}`
+                            }${
+                                prevPage && prevPage.type
+                                    ? `/${prevPage.type}`
+                                    : `/${item.type}`
+                            }/${item.id}`}
+                            state={{ title: title }}
+                            className={styles.product__inner}
+                        >
                             <h3 className={styles.product__title}>
                                 {item.title}
                             </h3>
@@ -65,25 +79,22 @@ function ProductListItem({ productList = [], type, title, prevPage }) {
                                     {item.config}
                                 </span>
                             </div>
-                        </div>
-                        <div className={styles.product__desc}>
-                            <h4 className={styles.product__selling}>판매가</h4>
-                            <strong>
-                                <span className={styles.product__price}>
-                                    {item.price
-                                        .toLocaleString()
-                                        .replace(
-                                            /\B(?=(\d{3})+(?!\d))/g,
-                                            ","
-                                        )}{" "}
-                                    원
-                                </span>
-                            </strong>
-                        </div>
-                        <div className={styles.product__icon}>
-                            <span>품절</span>
-                        </div>
-                    </Link>
+                        </Link>
+                    </div>
+                    <div className={styles.product__desc}>
+                        <h4 className={styles.product__selling}>판매가</h4>
+                        <strong>
+                            <span className={styles.product__price}>
+                                {item.price
+                                    .toLocaleString()
+                                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
+                                원
+                            </span>
+                        </strong>
+                    </div>
+                    <div className={styles.product__icon}>
+                        <span>품절</span>
+                    </div>
                 </li>
             ))}
         </>

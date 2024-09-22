@@ -1,4 +1,7 @@
 .product {
+    a {
+        display: block;
+    }
     &__figure {
         font-size: 0;
     }
@@ -7,6 +10,7 @@
         font-weight: 400;
     }
     &__desc {
+        margin-top: 20px;
         strong {
             display: inline-block;
             font-size: 18px;
@@ -15,6 +19,9 @@
         span {
             display: inline-block;
             color: #000;
+        }
+        & + & {
+            margin-top: 10px;
         }
     }
     &__config {
