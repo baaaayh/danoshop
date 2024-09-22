@@ -86,6 +86,68 @@
         }
     }
 
+    &__calc {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 30px 0;
+        border-top: 1px solid #e5e5e5;
+        > div {
+            &:first-child {
+                display: flex;
+                align-items: center;
+                flex: 2;
+            }
+            &:nth-child(2) {
+                display: flex;
+                align-items: center;
+                column-gap: 5px;
+                flex: 2;
+                > button {
+                    display: inline-block;
+                    width: 12px;
+                    height: 12px;
+                    background: #fff
+                        url(../../../public/images/icons/icon_product_delete.svg)
+                        center / auto no-repeat;
+                    font-size: 0;
+                    cursor: pointer;
+                }
+            }
+            &:nth-child(3) {
+                flex: 1;
+                display: flex;
+                justify-content: flex-end;
+            }
+        }
+    }
+
+    &__control {
+        display: inline-flex;
+        justify-content: center;
+        > button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #e5e5e5;
+            background-color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    }
+
+    &__qnum {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 30px;
+        border-top: 1px solid #e5e5e5;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
     .detail-view__tit {
         padding: 7px 5px 7px 0;
         flex-basis: 112px;

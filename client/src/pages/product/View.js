@@ -6,7 +6,7 @@ import BreadCrumb from "../../components/BreadCrumb";
 import styles from "./View.module.scss";
 
 function View() {
-    const [selectedOption, setSelectedOption] = useState({});
+    const [selectedOptions, setSelectedOptions] = useState([]); // 선택된 옵션 배열
     const [productInfo, setProductInfo] = useState({});
     const [totalPrice, setTotalPrice] = useState(0);
 
@@ -25,7 +25,6 @@ function View() {
 
     const params = useParams();
     const location = useLocation();
-
     const productId = params.id;
     const pageTitle = location.state?.title || ["전상품"];
 
@@ -37,27 +36,59 @@ function View() {
                     params: { id: productId },
                 }
             );
-            console.log(response.data[0]);
             setProductInfo(response.data[0]);
         } catch (error) {
-            console.error("Error fetching main product item:", error);
+            console.error("Error fetching product details:", error);
         }
     }
 
-    function handleChange(event) {
-        const { name, value } = event.target;
-        const selectedOptionValue = JSON.parse(value);
+    const handleOptionSelect = (selectedOptionValue) => {
+        const existingOptionIndex = selectedOptions.findIndex(
+            (option) => option.value.label === selectedOptionValue.label
+        );
 
-        setSelectedOption((prev) => ({ ...prev, [name]: selectedOptionValue }));
+        if (existingOptionIndex === -1) {
+            setSelectedOptions((prev) => [
+                ...prev,
+                {
+                    key: prev.length + 1,
+                    value: selectedOptionValue,
+                    quantity: 1,
+                },
+            ]);
+        }
+    };
 
-        const optionPrice = selectedOptionValue.price || 0;
-        const basePrice = Number(price) || 0;
-        setTotalPrice(basePrice + optionPrice);
-    }
+    const handleDeleteOption = (key) => {
+        setSelectedOptions((prev) =>
+            prev.filter((option) => option.key !== key)
+        );
+    };
+
+    const handleQuantityChange = (key, change) => {
+        setSelectedOptions((prev) =>
+            prev.map((option) =>
+                option.key === key
+                    ? {
+                          ...option,
+                          quantity: Math.max(option.quantity + change, 1),
+                      }
+                    : option
+            )
+        );
+    };
 
     useEffect(() => {
         getProductDetail();
     }, []);
+
+    useEffect(() => {
+        const newTotalPrice = selectedOptions.reduce((total, option) => {
+            const optionPrice = option.value.price || 0;
+            return total + (Number(price) + optionPrice) * option.quantity;
+        }, 0);
+        setTotalPrice(newTotalPrice);
+    }, [selectedOptions, price]);
 
     return (
         <SubContentsSmall>
@@ -99,7 +130,7 @@ function View() {
                                         <div>
                                             {price &&
                                                 Number(price).toLocaleString()}
-                                            <span>원</span>
+                                            원
                                         </div>
                                     </li>
                                     <li>
@@ -136,7 +167,6 @@ function View() {
                             </div>
 
                             {[option1, option2].map((option, index) => {
-                                // option이 undefined이거나 비어있는 배열일 경우 null 반환
                                 if (
                                     !option ||
                                     !Array.isArray(option.data) ||
@@ -148,7 +178,7 @@ function View() {
                                 return (
                                     <div
                                         key={index}
-                                        className={`${styles["detail-view__option"]} ${styles["detail-view__option--01"]}`}
+                                        className={`${styles["detail-view__option"]}`}
                                     >
                                         <div
                                             className={
@@ -162,67 +192,116 @@ function View() {
                                             >
                                                 {option.title}
                                             </span>
-                                            <div>
-                                                <select
-                                                    name={`option${index + 1}`}
-                                                    value={
-                                                        selectedOption[
-                                                            `option${index + 1}`
-                                                        ]?.value || ""
-                                                    }
-                                                    onChange={handleChange}
-                                                >
-                                                    <option value="">
-                                                        - [선택] 옵션을 선택해
-                                                        주세요 -
-                                                    </option>
-                                                    {option.data.map(
-                                                        (optionValue) => (
-                                                            <option
-                                                                value={JSON.stringify(
-                                                                    optionValue
-                                                                )}
-                                                                key={
-                                                                    optionValue.label
-                                                                }
-                                                            >
-                                                                {
-                                                                    optionValue.label
-                                                                }{" "}
-                                                                (
-                                                                {
-                                                                    optionValue.price
-                                                                }{" "}
-                                                                원)
-                                                            </option>
-                                                        )
-                                                    )}
-                                                </select>
-                                            </div>
+                                            <select
+                                                name={`option${index + 1}`}
+                                                onChange={(e) => {
+                                                    const value = JSON.parse(
+                                                        e.target.value
+                                                    );
+                                                    handleOptionSelect(value);
+                                                    e.target.value = ""; // 선택 후 초기화
+                                                }}
+                                            >
+                                                <option value="">
+                                                    - [선택] 옵션을 선택해
+                                                    주세요 -
+                                                </option>
+                                                {option.data.map(
+                                                    (optionValue) => (
+                                                        <option
+                                                            value={JSON.stringify(
+                                                                optionValue
+                                                            )}
+                                                            key={
+                                                                optionValue.label
+                                                            }
+                                                        >
+                                                            {optionValue.label}{" "}
+                                                            ({optionValue.price}{" "}
+                                                            원)
+                                                        </option>
+                                                    )
+                                                )}
+                                            </select>
                                         </div>
                                     </div>
                                 );
                             })}
 
-                            <div className={styles["detail-view__calc"]}>
-                                {Object.keys(selectedOption).length !== 0 && (
-                                    <div>
-                                        {Object.entries(selectedOption).map(
-                                            ([key, value]) => (
-                                                <div key={key}>
-                                                    <strong>
-                                                        {value.label}
-                                                    </strong>
-                                                    : {value.price} 원
-                                                </div>
-                                            )
-                                        )}
-                                    </div>
-                                )}
-                            </div>
                             <div className={styles["detail-view__caution"]}>
                                 <span>(최소주문수량 1개 이상)</span>
                             </div>
+                            {selectedOptions.map((option) => {
+                                const displayPrice =
+                                    (Number(price) +
+                                        (option.value.price || 0)) *
+                                    option.quantity;
+
+                                return (
+                                    <div
+                                        key={option.key}
+                                        className={styles["detail-view__calc"]}
+                                    >
+                                        <div>
+                                            <span>{option.value.label}</span>
+                                        </div>
+                                        <div>
+                                            <div
+                                                className={
+                                                    styles[
+                                                        "detail-view__control"
+                                                    ]
+                                                }
+                                            >
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleQuantityChange(
+                                                            option.key,
+                                                            -1
+                                                        )
+                                                    }
+                                                >
+                                                    -
+                                                </button>
+                                                <div
+                                                    className={
+                                                        styles[
+                                                            "detail-view__qnum"
+                                                        ]
+                                                    }
+                                                >
+                                                    {option.quantity}
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleQuantityChange(
+                                                            option.key,
+                                                            1
+                                                        )
+                                                    }
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleDeleteOption(
+                                                        option.key
+                                                    )
+                                                }
+                                            >
+                                                삭제
+                                            </button>
+                                        </div>
+                                        <div>
+                                            {displayPrice.toLocaleString()} 원
+                                        </div>
+                                    </div>
+                                );
+                            })}
                             <div className={styles["detail-view__total"]}>
                                 <div className={styles["detail-view__row"]}>
                                     <div
@@ -242,7 +321,11 @@ function View() {
                                         </strong>
                                         <span>
                                             <span className="detail-view__num">
-                                                0
+                                                {selectedOptions.reduce(
+                                                    (sum, option) =>
+                                                        sum + option.quantity,
+                                                    0
+                                                )}
                                             </span>{" "}
                                             개
                                         </span>
@@ -285,7 +368,7 @@ function View() {
                             <div className={styles["detail-view__button"]}>
                                 <div>
                                     <button
-                                        type="button"
+                                        type="submit"
                                         className="btn btn-square btn-square--black"
                                     >
                                         <span className="btn btn-square__text">
@@ -323,6 +406,9 @@ function View() {
                             </li>
                             <li>
                                 <a href="">상품후기</a>
+                            </li>
+                            <li>
+                                <a href="">상품</a>
                             </li>
                             <li>
                                 <a href="">상품문의</a>
