@@ -1,13 +1,13 @@
-import { useLocation, useParams } from "react-router-dom";
-import SubContents from "../../components/SubContents";
-import BreadCrumb from "../../components/BreadCrumb";
-import SubTitle from "../../components/SubTitle";
-import ProductList from "../../components/ProductList";
+import { useLocation, useParams } from 'react-router-dom';
+import SubContents from '../../components/SubContents';
+import BreadCrumb from '../../components/BreadCrumb';
+import SubTitle from '../../components/SubTitle';
+import ProductList from '../../components/ProductList';
 
 function Product() {
     const params = useParams();
     const location = useLocation();
-    const title = location.state?.title || ["전상품"];
+    const title = location.state?.title || ['전상품'];
 
     return (
         <SubContents>

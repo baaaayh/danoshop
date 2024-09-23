@@ -109,3 +109,28 @@ select {
         }
     }
 }
+
+.quantity-control {
+    display: inline-flex;
+    justify-content: center;
+    > button {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 30px;
+        height: 30px;
+        border: 1px solid #e5e5e5;
+        background-color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    &__view {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 30px;
+        border-top: 1px solid #e5e5e5;
+        border-bottom: 1px solid #e5e5e5;
+    }
+}

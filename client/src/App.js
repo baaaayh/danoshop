@@ -1,17 +1,17 @@
-import { useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
-import axios from "axios";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import Main from "./pages/main/Main";
-import Product from "./pages/product/Product";
-import View from "./pages/product/View";
-import Cart from "./pages/order/Cart";
+import { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import axios from 'axios';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Main from './pages/main/Main';
+import Product from './pages/product/Product';
+import View from './pages/product/View';
+import Cart from './pages/order/Cart';
 
-import "./styles/index.scss";
+import './styles/index.scss';
 
-import { useDispatch } from "react-redux";
-import { addMenuItem } from "./modules/menuList";
+import { useDispatch } from 'react-redux';
+import { addMenuItem } from './modules/menuList';
 
 function App() {
     const dispatch = useDispatch();
@@ -22,10 +22,10 @@ function App() {
 
     const getMenuList = async () => {
         try {
-            const response = await axios.get("http://localhost:4000/api/menu");
+            const response = await axios.get('http://localhost:4000/api/menu');
             handleAddMenuItem(response.data);
         } catch (error) {
-            console.error("Error fetching product list:", error);
+            console.error('Error fetching product list:', error);
         }
     };
 
@@ -45,19 +45,10 @@ function App() {
                     <Route path="/recent" />
                     <Route path="/product" element={<Product />} />
                     <Route path="/product/:category" element={<Product />} />
-                    <Route
-                        path="/product/:category/:type"
-                        element={<Product />}
-                    />
-                    <Route
-                        path="/product/detail/:category/:id"
-                        element={<View />}
-                    />
-                    <Route
-                        path="/product/detail/:category/:type/:id"
-                        element={<View />}
-                    />
-                    <Route path="/order/cart" element={<Cart />} />
+                    <Route path="/product/:category/:type" element={<Product />} />
+                    <Route path="/product/detail/:category/:id" element={<View />} />
+                    <Route path="/product/detail/:category/:type/:id" element={<View />} />
+                    <Route path="/order/:cart" element={<Cart />} />
                 </Routes>
             </div>
             <Footer />

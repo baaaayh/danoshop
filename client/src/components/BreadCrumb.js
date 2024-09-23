@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import styles from "./BreadCrumb.module.scss";
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { Link, useLocation } from 'react-router-dom';
+import styles from './BreadCrumb.module.scss';
 
 function BreadCrumb({ title, path }) {
+    const location = useLocation();
     const [menuList, setMenuList] = useState([]);
     const menuListData = useSelector((state) => state.menu.menuList);
 
@@ -13,6 +14,9 @@ function BreadCrumb({ title, path }) {
         }
     }, [menuListData]);
 
+    // category에 맞는 항목만 필터링
+    const filteredMenuList = menuList.filter((item) => path.category === item.category);
+
     return (
         <div className={styles.breadcrumb}>
             <nav>
@@ -20,57 +24,37 @@ function BreadCrumb({ title, path }) {
                     <li>
                         <Link to="/">홈</Link>
                     </li>
-                    {menuList.map((item, index) => {
-                        if (path.category === item.category) {
-                            return (
-                                <React.Fragment key={`fragment-${index}`}>
-                                    <li key={`depth1-${index}`}>
-                                        <Link
-                                            to={`/${item.pageType}/${item.category}`}
-                                            state={{
-                                                title: [title[0]],
-                                            }}
-                                        >
-                                            {item.depth1}
-                                        </Link>
-                                    </li>
-                                    {path.type &&
-                                    item.depth2 &&
-                                    item.depth2.length > 0
-                                        ? item.depth2.map(
-                                              (depth2Item, depth2Index) => {
-                                                  if (
-                                                      depth2Item.type ===
-                                                      path.type
-                                                  ) {
-                                                      return (
-                                                          <li
-                                                              key={`depth2-${index}-${depth2Index}`}
-                                                          >
-                                                              <Link
-                                                                  to={`/${item.pageType}/${path.category}/${path.type}`}
-                                                                  state={{
-                                                                      title: [
-                                                                          title[1],
-                                                                      ],
-                                                                  }}
-                                                              >
-                                                                  {
-                                                                      depth2Item.name
-                                                                  }
-                                                              </Link>
-                                                          </li>
-                                                      );
-                                                  }
-                                                  return null;
-                                              }
-                                          )
-                                        : null}
-                                </React.Fragment>
-                            );
-                        }
-                        return null;
-                    })}
+                    {filteredMenuList.map((item, index) => (
+                        <React.Fragment key={`fragment-${index}`}>
+                            <li key={`depth1-${index}`}>
+                                <Link to={`/${item.pageType}/${item.category}`} state={{ title: [title[0]] }}>
+                                    {item.depth1}
+                                </Link>
+                            </li>
+                            {path.type &&
+                                item.depth2 &&
+                                item.depth2.length > 0 &&
+                                item.depth2.map((depth2Item, depth2Index) => {
+                                    if (depth2Item.type === path.type) {
+                                        return (
+                                            <li key={`depth2-${index}-${depth2Index}`}>
+                                                <Link to={`/${item.pageType}/${path.category}/${path.type}`} state={{ title: [title[1]] }}>
+                                                    {depth2Item.name}
+                                                </Link>
+                                            </li>
+                                        );
+                                    }
+                                    return null;
+                                })}
+                        </React.Fragment>
+                    ))}
+                    {filteredMenuList.length <= 0 && (
+                        <li>
+                            <Link to={location.pathname} state={{ title }}>
+                                {title}
+                            </Link>
+                        </li>
+                    )}
                 </ul>
             </nav>
         </div>

@@ -1,26 +1,43 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import styles from "./Header.module.scss";
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import styles from './Header.module.scss';
 
 function Header() {
+    const [totalQuantity, setTotalQuantity] = useState(0);
     const [menuList, setMenuList] = useState({ menu: [] });
-    const menuListData = useSelector((state) => state.menu.menuList);
     const [scrolled, setScrolled] = useState();
+    const menuListData = useSelector((state) => state.menu.menuList);
+    const itemsOptions = useSelector((state) => state.cart.cartList.map((item) => item.options));
+
+    useEffect(() => {
+        const total = itemsOptions.reduce((acc, options) => {
+            return (
+                acc +
+                options.reduce((optAcc, option) => {
+                    return optAcc + (option.value.quantity || 0);
+                }, 0)
+            );
+        }, 0);
+
+        if (total !== totalQuantity) {
+            setTotalQuantity(total);
+        }
+    }, [itemsOptions, totalQuantity]);
 
     useEffect(() => {
         const handleScroll = () => {
             if (window.scrollY > 0) {
-                setScrolled("active");
+                setScrolled('active');
             } else {
                 setScrolled();
             }
         };
 
-        window.addEventListener("scroll", handleScroll);
+        window.addEventListener('scroll', handleScroll);
 
         return () => {
-            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener('scroll', handleScroll);
         };
     }, []);
 
@@ -29,14 +46,10 @@ function Header() {
     }, [menuListData]);
 
     return (
-        <header
-            className={
-                scrolled ? `${styles.header} ${styles.active}` : styles.header
-            }
-        >
+        <header className={scrolled ? `${styles.header} ${styles.active}` : styles.header}>
             <div className={styles.header__inner}>
                 <div className={styles.header__nav}>
-                    <ul className={styles["menu-nav"]}>
+                    <ul className={styles['menu-nav']}>
                         <li>
                             <Link to="/join">회원가입</Link>
                         </li>
@@ -61,23 +74,18 @@ function Header() {
                         <div className={styles.user}>
                             <ul>
                                 <li>
-                                    <Link to="" className={styles["btn-user"]}>
+                                    <Link to="" className={styles['btn-user']}>
                                         마이페이지
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link
-                                        to="/order/cart"
-                                        className={styles["btn-cart"]}
-                                    >
+                                    <Link to="/order/cart" className={styles['btn-cart']} state={{ title: ['장바구니'] }}>
                                         장바구니
+                                        <span>{totalQuantity}</span>
                                     </Link>
                                 </li>
                                 <li>
-                                    <button
-                                        type="button"
-                                        className={styles["btn-search"]}
-                                    >
+                                    <button type="button" className={styles['btn-search']}>
                                         검색
                                     </button>
                                 </li>
@@ -101,29 +109,18 @@ function Header() {
                                             {item.depth2.length > 0 && (
                                                 <div className={styles.depth2}>
                                                     <ul>
-                                                        {item.depth2.map(
-                                                            (dep2) => (
-                                                                <li
-                                                                    key={
-                                                                        dep2.name
-                                                                    }
+                                                        {item.depth2.map((dep2) => (
+                                                            <li key={dep2.name}>
+                                                                <Link
+                                                                    to={`/${item.pageType}/${item.category}/${dep2.type}`}
+                                                                    state={{
+                                                                        title: [item.depth1, dep2.name],
+                                                                    }}
                                                                 >
-                                                                    <Link
-                                                                        to={`/${item.pageType}/${item.category}/${dep2.type}`}
-                                                                        state={{
-                                                                            title: [
-                                                                                item.depth1,
-                                                                                dep2.name,
-                                                                            ],
-                                                                        }}
-                                                                    >
-                                                                        {
-                                                                            dep2.name
-                                                                        }
-                                                                    </Link>
-                                                                </li>
-                                                            )
-                                                        )}
+                                                                    {dep2.name}
+                                                                </Link>
+                                                            </li>
+                                                        ))}
                                                     </ul>
                                                 </div>
                                             )}
