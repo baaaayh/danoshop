@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { addCartItem } from '../../modules/cartList';
 import SubContentsSmall from '../../components/SubContentsSmall';
 import BreadCrumb from '../../components/BreadCrumb';
@@ -20,6 +20,8 @@ function View() {
     const location = useLocation();
     const productId = params.id;
     const pageTitle = location.state?.title || ['전상품'];
+
+    const loggedIn = useSelector((state) => state.user.state);
 
     useEffect(() => {
         const getProductDetail = async () => {
@@ -75,20 +77,22 @@ function View() {
         );
     };
 
-    // 장바구니에 추가하는 핸들러
     const handleAddToCart = () => {
-        if (isAdding) return;
-        setIsAdding(true);
+        if (loggedIn === 'guest') {
+            if (isAdding) return;
+            setIsAdding(true);
 
-        const product = {
-            id: productInfo.id,
-            options: selectedOptions,
-            price: price,
-            data: productInfo,
-        };
+            const product = {
+                id: productInfo.id,
+                options: selectedOptions,
+                price: price,
+                data: productInfo,
+            };
 
-        dispatch(addCartItem(product));
-        setIsAdding(false);
+            dispatch(addCartItem(product));
+            setIsAdding(false);
+        } else if (loggedIn === 'member') {
+        }
     };
 
     const { title, summary, price, config, deliveryType, deliveryCharge, detail, view } = productInfo;

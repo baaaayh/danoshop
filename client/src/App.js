@@ -1,41 +1,52 @@
 import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
+import { jwtDecode } from 'jwt-decode';
+import { addMenuItem } from './modules/menuList';
+import { removeToken } from './modules/userData';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Main from './pages/main/Main';
 import Product from './pages/product/Product';
 import View from './pages/product/View';
 import Cart from './pages/order/Cart';
-
+import Login from './pages/user/Login';
 import './styles/index.scss';
-
-import { useDispatch } from 'react-redux';
-import { addMenuItem } from './modules/menuList';
 
 function App() {
     const dispatch = useDispatch();
+    const loggedIn = useSelector((state) => state.user.state);
+    const token = useSelector((state) => state.user.token);
 
-    const handleAddMenuItem = (data) => {
-        dispatch(addMenuItem(data));
-    };
-
-    const getMenuList = async () => {
-        try {
+    const { data, error, isLoading } = useQuery({
+        queryKey: ['menu'],
+        queryFn: async () => {
             const response = await axios.get('http://localhost:4000/api/menu');
-            handleAddMenuItem(response.data);
-        } catch (error) {
-            console.error('Error fetching product list:', error);
-        }
-    };
+            return response.data;
+        },
+    });
 
     useEffect(() => {
-        getMenuList();
-    }, []);
+        !isLoading && dispatch(addMenuItem(data));
+    }, [data, error, isLoading]);
+
+    useEffect(() => {
+        if (CheckValidToken(token)) {
+            dispatch(removeToken());
+        }
+    }, [token]);
+
+    function CheckValidToken(token) {
+        if (!token) return true;
+        const decoded = jwtDecode(token);
+        return decoded.exp * 1000 < Date.now();
+    }
 
     return (
         <div className="container">
-            <Header />
+            <Header loggedIn={loggedIn} removeToken={removeToken} />
             <div className="wrap">
                 <Routes>
                     <Route exact path="/" element={<Main />} />
@@ -49,6 +60,7 @@ function App() {
                     <Route path="/product/detail/:category/:id" element={<View />} />
                     <Route path="/product/detail/:category/:type/:id" element={<View />} />
                     <Route path="/order/:cart" element={<Cart />} />
+                    <Route path="/user/login" element={<Login />} />
                 </Routes>
             </div>
             <Footer />

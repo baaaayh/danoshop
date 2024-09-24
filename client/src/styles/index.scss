@@ -16,6 +16,52 @@ select {
     background-size: 14px 8px;
 }
 
+input {
+    margin: 0;
+    padding: 0;
+    appearance: none;
+}
+input:focus {
+    outline: none;
+}
+
+input[type='text'], input[type='password'] {
+    display: block;
+    height: 48px;
+    line-height: 48px;
+    border: 1px solid #e3e3e3;
+    padding: 0 20px;
+}
+
+input[type='text']::placeholder, input[type='password']::placeholder {
+    color: #e3e3e3;
+}
+
+input[type='text']:focus, input[type='password']:focus {
+    border: 1px solid #000;
+}
+
+input[type="checkbox"] {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background: url(../../public/images/icons/icon_checkbox.svg) center / auto no-repeat;
+    cursor: pointer;
+}
+input[type="checkbox"]:checked {
+    background: url(../../public/images/icons/icon_checkbox_on.svg) center / auto no-repeat;
+}
+
+label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+
 .container {
     font-family: "NotoSansKR", sans-serif;
     font-weight: 400;

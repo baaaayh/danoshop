@@ -49,9 +49,6 @@ function Cart() {
     }, 0);
 
     // 총 배송비 계산
-    const totalDeliveryCharge = cartList.reduce((acc, item) => {
-        return acc + item.data.deliveryCharge; // 각 상품의 배송비 합산
-    }, 0);
 
     return (
         <SubContentsSmall>

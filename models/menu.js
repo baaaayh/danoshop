@@ -1,6 +1,5 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-// Define the KV schema
 const MenuSchema = new mongoose.Schema({
     menu: [
         {
@@ -11,8 +10,6 @@ const MenuSchema = new mongoose.Schema({
     ],
 });
 
-// Create the KV model
-const MENU = mongoose.model("MENU", MenuSchema);
+const MENU = mongoose.model('MENU', MenuSchema);
 
-// Export the model
 module.exports = MENU;

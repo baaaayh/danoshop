@@ -1,19 +1,27 @@
 // store.js
-import { configureStore } from "@reduxjs/toolkit";
-import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
-import { combineReducers } from "redux";
-import menuReducer from "../modules/menuList";
-import cartReducer from "../modules/cartList";
+import { configureStore } from '@reduxjs/toolkit';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import { combineReducers } from 'redux';
+import menuReducer from '../modules/menuList';
+import cartReducer from '../modules/cartList';
+import userReducer from '../modules/userData';
 
 const persistConfig = {
-    key: "cart",
-    storage,
+    cart: {
+        key: 'cart',
+        storage,
+    },
+    user: {
+        key: 'user',
+        storage,
+    },
 };
 
 const rootReducer = combineReducers({
     menu: menuReducer,
-    cart: persistReducer(persistConfig, cartReducer), // cartReducer에만 persist 적용
+    cart: persistReducer(persistConfig.cart, cartReducer),
+    user: persistReducer(persistConfig.user, userReducer),
 });
 
 const store = configureStore({
@@ -21,7 +29,7 @@ const store = configureStore({
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {
-                ignoredActions: ["persist/PERSIST"], // 필요한 경우 다른 액션도 추가
+                ignoredActions: ['persist/PERSIST'],
             },
         }),
 });

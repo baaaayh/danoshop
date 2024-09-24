@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearCart } from '../modules/cartList';
 import styles from './Header.module.scss';
 
-function Header() {
+function Header({ loggedIn, removeToken }) {
     const [totalQuantity, setTotalQuantity] = useState(0);
     const [menuList, setMenuList] = useState({ menu: [] });
     const [scrolled, setScrolled] = useState();
+    const dispatch = useDispatch();
     const menuListData = useSelector((state) => state.menu.menuList);
     const itemsOptions = useSelector((state) => state.cart.cartList.map((item) => item.options));
 
@@ -45,17 +47,33 @@ function Header() {
         setMenuList(menuListData[0]);
     }, [menuListData]);
 
+    function logout() {
+        alert('로그아웃 되었습니다.');
+        // dispatch(clearCart());
+        dispatch(removeToken());
+    }
+
     return (
         <header className={scrolled ? `${styles.header} ${styles.active}` : styles.header}>
             <div className={styles.header__inner}>
                 <div className={styles.header__nav}>
                     <ul className={styles['menu-nav']}>
                         <li>
-                            <Link to="/join">회원가입</Link>
+                            <Link to="/user/join">회원가입</Link>
                         </li>
-                        <li>
-                            <Link to="/login">로그인</Link>
-                        </li>
+                        {loggedIn === 'guest' ? (
+                            <li>
+                                <Link to="/user/login" state={{ title: ['로그인'] }}>
+                                    로그인
+                                </Link>
+                            </li>
+                        ) : (
+                            <li>
+                                <button type="button" onClick={logout}>
+                                    로그아웃
+                                </button>
+                            </li>
+                        )}
                         <li>
                             <Link to="/inquiry">주문조회</Link>
                         </li>
