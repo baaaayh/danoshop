@@ -9,9 +9,11 @@ import styles from './View.module.scss';
 import LayerPopup from '../../components/LayerPopup';
 
 function View() {
-    const [isPopupActive, setIsPopupActive] = useState(false);
     const dispatch = useDispatch();
-    const [selectedOptions, setSelectedOptions] = useState([]); // 선택된 옵션 배열
+    const userInfo = useSelector((state) => state.user);
+    const localCart = useSelector((state) => state.cart.cartList);
+    const [isPopupActive, setIsPopupActive] = useState(false);
+    const [selectedOptions, setSelectedOptions] = useState([]);
     const [productInfo, setProductInfo] = useState({});
     const [totalPrice, setTotalPrice] = useState(0);
     const [isAdding, setIsAdding] = useState(false);
@@ -20,8 +22,6 @@ function View() {
     const location = useLocation();
     const productId = params.id;
     const pageTitle = location.state?.title || ['전상품'];
-
-    const loggedIn = useSelector((state) => state.user.state);
 
     useEffect(() => {
         const getProductDetail = async () => {
@@ -70,33 +70,53 @@ function View() {
                 option.key === key
                     ? {
                           ...option,
-                          quantity: Math.max(option.quantity + change, 1),
+                          quantity: Math.max(option.quantity + change, 1), // quantity 수정
                       }
                     : option
             )
         );
     };
 
-    const handleAddToCart = () => {
-        if (loggedIn === 'guest') {
-            if (isAdding) return;
-            setIsAdding(true);
+    const handleAddToCart = async () => {
+        if (isAdding) return;
+        setIsAdding(true);
 
-            const product = {
-                id: productInfo.id,
-                options: selectedOptions,
-                price: price,
-                data: productInfo,
-            };
+        const { _id, ...rest } = productInfo;
 
+        const product = {
+            id: productInfo.id,
+            options: selectedOptions.map((option) => ({
+                ...option,
+                price: String(option.value.price),
+            })),
+            price: String(totalPrice),
+            data: {
+                ...rest,
+            },
+        };
+
+        try {
+            // 장바구니에 상품 추가
             dispatch(addCartItem(product));
+
+            // localCart 상태 확인 (상품 추가 후)
+            const updatedLocalCart = localCart; // dispatch 후 업데이트된 localCart를 사용
+
+            // 회원일 때 장바구니 정보를 서버에 전송
+            if (userInfo.state === 'member') {
+                const resCartData = await axios.post('http://localhost:4000/api/userCart', {
+                    loginData: { id: userInfo.userId },
+                    localCart: updatedLocalCart, // 최신 localCart 전송
+                });
+            }
+        } catch (error) {
+            console.error('Failed to add to cart:', error.response?.data || error.message);
+        } finally {
             setIsAdding(false);
-        } else if (loggedIn === 'member') {
         }
     };
 
     const { title, summary, price, config, deliveryType, deliveryCharge, detail, view } = productInfo;
-
     const options = productInfo.options || [];
 
     const layerPopupRef = useRef();
@@ -108,6 +128,24 @@ function View() {
     function closeLayerPopup() {
         setIsPopupActive(false);
     }
+
+    useEffect(() => {
+        const sendCartToServer = async () => {
+            if (userInfo.state === 'member' && localCart.length > 0) {
+                try {
+                    const resCartData = await axios.post('http://localhost:4000/api/userCart', {
+                        loginData: { id: userInfo.userId },
+                        localCart: localCart,
+                    });
+                    console.log(resCartData);
+                } catch (error) {
+                    console.error('Error sending cart to server:', error);
+                }
+            }
+        };
+
+        sendCartToServer();
+    }, [localCart, userInfo.state]);
 
     return (
         <SubContentsSmall>

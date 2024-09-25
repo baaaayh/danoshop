@@ -12,11 +12,18 @@ const cartListData = createSlice({
             if (existingProductIndex !== -1) {
                 const existingProduct = state.cartList[existingProductIndex];
 
-                action.payload.options.forEach((newOption) => {
+                // 객체를 배열로 변환
+                const optionsArray = Object.values(action.payload.options);
+
+                optionsArray.forEach((newOption) => {
                     const existingOptionIndex = existingProduct.options.findIndex((option) => option.key === newOption.key);
 
                     if (existingOptionIndex !== -1) {
-                        existingProduct.options[existingOptionIndex].value.quantity += newOption.quantity;
+                        existingProduct.options.forEach((option) => {
+                            if (option.key === newOption.key) {
+                                option.value.quantity += newOption.quantity;
+                            }
+                        });
                     } else {
                         existingProduct.options.push({
                             key: newOption.key,
@@ -28,13 +35,15 @@ const cartListData = createSlice({
                     }
                 });
             } else {
+                const optionsArray = Object.values(action.payload.options); // 객체를 배열로 변환
+
                 state.cartList.push({
                     ...action.payload,
-                    options: action.payload.options.map((option) => ({
+                    options: optionsArray.map((option) => ({
                         key: option.key,
                         value: {
-                            ...option.value,
                             quantity: option.quantity,
+                            ...option.value,
                         },
                     })),
                 });

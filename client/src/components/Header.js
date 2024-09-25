@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearCart } from '../modules/cartList';
 import styles from './Header.module.scss';
 
 function Header({ loggedIn, removeToken }) {
+    const navigate = useNavigate();
     const [totalQuantity, setTotalQuantity] = useState(0);
     const [menuList, setMenuList] = useState({ menu: [] });
     const [scrolled, setScrolled] = useState();
@@ -49,8 +50,9 @@ function Header({ loggedIn, removeToken }) {
 
     function logout() {
         alert('로그아웃 되었습니다.');
-        // dispatch(clearCart());
+        dispatch(clearCart());
         dispatch(removeToken());
+        navigate('/');
     }
 
     return (

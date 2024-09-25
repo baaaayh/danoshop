@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
 import { updateCartItem } from '../../modules/cartList';
 import SubContentsSmall from '../../components/SubContentsSmall';
 import BreadCrumb from '../../components/BreadCrumb';
@@ -11,6 +12,7 @@ function Cart() {
     const [cartList, setCartList] = useState([]);
     const [totalQuantity, setTotalQuantity] = useState(0);
     const cartData = useSelector((state) => state.cart.cartList);
+    const userInfo = useSelector((state) => state.user);
     const params = useParams();
     const location = useLocation();
     const title = location.state?.title || ['전상품'];
@@ -32,10 +34,23 @@ function Cart() {
         setTotalQuantity(totalQuantity);
     }, [cartList]);
 
-    const handleQuantityChange = (itemId, optionKey, change) => {
+    const handleQuantityChange = async (itemId, optionKey, change) => {
         const currentOption = cartList.find((item) => item.id === itemId).options.find((option) => option.key === optionKey);
         const newQuantity = Math.max(currentOption.value.quantity + change, 1);
-        dispatch(updateCartItem({ itemId, optionKey, quantity: newQuantity })); // 액션 디스패치
+
+        // Redux 상태 업데이트
+        dispatch(updateCartItem({ itemId, optionKey, quantity: newQuantity }));
+
+        // 서버와 동기화
+        try {
+            const userId = userInfo.userId; // 사용자 ID
+            await axios.post('http://localhost:4000/api/userCart', {
+                loginData: { id: userId },
+                localCart: cartList,
+            });
+        } catch (error) {
+            console.error('Failed to update cart on server:', error);
+        }
     };
 
     // 총 상품 금액 계산

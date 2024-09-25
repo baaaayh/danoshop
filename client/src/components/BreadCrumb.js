@@ -10,11 +10,10 @@ function BreadCrumb({ title, path }) {
 
     useEffect(() => {
         if (menuListData.length > 0) {
-            setMenuList(menuListData[0].menu); // menuListData의 첫 번째 항목에서 menu 배열 설정
+            setMenuList(menuListData[0].menu);
         }
     }, [menuListData]);
 
-    // category에 맞는 항목만 필터링
     const filteredMenuList = menuList.filter((item) => path.category === item.category);
 
     return (
@@ -38,13 +37,12 @@ function BreadCrumb({ title, path }) {
                                     if (depth2Item.type === path.type) {
                                         return (
                                             <li key={`depth2-${index}-${depth2Index}`}>
-                                                <Link to={`/${item.pageType}/${path.category}/${path.type}`} state={{ title: [title[1]] }}>
+                                                <Link to={`/${item.pageType}/${path.category}/${path.type}`} state={{ title: [depth2Item.name] }}>
                                                     {depth2Item.name}
                                                 </Link>
                                             </li>
                                         );
                                     }
-                                    return null;
                                 })}
                         </React.Fragment>
                     ))}
