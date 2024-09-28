@@ -1,35 +1,39 @@
-import { useState, useEffect, useRef } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
-import axios from 'axios';
-import { useSelector, useDispatch } from 'react-redux';
-import { addCartItem } from '../../modules/cartList';
-import SubContentsSmall from '../../components/SubContentsSmall';
-import BreadCrumb from '../../components/BreadCrumb';
-import styles from './View.module.scss';
-import LayerPopup from '../../components/LayerPopup';
+import { useState, useEffect, useRef } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { addCartItem } from "../../modules/cartList";
+import SubContentsSmall from "../../components/SubContentsSmall";
+import BreadCrumb from "../../components/BreadCrumb";
+import styles from "./View.module.scss";
+import LayerPopup from "../../components/LayerPopup";
 
 function View() {
     const dispatch = useDispatch();
     const userInfo = useSelector((state) => state.user);
     const localCart = useSelector((state) => state.cart.cartList);
+    const [updatedLocalCart, setUpdatedLocalCart] = useState([]);
     const [isPopupActive, setIsPopupActive] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState([]);
-    const [productInfo, setProductInfo] = useState({});
+    const [productInfo, setProductInfo] = useState({ price: 0 });
     const [totalPrice, setTotalPrice] = useState(0);
     const [isAdding, setIsAdding] = useState(false);
 
     const params = useParams();
     const location = useLocation();
     const productId = params.id;
-    const pageTitle = location.state?.title || ['전상품'];
+    const pageTitle = location.state?.title || ["전상품"];
 
     useEffect(() => {
         const getProductDetail = async () => {
             try {
-                const response = await axios.get('http://localhost:4000/api/product', { params: { id: productId } });
+                const response = await axios.get(
+                    "http://localhost:4000/api/product",
+                    { params: { id: productId } }
+                );
                 setProductInfo(response.data[0]);
             } catch (error) {
-                console.error('Error fetching product details:', error);
+                console.error("Error fetching product details:", error);
             }
         };
         getProductDetail();
@@ -38,21 +42,29 @@ function View() {
     useEffect(() => {
         const newTotalPrice = selectedOptions.reduce((total, option) => {
             const optionPrice = option.value.price || 0;
-            return total + (Number(productInfo.price) + optionPrice) * option.quantity;
+            return (
+                total +
+                (Number(productInfo.price) + optionPrice) *
+                    option.value.quantity
+            );
         }, 0);
         setTotalPrice(newTotalPrice);
     }, [selectedOptions, productInfo.price]);
 
     const handleOptionSelect = (selectedOptionValue, key) => {
         setSelectedOptions((prev) => {
-            const existingOptionIndex = prev.findIndex((option) => option.value.label === selectedOptionValue.label);
+            const existingOptionIndex = prev.findIndex(
+                (option) => option.key === key
+            );
             if (existingOptionIndex === -1) {
                 return [
                     ...prev,
                     {
                         key: key,
-                        value: selectedOptionValue,
-                        quantity: 1,
+                        value: {
+                            ...selectedOptionValue,
+                            quantity: 1,
+                        },
                     },
                 ];
             }
@@ -61,62 +73,60 @@ function View() {
     };
 
     const handleDeleteOption = (key) => {
-        setSelectedOptions((prev) => prev.filter((option) => option.key !== key));
+        setSelectedOptions((prev) =>
+            prev.filter((option) => option.key !== key)
+        );
     };
 
     const handleQuantityChange = (key, change) => {
         setSelectedOptions((prev) =>
-            prev.map((option) =>
-                option.key === key
-                    ? {
-                          ...option,
-                          quantity: Math.max(option.quantity + change, 1), // quantity 수정
-                      }
-                    : option
-            )
+            prev.map((option) => {
+                if (option.key === key) {
+                    option.value.quantity = option.value.quantity + change;
+                    return option;
+                } else {
+                    return option;
+                }
+            })
         );
     };
 
     const handleAddToCart = async () => {
         if (isAdding) return;
-        setIsAdding(true);
 
-        const { _id, ...rest } = productInfo;
+        setIsAdding(true);
 
         const product = {
             id: productInfo.id,
-            options: selectedOptions.map((option) => ({
-                ...option,
-                price: String(option.value.price),
-            })),
+            options: selectedOptions,
             price: String(totalPrice),
-            data: {
-                ...rest,
-            },
+            data: { ...productInfo },
         };
 
         try {
-            // 장바구니에 상품 추가
+            // Redux 상태 업데이트
             dispatch(addCartItem(product));
 
-            // localCart 상태 확인 (상품 추가 후)
-            const updatedLocalCart = localCart; // dispatch 후 업데이트된 localCart를 사용
-
-            // 회원일 때 장바구니 정보를 서버에 전송
-            if (userInfo.state === 'member') {
-                const resCartData = await axios.post('http://localhost:4000/api/userCart', {
-                    loginData: { id: userInfo.userId },
-                    localCart: updatedLocalCart, // 최신 localCart 전송
-                });
-            }
+            // 로컬 상태 업데이트
+            setUpdatedLocalCart([...updatedLocalCart, product]);
         } catch (error) {
-            console.error('Failed to add to cart:', error.response?.data || error.message);
+            console.error("Failed to add to cart:", error);
         } finally {
             setIsAdding(false);
         }
     };
 
-    const { title, summary, price, config, deliveryType, deliveryCharge, detail, view } = productInfo;
+    const {
+        title,
+        summary,
+        price,
+        config,
+        deliveryType,
+        deliveryCharge,
+        detail,
+        view,
+    } = productInfo;
+
     const options = productInfo.options || [];
 
     const layerPopupRef = useRef();
@@ -130,53 +140,78 @@ function View() {
     }
 
     useEffect(() => {
-        const sendCartToServer = async () => {
-            if (userInfo.state === 'member' && localCart.length > 0) {
+        if (userInfo.state === "member") {
+            const updateDbCart = async () => {
                 try {
-                    const resCartData = await axios.post('http://localhost:4000/api/userCart', {
+                    await axios.post("http://localhost:4000/api/userCart", {
                         loginData: { id: userInfo.userId },
-                        localCart: localCart,
+                        localCart: updatedLocalCart,
                     });
-                    console.log(resCartData);
                 } catch (error) {
-                    console.error('Error sending cart to server:', error);
+                    console.error("Error updating cart:", error);
                 }
-            }
-        };
+            };
 
-        sendCartToServer();
-    }, [localCart, userInfo.state]);
+            updateDbCart();
+        }
+    }, [updatedLocalCart, userInfo]);
 
     return (
         <SubContentsSmall>
             <BreadCrumb title={pageTitle} path={params} />
-            <div className={styles['detail-view']}>
-                <div className={styles['detail-view__top']}>
-                    <div className={styles['detail-view__figure']}>
+            <div className={styles["detail-view"]}>
+                <div className={styles["detail-view__top"]}>
+                    <div className={styles["detail-view__figure"]}>
                         <img src={`/uploads/product/${view}`} alt={title} />
                     </div>
-                    <div className={styles['detail-view__info']}>
-                        <h2 className={styles['detail-view__title']}>{title}</h2>
-                        <div className={styles['detail-view__list']}>
+                    <div className={styles["detail-view__info"]}>
+                        <h2 className={styles["detail-view__title"]}>
+                            {title}
+                        </h2>
+                        <div className={styles["detail-view__list"]}>
                             <ul>
                                 <li>
-                                    <span className={styles['detail-view__tit']}>상품요약정보</span>
+                                    <span
+                                        className={styles["detail-view__tit"]}
+                                    >
+                                        상품요약정보
+                                    </span>
                                     <div>{summary}</div>
                                 </li>
-                                <li className={styles['detail-view__strong']}>
-                                    <span className={styles['detail-view__tit']}>판매가</span>
-                                    <div>{price && Number(price).toLocaleString()} 원</div>
+                                <li className={styles["detail-view__strong"]}>
+                                    <span
+                                        className={styles["detail-view__tit"]}
+                                    >
+                                        판매가
+                                    </span>
+                                    <div>
+                                        {price &&
+                                            Number(price).toLocaleString()}{" "}
+                                        원
+                                    </div>
                                 </li>
                                 <li>
-                                    <span className={styles['detail-view__tit']}>구성</span>
+                                    <span
+                                        className={styles["detail-view__tit"]}
+                                    >
+                                        구성
+                                    </span>
                                     <div>{config}</div>
                                 </li>
                                 <li>
-                                    <span className={styles['detail-view__tit']}>배송방법</span>
+                                    <span
+                                        className={styles["detail-view__tit"]}
+                                    >
+                                        배송방법
+                                    </span>
                                     <div>{deliveryType}</div>
                                 </li>
                                 <li>
-                                    <span className={styles['detail-view__tit']}>배송비</span>
+                                    <span
+                                        className={styles["detail-view__tit"]}
+                                    >
+                                        배송비
+                                    </span>
                                     <div>{deliveryCharge}</div>
                                 </li>
                             </ul>
@@ -190,94 +225,189 @@ function View() {
                             }
 
                             return (
-                                <div key={key} className={styles['detail-view__option']}>
-                                    <div className={styles['detail-view__selectbox']}>
-                                        <span className={styles['detail-view__tit']}>{option[key].title}</span>
+                                <div
+                                    key={key}
+                                    className={styles["detail-view__option"]}
+                                >
+                                    <div
+                                        className={
+                                            styles["detail-view__selectbox"]
+                                        }
+                                    >
+                                        <span
+                                            className={
+                                                styles["detail-view__tit"]
+                                            }
+                                        >
+                                            {option[key].title}
+                                        </span>
                                         <select
                                             name={key}
                                             onChange={(e) => {
-                                                const value = JSON.parse(e.target.value);
-                                                handleOptionSelect(value, key);
-                                                e.target.value = ''; // 선택 후 초기화
+                                                const value = JSON.parse(
+                                                    e.target.value
+                                                );
+                                                const selectedOptionValueId =
+                                                    JSON.parse(
+                                                        e.target.value
+                                                    ).id;
+                                                handleOptionSelect(
+                                                    value,
+                                                    selectedOptionValueId
+                                                );
+                                                e.target.value = ""; // 선택 후 초기화
                                             }}
                                         >
-                                            <option value="">- [선택] 옵션을 선택해 주세요 -</option>
-                                            {option[key].data.map((optionValue) => (
-                                                <option value={JSON.stringify(optionValue)} key={optionValue.label}>
-                                                    {optionValue.label} ({optionValue.price} 원)
-                                                </option>
-                                            ))}
+                                            <option value="">
+                                                - [선택] 옵션을 선택해 주세요 -
+                                            </option>
+                                            {option[key].data.map(
+                                                (optionValue) => (
+                                                    <option
+                                                        value={JSON.stringify(
+                                                            optionValue
+                                                        )}
+                                                        key={optionValue.id}
+                                                    >
+                                                        {optionValue.label} (
+                                                        {optionValue.price} 원)
+                                                    </option>
+                                                )
+                                            )}
                                         </select>
                                     </div>
                                 </div>
                             );
                         })}
 
-                        <div className={styles['detail-view__caution']}>
+                        <div className={styles["detail-view__caution"]}>
                             <span>(최소주문수량 1개 이상)</span>
                         </div>
+                        {selectedOptions.length > 0 &&
+                            selectedOptions.map((option) => {
+                                const displayPrice =
+                                    (Number(price) +
+                                        (Number(option.value.price) || 0)) *
+                                    Number(option.value.quantity);
 
-                        {selectedOptions.map((option) => {
-                            const displayPrice = (Number(price) + (option.value.price || 0)) * option.quantity;
-
-                            return (
-                                <div key={option.key} className={styles['detail-view__calc']}>
-                                    <div>
-                                        <div>{title}</div>
-                                        <div>- {option.value.label}</div>
-                                    </div>
-                                    <div>
-                                        <div className="quantity-control">
-                                            <button type="button" onClick={() => handleQuantityChange(option.key, -1)}>
-                                                -
-                                            </button>
-                                            <div className="quantity-control__view">{option.quantity}</div>
-                                            <button type="button" onClick={() => handleQuantityChange(option.key, 1)}>
-                                                +
+                                return (
+                                    <div
+                                        key={option.key}
+                                        className={styles["detail-view__calc"]}
+                                    >
+                                        <div>
+                                            <div>{title}</div>
+                                            <div>- {option.value.label}</div>
+                                        </div>
+                                        <div>
+                                            <div className="quantity-control">
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleQuantityChange(
+                                                            option.key,
+                                                            -1
+                                                        )
+                                                    }
+                                                >
+                                                    -
+                                                </button>
+                                                <div className="quantity-control__view">
+                                                    {option.value.quantity}
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleQuantityChange(
+                                                            option.key,
+                                                            1
+                                                        )
+                                                    }
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleDeleteOption(
+                                                        option.key
+                                                    )
+                                                }
+                                            >
+                                                삭제
                                             </button>
                                         </div>
-                                        <button type="button" onClick={() => handleDeleteOption(option.key)}>
-                                            삭제
-                                        </button>
+                                        <div>
+                                            {displayPrice.toLocaleString()} 원
+                                        </div>
                                     </div>
-                                    <div>{displayPrice.toLocaleString()} 원</div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
 
-                        <div className={styles['detail-view__total']}>
-                            <div className={styles['detail-view__row']}>
-                                <div className={styles['detail-view__quantity']}>
+                        <div className={styles["detail-view__total"]}>
+                            <div className={styles["detail-view__row"]}>
+                                <div
+                                    className={styles["detail-view__quantity"]}
+                                >
                                     TOTAL<span> (QUANTITY)</span>
                                 </div>
-                                <div className={styles['detail-view__result']}>
-                                    <strong>{totalPrice.toLocaleString()}</strong>
+                                <div className={styles["detail-view__result"]}>
+                                    <strong>
+                                        {totalPrice.toLocaleString()}
+                                    </strong>
                                     <span>
-                                        <span className="detail-view__num">{selectedOptions.reduce((sum, option) => sum + option.quantity, 0)}</span> 개
+                                        <span className="detail-view__num">
+                                            {selectedOptions.reduce(
+                                                (sum, option) =>
+                                                    sum + option.value.quantity,
+                                                0
+                                            )}
+                                        </span>{" "}
+                                        개
                                     </span>
                                 </div>
                             </div>
-                            <div className={styles['detail-view__row']}>
-                                <div className={styles['detail-view__delivery']}>
-                                    <span className={styles['detail-view__tit']}>배송정보</span>
+                            <div className={styles["detail-view__row"]}>
+                                <div
+                                    className={styles["detail-view__delivery"]}
+                                >
+                                    <span
+                                        className={styles["detail-view__tit"]}
+                                    >
+                                        배송정보
+                                    </span>
                                     <div>
                                         <ul>
                                             <li>다노배송(새벽/택배)</li>
                                             <li>
-                                                새벽배송 : 지금 주문하면 <strong>9월 24일(화) 오전 7시 전</strong> 도착
+                                                새벽배송 : 지금 주문하면{" "}
+                                                <strong>
+                                                    9월 24일(화) 오전 7시 전
+                                                </strong>{" "}
+                                                도착
                                             </li>
                                             <li>
-                                                택배배송 : 지금 주문하면 <strong>9월 23일(월) 출고</strong>
+                                                택배배송 : 지금 주문하면{" "}
+                                                <strong>
+                                                    9월 23일(월) 출고
+                                                </strong>
                                             </li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className={styles['detail-view__button']}>
+                        <div className={styles["detail-view__button"]}>
                             <div>
-                                <button type="button" className="btn btn-square btn-square--black" onClick={handleAddToCart}>
-                                    <span className="btn btn-square__text">구매하기</span>
+                                <button
+                                    type="button"
+                                    className="btn btn-square btn-square--black"
+                                    onClick={handleAddToCart}
+                                >
+                                    <span className="btn btn-square__text">
+                                        구매하기
+                                    </span>
                                 </button>
                             </div>
                             <div>
@@ -290,16 +420,23 @@ function View() {
                                     }}
                                     disabled={isAdding}
                                 >
-                                    <span className="btn btn-square__text">장바구니</span>
+                                    <span className="btn btn-square__text">
+                                        장바구니
+                                    </span>
                                 </button>
-                                <button type="button" className="btn btn-square">
-                                    <span className="btn btn-square__text">관심상품</span>
+                                <button
+                                    type="button"
+                                    className="btn btn-square"
+                                >
+                                    <span className="btn btn-square__text">
+                                        관심상품
+                                    </span>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className={styles['detail-view__contents']}>
+                <div className={styles["detail-view__contents"]}>
                     <div className="detail-tab">
                         <ul>
                             <li className="active">
@@ -319,14 +456,21 @@ function View() {
                             </li>
                         </ul>
                     </div>
-                    <div className={styles['detail-view__box']}>
-                        <div className={styles['detail-view__inner']}>
-                            <img src={`/uploads/product/${detail}`} alt={title} />
+                    <div className={styles["detail-view__box"]}>
+                        <div className={styles["detail-view__inner"]}>
+                            <img
+                                src={`/uploads/product/${detail}`}
+                                alt={title}
+                            />
                         </div>
                     </div>
                 </div>
             </div>
-            <LayerPopup ref={layerPopupRef} closeLayerPopup={closeLayerPopup} isActive={isPopupActive} />
+            <LayerPopup
+                ref={layerPopupRef}
+                closeLayerPopup={closeLayerPopup}
+                isActive={isPopupActive}
+            />
         </SubContentsSmall>
     );
 }
