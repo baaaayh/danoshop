@@ -4,6 +4,7 @@ import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { addCartItem } from "../../modules/cartList";
 import SubContentsSmall from "../../components/SubContentsSmall";
+import SubTitle from "../../components/SubTitle";
 import BreadCrumb from "../../components/BreadCrumb";
 import styles from "./View.module.scss";
 import LayerPopup from "../../components/LayerPopup";
@@ -11,7 +12,6 @@ import LayerPopup from "../../components/LayerPopup";
 function View() {
     const dispatch = useDispatch();
     const userInfo = useSelector((state) => state.user);
-    const localCart = useSelector((state) => state.cart.cartList);
     const [updatedLocalCart, setUpdatedLocalCart] = useState([]);
     const [isPopupActive, setIsPopupActive] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState([]);

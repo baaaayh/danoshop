@@ -109,8 +109,11 @@ app.post("/api/userCart", async (req, res) => {
                         (option) => option.key === localOption.key
                     );
                     if (existingOption) {
-                        existingOption.value.quantity =
-                            localOption.value.quantity;
+                        // 기존 수량과 로컬 수량 중 최대값 사용
+                        existingOption.value.quantity = Math.max(
+                            existingOption.value.quantity,
+                            localOption.value.quantity
+                        );
                     } else {
                         existingDBItem.options.push(localOption);
                     }
@@ -122,6 +125,7 @@ app.post("/api/userCart", async (req, res) => {
 
         user.markModified("cart");
         await user.save();
+
         res.json({ success: true, cart: user.cart });
     } catch (error) {
         console.error("Error saving cart data", error);

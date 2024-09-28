@@ -16,8 +16,8 @@ function Cart() {
     const userInfo = useSelector((state) => state.user);
     const params = useParams();
     const location = useLocation();
-    const title = location.state?.title || ["전상품"];
     const dispatch = useDispatch();
+    const title = location.state?.title || ["전상품"];
 
     useEffect(() => {
         setCartList(cartData);

@@ -11,10 +11,11 @@ function LoginForm() {
         id: "",
         password: "",
     });
+    const [updatedLocalCart, setUpdatedLocalCart] = useState();
     const [validUser, setValidUser] = useState(""); // 초기값 true로 설정
     const dispatch = useDispatch();
     const localCart = useSelector((state) => state.cart.cartList);
-    const [updatedLocalCart, setUpdatedLocalCart] = useState();
+    const userInfo = useSelector((state) => state.user);
     const isLoggedIn = useSelector((state) => state.user.token);
     const navigate = useNavigate();
 
@@ -52,17 +53,19 @@ function LoginForm() {
             );
 
             if (response.data.success) {
-                dispatch(clearCart());
+                // 로그인 성공 시 로컬 카트를 서버로 전송하여 동기화
                 const resCartData = await axios.post(
                     "http://localhost:4000/api/userCart",
                     {
                         loginData: { id: response.data.user.userId },
-                        localCart: [],
+                        localCart: localCart, // 현재 로컬 카트를 서버로 전송
                     }
                 );
 
+                // 서버에서 받은 카트 데이터를 Redux 상태에 업데이트
+                dispatch(clearCart());
                 resCartData.data.cart.forEach((item) => {
-                    dispatch(addCartItem(item)); // 서버에서 가져온 카트 데이터 추가
+                    dispatch(addCartItem(item));
                 });
             }
             navigate("/");
@@ -71,6 +74,32 @@ function LoginForm() {
             setValidUser(false);
         }
     }
+
+    useEffect(() => {
+        if (isLoggedIn) {
+            const fetchCartData = async () => {
+                try {
+                    // 서버에서 데이터를 다시 불러오기
+                    const response = await axios.post(
+                        "http://localhost:4000/api/userCart",
+                        { loginData: { id: userInfo.userId }, localCart: [] }
+                    );
+
+                    // 서버로부터 받은 장바구니 데이터를 로컬 상태로 설정
+                    if (response.data) {
+                        dispatch(clearCart()); // 기존 로컬 카트 초기화
+                        response.data.cart.forEach((item) =>
+                            dispatch(addCartItem(item))
+                        ); // 서버 데이터로 스토어 업데이트
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch cart data:", error);
+                }
+            };
+
+            fetchCartData();
+        }
+    }, [isLoggedIn, dispatch]);
 
     return (
         <div className={styles["login"]}>
