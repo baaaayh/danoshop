@@ -97,6 +97,9 @@ app.post("/api/userCart", async (req, res) => {
         if (!user) {
             return res.status(404).send("User not found");
         }
+        if (localCart.length <= 0) {
+            return res.json({ success: true, cart: [] });
+        }
 
         localCart.forEach((localItem) => {
             const existingDBItem = user.cart.find(
@@ -122,6 +125,10 @@ app.post("/api/userCart", async (req, res) => {
                 user.cart.push(localItem);
             }
         });
+
+        user.cart = user.cart.filter((dbItem) =>
+            localCart.some((localItem) => localItem.id === dbItem.id)
+        );
 
         user.markModified("cart");
         await user.save();

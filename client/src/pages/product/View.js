@@ -12,6 +12,8 @@ import LayerPopup from "../../components/LayerPopup";
 function View() {
     const dispatch = useDispatch();
     const userInfo = useSelector((state) => state.user);
+    const [cartList, setCartList] = useState([]);
+    const cartData = useSelector((state) => state.cart.cartList);
     const [updatedLocalCart, setUpdatedLocalCart] = useState([]);
     const [isPopupActive, setIsPopupActive] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState([]);
@@ -82,8 +84,21 @@ function View() {
         setSelectedOptions((prev) =>
             prev.map((option) => {
                 if (option.key === key) {
-                    option.value.quantity = option.value.quantity + change;
-                    return option;
+                    const currentQuantity = option.value?.quantity ?? 0;
+                    const newQuantity = currentQuantity + change;
+
+                    if (newQuantity < 1) {
+                        alert("최소 주문 수량은 1개입니다.");
+                        return option;
+                    }
+
+                    return {
+                        ...option,
+                        value: {
+                            ...option.value,
+                            quantity: newQuantity,
+                        },
+                    };
                 } else {
                     return option;
                 }
@@ -93,6 +108,10 @@ function View() {
 
     const handleAddToCart = async () => {
         if (isAdding) return;
+        if (selectedOptions.length <= 0) {
+            alert("옵션을 선택해 주세요.");
+            return;
+        }
 
         setIsAdding(true);
 
@@ -104,11 +123,38 @@ function View() {
         };
 
         try {
-            // Redux 상태 업데이트
-            dispatch(addCartItem(product));
+            const existingCartItems = cartData || [];
+            let isDuplicate = false;
 
-            // 로컬 상태 업데이트
-            setUpdatedLocalCart([...updatedLocalCart, product]);
+            existingCartItems.forEach((item) => {
+                const selectedOptionKeys = selectedOptions.map(
+                    (option) => option.key
+                );
+                const existingOptionKeys = item.options.map(
+                    (option) => option.key
+                );
+
+                if (
+                    existingOptionKeys.some((key) =>
+                        selectedOptionKeys.includes(key)
+                    )
+                ) {
+                    isDuplicate = true;
+                }
+            });
+
+            if (isDuplicate) {
+                const isConfirmed = window.confirm(
+                    "동일한 상품이 장바구니에 있습니다. 추가하시겠습니까?"
+                );
+                if (!isConfirmed) {
+                    return;
+                }
+            }
+
+            dispatch(addCartItem(product));
+            setUpdatedLocalCart((prev) => [...prev, product]);
+            openLayerPopup(true);
         } catch (error) {
             console.error("Failed to add to cart:", error);
         } finally {
@@ -151,7 +197,6 @@ function View() {
                     console.error("Error updating cart:", error);
                 }
             };
-
             updateDbCart();
         }
     }, [updatedLocalCart, userInfo]);
@@ -289,7 +334,7 @@ function View() {
                                     (Number(price) +
                                         (Number(option.value.price) || 0)) *
                                     Number(option.value.quantity);
-
+                                console.log(Number(option.value.quantity));
                                 return (
                                     <div
                                         key={option.key}
@@ -416,7 +461,6 @@ function View() {
                                     className="btn btn-square"
                                     onClick={() => {
                                         handleAddToCart();
-                                        openLayerPopup();
                                     }}
                                     disabled={isAdding}
                                 >

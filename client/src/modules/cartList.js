@@ -22,7 +22,6 @@ const cartListData = createSlice({
                         existingProduct.options.findIndex(
                             (option) => option.key === newOption.key
                         );
-                    console.log(existingProduct);
                     if (existingOptionIndex !== -1) {
                         existingProduct.options.forEach((option) => {
                             if (option.key === newOption.key) {

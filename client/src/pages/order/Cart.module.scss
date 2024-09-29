@@ -9,7 +9,7 @@
             font-size: 14px;
             color: #1a1a1a;
             &::after {
-                content:'';
+                content: "";
                 display: inline-block;
                 position: absolute;
                 top: 50%;
@@ -19,7 +19,7 @@
                 margin-top: 1px;
                 border-top: 1px solid #e0e0e0;
                 border-left: 1px solid #e0e0e0;
-                transform: translateY(-50%) rotate(135deg)
+                transform: translateY(-50%) rotate(135deg);
             }
             &:first-child {
                 padding-left: 0;
@@ -33,6 +33,16 @@
 .cart {
     display: flex;
     column-gap: 48px;
+    &__container {
+        position: relative;
+        flex-basis: 100%;
+        display: flex;
+        > button {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+    }
     &__view {
         flex-basis: 100%;
     }
@@ -44,7 +54,7 @@
             line-height: 60px;
             cursor: pointer;
             &::after {
-                content:'';
+                content: "";
                 position: absolute;
                 top: 50%;
                 right: 5px;
@@ -110,7 +120,7 @@
             padding-left: 15px;
             font-size: 15px;
             &::before {
-                content:"";
+                content: "";
                 position: absolute;
                 top: 7px;
                 left: 0;
@@ -140,7 +150,7 @@
             font-size: 14px;
             color: #1a1a1a;
         }
-        strong  {
+        strong {
             vertical-align: text-bottom;
         }
     }

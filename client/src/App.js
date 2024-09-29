@@ -1,19 +1,19 @@
-import { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import { useQuery } from '@tanstack/react-query';
-import { jwtDecode } from 'jwt-decode';
-import { addMenuItem } from './modules/menuList';
-import { removeToken } from './modules/userData';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import Main from './pages/main/Main';
-import Product from './pages/product/Product';
-import View from './pages/product/View';
-import Cart from './pages/order/Cart';
-import Login from './pages/user/Login';
-import './styles/index.scss';
+import { useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
+import { jwtDecode } from "jwt-decode";
+import { addMenuItem } from "./modules/menuList";
+import { removeToken } from "./modules/userData";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Main from "./pages/main/Main";
+import Product from "./pages/product/Product";
+import View from "./pages/product/View";
+import Cart from "./pages/order/Cart";
+import Login from "./pages/member/Login";
+import "./styles/index.scss";
 
 function App() {
     const dispatch = useDispatch();
@@ -21,9 +21,9 @@ function App() {
     const token = useSelector((state) => state.user.token);
 
     const { data, error, isLoading } = useQuery({
-        queryKey: ['menu'],
+        queryKey: ["menu"],
         queryFn: async () => {
-            const response = await axios.get('http://localhost:4000/api/menu');
+            const response = await axios.get("http://localhost:4000/api/menu");
             return response.data;
         },
     });
@@ -56,11 +56,20 @@ function App() {
                     <Route path="/recent" />
                     <Route path="/product" element={<Product />} />
                     <Route path="/product/:category" element={<Product />} />
-                    <Route path="/product/:category/:type" element={<Product />} />
-                    <Route path="/product/detail/:category/:id" element={<View />} />
-                    <Route path="/product/detail/:category/:type/:id" element={<View />} />
+                    <Route
+                        path="/product/:category/:type"
+                        element={<Product />}
+                    />
+                    <Route
+                        path="/product/detail/:category/:id"
+                        element={<View />}
+                    />
+                    <Route
+                        path="/product/detail/:category/:type/:id"
+                        element={<View />}
+                    />
                     <Route path="/order/:cart" element={<Cart />} />
-                    <Route path="/user/login" element={<Login />} />
+                    <Route path="/member/login" element={<Login />} />
                 </Routes>
             </div>
             <Footer />
