@@ -94,41 +94,36 @@ app.post("/api/userCart", async (req, res) => {
         const { loginData, localCart } = req.body;
         const user = await User.findOne({ userId: loginData.id });
 
-        if (!user) {
-            return res.status(404).send("User not found");
-        }
-        if (localCart.length <= 0) {
-            return res.json({ success: true, cart: [] });
+        if (user.state === "guest") {
+            return res.send({ user: "GUEST" });
         }
 
-        localCart.forEach((localItem) => {
-            const existingDBItem = user.cart.find(
-                (item) => item.id === localItem.id
-            );
+        // 로컬 장바구니가 비어있지 않은 경우
+        if (localCart.length > 0) {
+            localCart.forEach((localItem) => {
+                const existingDBItem = user.cart.find(
+                    (item) => item.id === localItem.id
+                );
 
-            if (existingDBItem) {
-                localItem.options.forEach((localOption) => {
-                    const existingOption = existingDBItem.options.find(
-                        (option) => option.key === localOption.key
-                    );
-                    if (existingOption) {
-                        // 기존 수량과 로컬 수량 중 최대값 사용
-                        existingOption.value.quantity = Math.max(
-                            existingOption.value.quantity,
-                            localOption.value.quantity
+                if (existingDBItem) {
+                    localItem.options.forEach((localOption) => {
+                        const existingOption = existingDBItem.options.find(
+                            (option) => option.key === localOption.key
                         );
-                    } else {
-                        existingDBItem.options.push(localOption);
-                    }
-                });
-            } else {
-                user.cart.push(localItem);
-            }
-        });
-
-        user.cart = user.cart.filter((dbItem) =>
-            localCart.some((localItem) => localItem.id === dbItem.id)
-        );
+                        if (existingOption) {
+                            existingOption.value.quantity = Math.max(
+                                existingOption.value.quantity,
+                                localOption.value.quantity
+                            );
+                        } else {
+                            existingDBItem.options.push(localOption); // 신규 옵션 추가
+                        }
+                    });
+                } else {
+                    user.cart.push(localItem); // 신규 상품 추가
+                }
+            });
+        }
 
         user.markModified("cart");
         await user.save();
@@ -137,6 +132,28 @@ app.post("/api/userCart", async (req, res) => {
     } catch (error) {
         console.error("Error saving cart data", error);
         res.status(500).send("Error saving cart data");
+    }
+});
+
+app.post("/api/removeCartItem", async (req, res) => {
+    const { loginData, itemId } = req.body;
+
+    try {
+        const user = await User.findOne({ userId: loginData.id });
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        // 장바구니에서 해당 itemId 삭제
+        user.cart = user.cart.filter((item) => item.id !== itemId);
+        user.markModified("cart");
+        await user.save(); // 변경사항 저장
+
+        res.json({ success: true, msg: "Item removed successfully" });
+    } catch (error) {
+        console.error("Error removing item from cart:", error);
+        res.status(500).send("Error removing item");
     }
 });
 

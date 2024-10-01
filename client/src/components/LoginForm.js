@@ -1,30 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addCartItem, updateCartItem, clearCart } from "../modules/cartList";
+import { addCartItem, clearCart } from "../modules/cartList";
 import { saveToken } from "../modules/userData";
 import axios from "axios";
 import styles from "./LoginForm.module.scss";
 
 function LoginForm() {
-    const [loginData, setLoginData] = useState({
-        id: "",
-        password: "",
-    });
-    const [updatedLocalCart, setUpdatedLocalCart] = useState();
-    const [validUser, setValidUser] = useState(""); // 초기값 true로 설정
+    const [loginData, setLoginData] = useState({ id: "", password: "" });
+    const [validUser, setValidUser] = useState("");
     const dispatch = useDispatch();
-    const localCart = useSelector((state) => state.cart.cartList);
     const userInfo = useSelector((state) => state.user);
+    const localCart = useSelector((state) => state.cart.cartList);
     const isLoggedIn = useSelector((state) => state.user.token);
     const navigate = useNavigate();
 
     function onChange(event) {
         const { name, value } = event.target;
-        setLoginData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setLoginData((prev) => ({ ...prev, [name]: value }));
     }
 
     async function submitLoginData(event) {
@@ -45,33 +38,45 @@ function LoginForm() {
                 "http://localhost:4000/api/login",
                 loginData
             );
-
             setValidUser(response.data.msg);
 
-            dispatch(
-                saveToken({ token: response.data.token, userId: loginData.id })
+            if (response.data.success) {
+                dispatch(
+                    saveToken({
+                        token: response.data.token,
+                        userId: loginData.id,
+                    })
+                );
+                await fetchCartData(); // 장바구니 데이터 가져오기
+                navigate("/");
+            }
+        } catch (error) {
+            console.error("Login failed:", error);
+            setValidUser("로그인 실패. 서버에 문제가 있을 수 있습니다.");
+        }
+    }
+
+    async function fetchCartData() {
+        try {
+            const response = await axios.post(
+                "http://localhost:4000/api/userCart",
+                {
+                    loginData: { id: userInfo.userId },
+                    localCart: [],
+                }
             );
 
             if (response.data.success) {
-                // 로그인 성공 시 로컬 카트를 서버로 전송하여 동기화
-                const resCartData = await axios.post(
-                    "http://localhost:4000/api/userCart",
-                    {
-                        loginData: { id: response.data.user.userId },
-                        localCart: localCart, // 현재 로컬 카트를 서버로 전송
-                    }
-                );
-
-                // 서버에서 받은 카트 데이터를 Redux 상태에 업데이트
                 dispatch(clearCart());
-                resCartData.data.cart.forEach((item) => {
-                    dispatch(addCartItem(item));
-                });
+                response.data.cart.forEach((item) =>
+                    dispatch(addCartItem(item))
+                );
             }
-            navigate("/");
         } catch (error) {
-            console.error(error);
-            setValidUser(false);
+            console.error("Failed to fetch cart data:", error);
+            alert(
+                "장바구니 데이터를 가져오는 데 실패했습니다. 서버에 문제가 있을 수 있습니다."
+            );
         }
     }
 
@@ -79,18 +84,19 @@ function LoginForm() {
         if (isLoggedIn) {
             const fetchCartData = async () => {
                 try {
-                    // 서버에서 데이터를 다시 불러오기
                     const response = await axios.post(
                         "http://localhost:4000/api/userCart",
-                        { loginData: { id: userInfo.userId }, localCart: [] }
+                        {
+                            loginData: { id: userInfo.userId },
+                            localCart: [],
+                        }
                     );
 
-                    // 서버로부터 받은 장바구니 데이터를 로컬 상태로 설정
                     if (response.data) {
-                        dispatch(clearCart()); // 기존 로컬 카트 초기화
+                        dispatch(clearCart());
                         response.data.cart.forEach((item) =>
                             dispatch(addCartItem(item))
-                        ); // 서버 데이터로 스토어 업데이트
+                        );
                     }
                 } catch (error) {
                     console.error("Failed to fetch cart data:", error);
@@ -103,7 +109,6 @@ function LoginForm() {
 
     return (
         <div className={styles["login"]}>
-            ID : user1 / PW : 1234
             <div
                 className={`${styles["login__row"]} ${styles["login__row--input"]}`}
             >

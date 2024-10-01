@@ -14,43 +14,30 @@ const cartListData = createSlice({
             if (existingProductIndex !== -1) {
                 const existingProduct = state.cartList[existingProductIndex];
 
-                // 객체를 배열로 변환
-                const optionsArray = Object.values(action.payload.options);
-
-                optionsArray.forEach((newOption) => {
+                action.payload.options.forEach((newOption) => {
                     const existingOptionIndex =
                         existingProduct.options.findIndex(
                             (option) => option.key === newOption.key
                         );
+
                     if (existingOptionIndex !== -1) {
-                        existingProduct.options.forEach((option) => {
-                            if (option.key === newOption.key) {
-                                option.value.quantity +=
-                                    newOption.value.quantity;
-                            }
-                        });
+                        existingProduct.options[
+                            existingOptionIndex
+                        ].value.quantity += newOption.value.quantity;
                     } else {
                         existingProduct.options.push({
                             key: newOption.key,
                             value: {
                                 ...newOption.value,
-                                quantity: newOption.quantity,
+                                quantity: newOption.value.quantity,
                             },
                         });
                     }
                 });
             } else {
-                const optionsArray = Object.values(action.payload.options); // 객체를 배열로 변환
-
                 state.cartList.push({
                     ...action.payload,
-                    options: optionsArray.map((option) => ({
-                        key: option.key,
-                        value: {
-                            quantity: option.quantity,
-                            ...option.value,
-                        },
-                    })),
+                    options: action.payload.options,
                 });
             }
         },
@@ -64,16 +51,16 @@ const cartListData = createSlice({
         },
         updateCartItem: (state, action) => {
             const { itemId, optionKey, quantity } = action.payload;
-            const existingProductIndex = state.cartList.findIndex((item) => {
-                return item.id === itemId;
-            });
+            const existingProductIndex = state.cartList.findIndex(
+                (item) => item.id === itemId
+            );
+
             if (existingProductIndex !== -1) {
                 const existingProduct = state.cartList[existingProductIndex];
                 const existingOptionIndex = existingProduct.options.findIndex(
-                    (option) => {
-                        return option.key === optionKey;
-                    }
+                    (option) => option.key === optionKey
                 );
+
                 if (existingOptionIndex !== -1) {
                     existingProduct.options[
                         existingOptionIndex

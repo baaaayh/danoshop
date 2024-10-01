@@ -3,6 +3,7 @@ import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import {
+    addCartItem,
     updateCartItem,
     removeCartItem,
     clearCart,
@@ -13,157 +14,133 @@ import SubTitle from "../../components/SubTitle";
 import styles from "./Cart.module.scss";
 
 function Cart() {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [cartList, setCartList] = useState([]);
+    const cartList = useSelector((state) => state.cart.cartList);
+    const userInfo = useSelector((state) => state.user);
     const [totalPrice, setTotalPrice] = useState(0);
     const [totalQuantity, setTotalQuantity] = useState(0);
-    const cartData = useSelector((state) => state.cart.cartList);
-    const userInfo = useSelector((state) => state.user);
-    const token = useSelector((state) => state.user.token);
-    const params = useParams();
-    const location = useLocation();
-    const dispatch = useDispatch();
-    const title = location.state?.title || ["전상품"];
 
     useEffect(() => {
-        setCartList(cartData);
-    }, [cartData]);
+        // 로그인 상태일 때만 장바구니 데이터를 가져옵니다.
+        if (userInfo.token) {
+            fetchCartData();
+        }
+    }, [userInfo.token]);
 
-    useEffect(() => {
-        const totalQuantity = cartList.reduce((acc, item) => {
-            return (
-                acc +
-                item.options.reduce((optAcc, option) => {
-                    return optAcc + (option.value.quantity || 0);
-                }, 0)
-            );
-        }, 0);
-        setTotalQuantity(totalQuantity);
-    }, [cartList]);
-
-    useEffect(() => {
-        const totalPrice = cartList.reduce((acc, item) => {
-            return (
-                acc +
-                item.options.reduce((itemAcc, option) => {
-                    const itemTotal =
-                        (Number(item.price) - Number(option.value.price)) *
-                        Number(option.value.quantity);
-                    return itemAcc + itemTotal;
-                }, 0)
-            );
-        }, 0);
-
-        setTotalPrice(totalPrice);
-    }, [cartList, userInfo.userId]);
-
-    useEffect(() => {
-        const fetchCartData = async () => {
-            if (userInfo.isLoggedIn) {
-                dispatch(clearCart());
-
-                try {
-                    const response = await axios.post(
-                        "http://localhost:4000/api/userCart",
-                        {
-                            loginData: { id: userInfo.userId },
-                            localCart: [],
-                        }
-                    );
-
-                    if (response.data) {
-                        setCartList(response.data.cartItems);
-                    }
-                } catch (error) {
-                    console.error("Failed to fetch cart data:", error);
-                }
-            }
-        };
-
-        fetchCartData();
-    }, [userInfo, dispatch]);
-
-    const handleQuantityChange = async (itemId, optionKey, change) => {
-        const updatedCartList = cartList.map((item) => {
-            if (item.id === itemId) {
-                const updatedOptions = item.options
-                    .map((option) => {
-                        if (option.key === optionKey) {
-                            const currentQuantity = option.value?.quantity ?? 0;
-                            const newQuantity = currentQuantity + change;
-
-                            if (newQuantity <= 0) {
-                                const remove =
-                                    window.confirm("상품을 삭제 하시겠습니까?");
-                                if (remove) {
-                                    removeItem(itemId); // 아이템 삭제 처리
-                                    return null; // 해당 옵션 제거
-                                } else {
-                                    console.log(1);
-                                    // 삭제를 취소할 경우 수량을 1로 유지
-                                    return {
-                                        ...option,
-                                        value: {
-                                            ...option.value,
-                                            quantity: 1, // 수량을 1로 유지
-                                        },
-                                    };
-                                }
-                            }
-                        }
-                        return option; // 해당 옵션이 아닐 경우 그대로 반환
-                    })
-                    .filter(Boolean); // null 제거
-
-                return { ...item, options: updatedOptions }; // 아이템 반환
-            }
-            return item; // 해당 아이템이 아닐 경우 그대로 반환
-        });
-
-        // 상태 업데이트
-        setCartList(updatedCartList);
-        dispatch(updateCartItem({ itemId, optionKey, quantity: change }));
-
-        // 서버에 업데이트 요청
-        await updateServerCart(updatedCartList);
-    };
-
-    // 서버에 장바구니 업데이트 요청을 위한 함수
-    const updateServerCart = async (updatedCartList) => {
+    async function fetchCartData() {
         try {
             const response = await axios.post(
                 "http://localhost:4000/api/userCart",
                 {
                     loginData: { id: userInfo.userId },
-                    localCart: updatedCartList,
+                    localCart: [],
                 }
             );
-            console.log(response.data); // 응답 확인
+
+            if (response.data.success) {
+                dispatch(clearCart());
+                response.data.cart.forEach((item) =>
+                    dispatch(addCartItem(item))
+                );
+            }
         } catch (error) {
-            console.error("Failed to update cart on server:", error);
+            console.error("Failed to fetch cart data:", error);
+            alert(
+                "장바구니 데이터를 가져오는 데 실패했습니다. 서버에 문제가 있을 수 있습니다."
+            );
+        }
+    }
+
+    useEffect(() => {
+        calculateTotal();
+    }, [cartList]);
+
+    const calculateTotal = () => {
+        let price = 0;
+        let quantity = 0;
+
+        cartList.forEach((item) => {
+            item.options.forEach((option) => {
+                const itemPrice = Number(item.price); // 총 가격
+                const itemQuantity = option.value.quantity; // 수량
+
+                price += itemPrice * itemQuantity; // 총 가격 계산
+                quantity += itemQuantity; // 총 수량 계산
+            });
+        });
+
+        setTotalPrice(price);
+        setTotalQuantity(quantity);
+    };
+
+    useEffect(() => {
+        calculateTotal(); // cartList가 변경될 때 총 가격과 수량을 계산
+    }, [cartList]);
+
+    const handleQuantityChange = async (itemId, optionKey, change) => {
+        const existingItem = cartList.find((item) => item.id === itemId);
+        const existingOption = existingItem.options.find(
+            (option) => option.key === optionKey
+        );
+
+        const newQuantity = existingOption.value.quantity + change;
+        if (newQuantity < 1) return; // 수량이 0 미만이 되지 않도록
+
+        // Redux 상태 업데이트
+        dispatch(updateCartItem({ itemId, optionKey, quantity: change }));
+
+        if (userInfo.token) {
+            try {
+                // 데이터베이스와 동기화
+                await axios.post("http://localhost:4000/api/userCart", {
+                    loginData: { id: userInfo.userId },
+                    localCart: cartList.map((item) => {
+                        if (item.id === itemId) {
+                            return {
+                                ...item,
+                                options: item.options.map((option) => {
+                                    if (option.key === optionKey) {
+                                        return {
+                                            ...option,
+                                            value: {
+                                                ...option.value,
+                                                quantity: newQuantity, // 새로운 수량으로 업데이트
+                                            },
+                                        };
+                                    }
+                                    return option;
+                                }),
+                            };
+                        }
+                        return item;
+                    }),
+                });
+            } catch (error) {
+                console.error("Failed to update cart on server:", error);
+            }
         }
     };
 
-    const removeItem = async (id) => {
-        const updatedCartList = cartList.filter((item) => item.id !== id);
-        setCartList(updatedCartList);
-        dispatch(removeCartItem(id));
+    const removeItem = async (itemId) => {
+        // Redux 상태에서 항목 제거
+        dispatch(removeCartItem(itemId));
 
-        try {
-            const response = await axios.post(
-                "http://localhost:4000/api/userCart",
-                {
+        if (userInfo.token) {
+            try {
+                // 서버에 삭제 요청
+                await axios.post("http://localhost:4000/api/removeCartItem", {
                     loginData: { id: userInfo.userId },
-                    localCart: updatedCartList,
-                }
-            );
-        } catch (error) {
-            console.error("Failed to update cart on server:", error);
+                    itemId: itemId, // 삭제할 itemId를 전달
+                });
+            } catch (error) {
+                console.error("Failed to remove item from server:", error);
+            }
         }
     };
 
     const goToPayment = () => {
-        if (token) {
+        if (userInfo.token) {
             navigate("/order/payment");
         } else {
             navigate("/member/login");
@@ -172,10 +149,10 @@ function Cart() {
 
     return (
         <SubContentsSmall>
-            <BreadCrumb title={title} path={params} />
+            <BreadCrumb title="장바구니" path={[]} />
             {cartList.length > 0 ? (
                 <>
-                    <SubTitle title={title} />
+                    <SubTitle title="장바구니" />
                     <div className={styles["step"]}>
                         <ol>
                             <li>1. 장바구니</li>
@@ -299,40 +276,38 @@ function Cart() {
                                                                     <span>
                                                                         수량
                                                                     </span>
-                                                                    <div>
-                                                                        <div className="quantity-control">
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={() =>
-                                                                                    handleQuantityChange(
-                                                                                        item.id,
-                                                                                        option.key,
-                                                                                        -1
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                -
-                                                                            </button>
-                                                                            <div className="quantity-control__view">
-                                                                                {
-                                                                                    option
-                                                                                        .value
-                                                                                        .quantity
-                                                                                }
-                                                                            </div>
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={() =>
-                                                                                    handleQuantityChange(
-                                                                                        item.id,
-                                                                                        option.key,
-                                                                                        1
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                +
-                                                                            </button>
+                                                                    <div className="quantity-control">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() =>
+                                                                                handleQuantityChange(
+                                                                                    item.id,
+                                                                                    option.key,
+                                                                                    -1
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            -
+                                                                        </button>
+                                                                        <div className="quantity-control__view">
+                                                                            {
+                                                                                option
+                                                                                    .value
+                                                                                    .quantity
+                                                                            }
                                                                         </div>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() =>
+                                                                                handleQuantityChange(
+                                                                                    item.id,
+                                                                                    option.key,
+                                                                                    1
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            +
+                                                                        </button>
                                                                     </div>
                                                                 </div>
                                                                 <div
@@ -347,14 +322,9 @@ function Cart() {
                                                                     </span>
                                                                     <div>
                                                                         <strong>{`${(
-                                                                            (Number(
+                                                                            Number(
                                                                                 item.price
-                                                                            ) +
-                                                                                Number(
-                                                                                    option
-                                                                                        .value
-                                                                                        .price
-                                                                                )) *
+                                                                            ) *
                                                                             Number(
                                                                                 option
                                                                                     .value
@@ -418,16 +388,16 @@ function Cart() {
                                     </li>
                                     <li>
                                         <span>총 배송비</span>
-                                        <div>{`3500 원`}</div>
+                                        <div>3500 원</div>
                                     </li>
                                 </ul>
                                 <div className={styles["cart__total"]}>
                                     <b>결제예정금액</b>
                                     <div>
                                         <strong>{`${(
-                                            Number(totalPrice) + 3500
-                                        ).toLocaleString()}`}</strong>
-                                        <span>원</span>
+                                            totalPrice + 3500
+                                        ).toLocaleString()}`}</strong>{" "}
+                                        원
                                     </div>
                                 </div>
                             </div>

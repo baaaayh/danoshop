@@ -334,7 +334,6 @@ function View() {
                                     (Number(price) +
                                         (Number(option.value.price) || 0)) *
                                     Number(option.value.quantity);
-                                console.log(Number(option.value.quantity));
                                 return (
                                     <div
                                         key={option.key}
