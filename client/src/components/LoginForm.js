@@ -61,8 +61,8 @@ function LoginForm() {
             const response = await axios.post(
                 "http://localhost:4000/api/userCart",
                 {
-                    loginData: { id: userInfo.userId },
-                    localCart: [],
+                    loginData: { id: loginData.id },
+                    localCart: localCart,
                 }
             );
 
@@ -80,35 +80,36 @@ function LoginForm() {
         }
     }
 
-    useEffect(() => {
-        if (isLoggedIn) {
-            const fetchCartData = async () => {
-                try {
-                    const response = await axios.post(
-                        "http://localhost:4000/api/userCart",
-                        {
-                            loginData: { id: userInfo.userId },
-                            localCart: [],
-                        }
-                    );
+    // useEffect(() => {
+    //     if (isLoggedIn) {
+    //         const fetchCartData = async () => {
+    //             try {
+    //                 const response = await axios.post(
+    //                     "http://localhost:4000/api/userCart",
+    //                     {
+    //                         loginData: { id: loginData.id },
+    //                         localCart: [],
+    //                     }
+    //                 );
 
-                    if (response.data) {
-                        dispatch(clearCart());
-                        response.data.cart.forEach((item) =>
-                            dispatch(addCartItem(item))
-                        );
-                    }
-                } catch (error) {
-                    console.error("Failed to fetch cart data:", error);
-                }
-            };
+    //                 if (response.data) {
+    //                     dispatch(clearCart());
+    //                     response.data.cart.forEach((item) =>
+    //                         dispatch(addCartItem(item))
+    //                     );
+    //                 }
+    //             } catch (error) {
+    //                 console.error("Failed to fetch cart data:", error);
+    //             }
+    //         };
 
-            fetchCartData();
-        }
-    }, [isLoggedIn, dispatch]);
+    //         fetchCartData();
+    //     }
+    // }, [isLoggedIn, userInfo, dispatch]);
 
     return (
         <div className={styles["login"]}>
+            ID : user1 / PW : 1234
             <div
                 className={`${styles["login__row"]} ${styles["login__row--input"]}`}
             >

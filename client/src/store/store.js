@@ -1,19 +1,19 @@
 // store.js
-import { configureStore } from '@reduxjs/toolkit';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { combineReducers } from 'redux';
-import menuReducer from '../modules/menuList';
-import cartReducer from '../modules/cartList';
-import userReducer from '../modules/userData';
+import { configureStore } from "@reduxjs/toolkit";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import { combineReducers } from "redux";
+import menuReducer from "../modules/menuList";
+import cartReducer from "../modules/cartList";
+import userReducer from "../modules/userData";
 
 const persistConfig = {
     cart: {
-        key: 'cart',
+        key: "cart",
         storage,
     },
     user: {
-        key: 'user',
+        key: "user",
         storage,
     },
 };
@@ -29,7 +29,7 @@ const store = configureStore({
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {
-                ignoredActions: ['persist/PERSIST'],
+                ignoredActions: ["persist/PERSIST"],
             },
         }),
 });

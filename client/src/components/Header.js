@@ -12,7 +12,7 @@ function Header({ loggedIn, removeToken }) {
     const dispatch = useDispatch();
     const menuListData = useSelector((state) => state.menu.menuList);
     const itemsOptions = useSelector((state) =>
-        state.cart.cartList.map((item) => item.options)
+        state.cart.cartList?.map((item) => item.options)
     );
 
     useEffect(() => {

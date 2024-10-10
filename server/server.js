@@ -94,6 +94,8 @@ app.post("/api/userCart", async (req, res) => {
         const { loginData, localCart } = req.body;
         const user = await User.findOne({ userId: loginData.id });
 
+        console.log(loginData, localCart);
+
         if (user.state === "guest") {
             return res.send({ user: "GUEST" });
         }
@@ -135,8 +137,8 @@ app.post("/api/userCart", async (req, res) => {
     }
 });
 
-app.post("/api/removeCartItem", async (req, res) => {
-    const { loginData, itemId } = req.body;
+app.post("/api/removeCartOption", async (req, res) => {
+    const { loginData, optionKey } = req.body;
 
     try {
         const user = await User.findOne({ userId: loginData.id });
@@ -145,8 +147,25 @@ app.post("/api/removeCartItem", async (req, res) => {
             return res.status(404).send("User not found");
         }
 
-        // 장바구니에서 해당 itemId 삭제
-        user.cart = user.cart.filter((item) => item.id !== itemId);
+        // 장바구니에서 해당 optionKey 삭제
+        user.cart = user.cart
+            .map((item) => {
+                const updatedOptions = item.options.filter(
+                    (option) => option.key !== optionKey
+                );
+
+                // 옵션이 없으면 아이템을 삭제
+                if (updatedOptions.length === 0) {
+                    return null; // null 반환
+                }
+
+                return {
+                    ...item,
+                    options: updatedOptions,
+                };
+            })
+            .filter((item) => item !== null); // null인 아이템 제거
+
         user.markModified("cart");
         await user.save(); // 변경사항 저장
 

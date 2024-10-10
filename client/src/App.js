@@ -12,6 +12,7 @@ import Main from "./pages/main/Main";
 import Product from "./pages/product/Product";
 import View from "./pages/product/View";
 import Cart from "./pages/order/Cart";
+import Order from "./pages/order/Order";
 import Login from "./pages/member/Login";
 import "./styles/index.scss";
 
@@ -68,7 +69,8 @@ function App() {
                         path="/product/detail/:category/:type/:id"
                         element={<View />}
                     />
-                    <Route path="/order/:cart" element={<Cart />} />
+                    <Route path="/order/cart" element={<Cart />} />
+                    <Route path="/order/order" element={<Order />} />
                     <Route path="/member/login" element={<Login />} />
                 </Routes>
             </div>

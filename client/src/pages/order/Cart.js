@@ -5,7 +5,7 @@ import axios from "axios";
 import {
     addCartItem,
     updateCartItem,
-    removeCartItem,
+    removeCartOption,
     clearCart,
 } from "../../modules/cartList";
 import SubContentsSmall from "../../components/SubContentsSmall";
@@ -20,6 +20,16 @@ function Cart() {
     const userInfo = useSelector((state) => state.user);
     const [totalPrice, setTotalPrice] = useState(0);
     const [totalQuantity, setTotalQuantity] = useState(0);
+    const [selectedOptionList, setSelectedOptionList] = useState([]);
+    const [allOptionList, setAllOptionList] = useState([]);
+
+    useEffect(() => {
+        cartList.forEach((item) => {
+            item.options.forEach((option) => {
+                setAllOptionList((prevList) => [...prevList, option]);
+            });
+        });
+    }, []);
 
     useEffect(() => {
         // 로그인 상태일 때만 장바구니 데이터를 가져옵니다.
@@ -34,7 +44,7 @@ function Cart() {
                 "http://localhost:4000/api/userCart",
                 {
                     loginData: { id: userInfo.userId },
-                    localCart: [],
+                    localCart: cartList,
                 }
             );
 
@@ -63,9 +73,10 @@ function Cart() {
         cartList.forEach((item) => {
             item.options.forEach((option) => {
                 const itemPrice = Number(item.price); // 총 가격
+                const optionPrice = Number(option.value.price);
                 const itemQuantity = option.value.quantity; // 수량
 
-                price += itemPrice * itemQuantity; // 총 가격 계산
+                price += (itemPrice + optionPrice) * itemQuantity; // 총 가격 계산
                 quantity += itemQuantity; // 총 수량 계산
             });
         });
@@ -74,10 +85,6 @@ function Cart() {
         setTotalQuantity(quantity);
     };
 
-    useEffect(() => {
-        calculateTotal(); // cartList가 변경될 때 총 가격과 수량을 계산
-    }, [cartList]);
-
     const handleQuantityChange = async (itemId, optionKey, change) => {
         const existingItem = cartList.find((item) => item.id === itemId);
         const existingOption = existingItem.options.find(
@@ -85,7 +92,12 @@ function Cart() {
         );
 
         const newQuantity = existingOption.value.quantity + change;
-        if (newQuantity < 1) return; // 수량이 0 미만이 되지 않도록
+        if (newQuantity < 1) {
+            alert("최소 수량은 1개 이상입니다. 해당 상품을 삭제하시겠습니까?");
+            dispatch(removeCartOption(optionKey));
+            removeOption(optionKey);
+            return;
+        }
 
         // Redux 상태 업데이트
         dispatch(updateCartItem({ itemId, optionKey, quantity: change }));
@@ -122,16 +134,16 @@ function Cart() {
         }
     };
 
-    const removeItem = async (itemId) => {
+    const removeOption = async (optionKey) => {
         // Redux 상태에서 항목 제거
-        dispatch(removeCartItem(itemId));
+        dispatch(removeCartOption(optionKey));
 
         if (userInfo.token) {
             try {
                 // 서버에 삭제 요청
-                await axios.post("http://localhost:4000/api/removeCartItem", {
+                await axios.post("http://localhost:4000/api/removeCartOption", {
                     loginData: { id: userInfo.userId },
-                    itemId: itemId, // 삭제할 itemId를 전달
+                    optionKey: optionKey, // 삭제할 optionKey 전달
                 });
             } catch (error) {
                 console.error("Failed to remove item from server:", error);
@@ -139,20 +151,48 @@ function Cart() {
         }
     };
 
-    const goToPayment = () => {
-        if (userInfo.token) {
-            navigate("/order/payment");
+    const handleCheckbox = (e) => {
+        const optionKey = e.target.value;
+        if (e.target.checked) {
+            cartList.forEach((item) => {
+                item.options.forEach((option) => {
+                    if (option.key === optionKey) {
+                        setSelectedOptionList([...selectedOptionList, option]);
+                    }
+                });
+            });
         } else {
-            navigate("/member/login");
+            const optionList = selectedOptionList.filter((option) => {
+                return option.key !== optionKey;
+            });
+            setSelectedOptionList(optionList);
         }
+    };
+
+    const goToPayment = (items) => {
+        let optionsArray;
+
+        if (items === "parts") {
+            optionsArray = selectedOptionList;
+        } else {
+            optionsArray = allOptionList;
+        }
+
+        console.log(optionsArray);
+
+        // if (userInfo.token) {
+        //     navigate("/order/order", { state: { options: optionsArray } });
+        // } else {
+        //     navigate("/member/login");
+        // }
     };
 
     return (
         <SubContentsSmall>
-            <BreadCrumb title="장바구니" path={[]} />
-            {cartList.length > 0 ? (
+            <BreadCrumb title="장바구니" path={[""]} />
+            {cartList && cartList.length > 0 ? (
                 <>
-                    <SubTitle title="장바구니" />
+                    <SubTitle title={["장바구니"]} />
                     <div className={styles["step"]}>
                         <ol>
                             <li>1. 장바구니</li>
@@ -194,7 +234,15 @@ function Cart() {
                                                                     ]
                                                                 }
                                                             >
-                                                                <input type="checkbox" />
+                                                                <input
+                                                                    type="checkbox"
+                                                                    value={
+                                                                        option.key
+                                                                    }
+                                                                    onChange={
+                                                                        handleCheckbox
+                                                                    }
+                                                                />
                                                             </div>
                                                             <div
                                                                 className={
@@ -322,9 +370,14 @@ function Cart() {
                                                                     </span>
                                                                     <div>
                                                                         <strong>{`${(
-                                                                            Number(
+                                                                            (Number(
                                                                                 item.price
-                                                                            ) *
+                                                                            ) +
+                                                                                Number(
+                                                                                    option
+                                                                                        .value
+                                                                                        .price
+                                                                                )) *
                                                                             Number(
                                                                                 option
                                                                                     .value
@@ -363,8 +416,8 @@ function Cart() {
                                                                 type="button"
                                                                 className="btn btn-remove"
                                                                 onClick={() =>
-                                                                    removeItem(
-                                                                        item.id
+                                                                    removeOption(
+                                                                        option.key
                                                                     )
                                                                 }
                                                             >
@@ -407,7 +460,7 @@ function Cart() {
                                         <button
                                             type="button"
                                             className="btn btn-square btn-square--black"
-                                            onClick={goToPayment}
+                                            onClick={() => goToPayment("all")}
                                         >
                                             <span className="btn-square__text">
                                                 전체상품주문
@@ -418,7 +471,7 @@ function Cart() {
                                         <button
                                             type="button"
                                             className="btn btn-square"
-                                            onClick={goToPayment}
+                                            onClick={() => goToPayment("parts")}
                                         >
                                             <span className="btn-square__text">
                                                 선택상품주문
