@@ -10,8 +10,6 @@ function LoginForm() {
     const [loginData, setLoginData] = useState({ id: "", password: "" });
     const [validUser, setValidUser] = useState("");
     const dispatch = useDispatch();
-    const userInfo = useSelector((state) => state.user);
-    const localCart = useSelector((state) => state.cart.cartList);
     const isLoggedIn = useSelector((state) => state.user.token);
     const navigate = useNavigate();
 
@@ -47,7 +45,6 @@ function LoginForm() {
                         userId: loginData.id,
                     })
                 );
-                await fetchCartData(); // 장바구니 데이터 가져오기
                 navigate("/");
             }
         } catch (error) {
@@ -55,57 +52,6 @@ function LoginForm() {
             setValidUser("로그인 실패. 서버에 문제가 있을 수 있습니다.");
         }
     }
-
-    async function fetchCartData() {
-        try {
-            const response = await axios.post(
-                "http://localhost:4000/api/userCart",
-                {
-                    loginData: { id: loginData.id },
-                    localCart: localCart,
-                }
-            );
-
-            if (response.data.success) {
-                dispatch(clearCart());
-                response.data.cart.forEach((item) =>
-                    dispatch(addCartItem(item))
-                );
-            }
-        } catch (error) {
-            console.error("Failed to fetch cart data:", error);
-            alert(
-                "장바구니 데이터를 가져오는 데 실패했습니다. 서버에 문제가 있을 수 있습니다."
-            );
-        }
-    }
-
-    // useEffect(() => {
-    //     if (isLoggedIn) {
-    //         const fetchCartData = async () => {
-    //             try {
-    //                 const response = await axios.post(
-    //                     "http://localhost:4000/api/userCart",
-    //                     {
-    //                         loginData: { id: loginData.id },
-    //                         localCart: [],
-    //                     }
-    //                 );
-
-    //                 if (response.data) {
-    //                     dispatch(clearCart());
-    //                     response.data.cart.forEach((item) =>
-    //                         dispatch(addCartItem(item))
-    //                     );
-    //                 }
-    //             } catch (error) {
-    //                 console.error("Failed to fetch cart data:", error);
-    //             }
-    //         };
-
-    //         fetchCartData();
-    //     }
-    // }, [isLoggedIn, userInfo, dispatch]);
 
     return (
         <div className={styles["login"]}>

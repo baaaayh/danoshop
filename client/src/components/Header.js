@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { clearCart } from "../modules/cartList";
+import { addCartItem, clearCart } from "../modules/cartList";
+import axios from "axios";
 import styles from "./Header.module.scss";
 
 function Header({ loggedIn, removeToken }) {
@@ -14,6 +15,46 @@ function Header({ loggedIn, removeToken }) {
     const itemsOptions = useSelector((state) =>
         state.cart.cartList?.map((item) => item.options)
     );
+    const userInfo = useSelector((state) => state.user);
+    const localCart = useSelector((state) => state.cart.cartList);
+
+    useEffect(() => {
+        const cartUpdated = localStorage.getItem("cartUpdated");
+        if (userInfo.token && !cartUpdated) {
+            fetchCartData().then(() => {
+                localStorage.setItem("cartUpdated", "true"); // 데이터가 가져와지면 localStorage에 저장
+            });
+        }
+    }, [userInfo.token]);
+
+    async function fetchCartData() {
+        try {
+            if (localStorage.getItem("cartUpdated")) {
+                return;
+            }
+
+            const response = await axios.post(
+                "http://localhost:4000/api/userCart",
+                {
+                    loginData: { id: userInfo.userId },
+                    localCart: localCart,
+                    type: "update",
+                }
+            );
+
+            if (response.data.success) {
+                dispatch(clearCart());
+                response.data.cart.forEach((item) =>
+                    dispatch(addCartItem(item))
+                );
+            }
+        } catch (error) {
+            console.error("Failed to fetch cart data:", error);
+            alert(
+                "장바구니 데이터를 가져오는 데 실패했습니다. 서버에 문제가 있을 수 있습니다."
+            );
+        }
+    }
 
     useEffect(() => {
         const total = itemsOptions.reduce((acc, options) => {
@@ -54,6 +95,7 @@ function Header({ loggedIn, removeToken }) {
         alert("로그아웃 되었습니다.");
         dispatch(clearCart());
         dispatch(removeToken());
+        localStorage.removeItem("cartUpdated");
         navigate("/");
     }
 

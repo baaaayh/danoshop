@@ -1,17 +1,25 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const orderListData = createSlice({
-    name: 'cart',
+    name: "order",
     initialState: {
         orderList: [],
     },
     reducers: {
         saveOrder: (state, action) => {
-            console.log(action.payload);
+            state.orderList = action.payload;
         },
-        clearOrder: (state, action) => {},
+        removeOrderOption: (state, action) => {
+            state.orderList = state.orderList.filter((stateOption) => {
+                return stateOption.key !== action.payload;
+            });
+        },
+        clearOrder: (state, action) => {
+            state.orderList = [];
+        },
     },
 });
 
-export const { saveOrder, clearOrder } = orderListData.actions;
+export const { saveOrder, removeOrderOption, clearOrder } =
+    orderListData.actions;
 export default orderListData.reducer;

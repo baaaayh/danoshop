@@ -91,10 +91,8 @@ app.post("/api/login", async (req, res) => {
 
 app.post("/api/userCart", async (req, res) => {
     try {
-        const { loginData, localCart } = req.body;
+        const { loginData, localCart, type } = req.body;
         const user = await User.findOne({ userId: loginData.id });
-
-        console.log(loginData, localCart);
 
         if (user.state === "guest") {
             return res.send({ user: "GUEST" });
@@ -113,10 +111,13 @@ app.post("/api/userCart", async (req, res) => {
                             (option) => option.key === localOption.key
                         );
                         if (existingOption) {
-                            existingOption.value.quantity = Math.max(
-                                existingOption.value.quantity,
-                                localOption.value.quantity
-                            );
+                            if (type === "update") {
+                                existingOption.value.quantity +=
+                                    localOption.value.quantity;
+                            } else if (type === "overwrite") {
+                                existingOption.value.quantity =
+                                    localOption.value.quantity;
+                            }
                         } else {
                             existingDBItem.options.push(localOption); // 신규 옵션 추가
                         }

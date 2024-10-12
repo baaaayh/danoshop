@@ -48,9 +48,8 @@ const cartListData = createSlice({
                         (option) => option.key !== action.payload
                     );
 
-                    // 옵션이 없으면 아이템을 삭제
                     if (updatedOptions.length === 0) {
-                        return null; // 이곳에서 null을 반환
+                        return null;
                     }
 
                     return {
@@ -58,7 +57,7 @@ const cartListData = createSlice({
                         options: updatedOptions,
                     };
                 })
-                .filter((item) => item !== null); // null인 아이템 제거
+                .filter((item) => item !== null);
         },
         clearCart: (state) => {
             state.cartList = [];
@@ -78,21 +77,9 @@ const cartListData = createSlice({
                 if (existingOptionIndex !== -1) {
                     existingProduct.options[
                         existingOptionIndex
-                    ].value.quantity += quantity;
-
-                    // 옵션의 수량이 0 이하가 되면 해당 옵션 삭제
-                    if (
-                        existingProduct.options[existingOptionIndex].value
-                            .quantity < 1
-                    ) {
-                        state.cartList[existingProductIndex].options.splice(
-                            existingOptionIndex,
-                            1
-                        );
-                    }
+                    ].value.quantity = quantity;
                 }
 
-                // 옵션이 없으면 아이템 삭제
                 if (state.cartList[existingProductIndex].options.length === 0) {
                     state.cartList.splice(existingProductIndex, 1);
                 }
