@@ -177,6 +177,70 @@ app.post("/api/removeCartOption", async (req, res) => {
     }
 });
 
+app.post("/api/checkId", async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const duplication = await User.findOne({ userId: userId });
+
+        res.json({
+            success: true,
+            checkId: !duplication ? false : true,
+        });
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post("/api/join", async (req, res) => {
+    try {
+        const {
+            joinType,
+            userId,
+            password,
+            userName,
+            phone,
+            email,
+            birth,
+            recommand,
+        } = req.body;
+
+        // 필수 입력 값 체크
+        if (!userId || !password || !userName || !email) {
+            return res.status(400).json({
+                success: false,
+                msg: "필수 입력 값을 확인해주세요.",
+            });
+        }
+
+        // 비밀번호 해싱
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = new User({
+            joinType,
+            userId,
+            password: hashedPassword,
+            userName,
+            phone,
+            email,
+            birth,
+            recommand,
+        });
+
+        await newUser.save();
+
+        res.status(201).json({
+            success: true,
+            msg: "회원 가입이 성공적으로 완료됐습니다.",
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            msg: "서버 오류가 발생했습니다. 다시 시도해주세요.",
+        });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

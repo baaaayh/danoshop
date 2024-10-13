@@ -775,6 +775,12 @@ table {
                 font-size: 12px;
                 color: #868686;
             }
+            .red {
+                color: Red;
+            }
+            .blue {
+                color: blue;
+            }
         }
     }
 }
@@ -829,5 +835,14 @@ table {
     }
     &__title {
         margin-bottom: 20px;
+    }
+    &__button {
+        ul {
+            display: flex;
+            column-gap: 20px;
+            li {
+                flex-basis: 100%;
+            }
+        }
     }
 }
