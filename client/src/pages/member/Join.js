@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-import SubContentsSmall from '../../components/SubContentsSmall';
-import BreadCrumb from '../../components/BreadCrumb';
-import SubTitle from '../../components/SubTitle';
+import React from "react";
+import { useParams } from "react-router-dom";
+import SubContentsXsmall from "../../components/SubContentsXsmall";
+import BreadCrumb from "../../components/BreadCrumb";
+import SubTitle from "../../components/SubTitle";
+import JoinForm from "../../components/JoinForm";
 
 function Join() {
     const params = useParams();
-    const location = useLocation();
     return (
-        <SubContentsSmall>
-            <BreadCrumb title={title} path={params} />
-            <SubTitle title={title} />
-        </SubContentsSmall>
+        <SubContentsXsmall>
+            <BreadCrumb title={["회원가입"]} path={params} />
+            <SubTitle title={["회원가입"]} />
+            <JoinForm />
+        </SubContentsXsmall>
     );
 }
 

@@ -30,6 +30,14 @@ button {
             color: #fff;
         }
     }
+
+    &--white {
+        border: 1px solid #000;
+        background-color: #fff;
+        .btn-square__text {
+            color: #000;
+        }
+    }
 }
 
 .btn-remove {

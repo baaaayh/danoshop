@@ -14,6 +14,8 @@ import View from "./pages/product/View";
 import Cart from "./pages/order/Cart";
 import Order from "./pages/order/Order";
 import Login from "./pages/member/Login";
+import Agreement from "./pages/member/Agreement";
+import Join from "./pages/member/Join";
 import "./styles/index.scss";
 
 function App() {
@@ -59,10 +61,7 @@ function App() {
                 <div className="wrap">
                     <Routes>
                         <Route exact path="/" element={<Main />} />
-                        <Route path="/join" />
-                        <Route path="/login" />
-                        <Route path="/inquiry" />
-                        <Route path="/recent" />
+
                         <Route path="/product" element={<Product />} />
                         <Route
                             path="/product/:category"
@@ -81,6 +80,11 @@ function App() {
                             element={<View />}
                         />
                         <Route path="/order/cart" element={<Cart />} />
+                        <Route
+                            path="/member/agreement"
+                            element={<Agreement />}
+                        />
+                        <Route path="/member/join" element={<Join />} />
                         <Route path="/member/login" element={<Login />} />
                     </Routes>
                 </div>

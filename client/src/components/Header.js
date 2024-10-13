@@ -109,7 +109,7 @@ function Header({ loggedIn, removeToken }) {
                 <div className={styles.header__nav}>
                     <ul className={styles["menu-nav"]}>
                         <li>
-                            <Link to="/user/join">회원가입</Link>
+                            <Link to="/member/agreement">회원가입</Link>
                         </li>
                         {loggedIn === "guest" ? (
                             <li>

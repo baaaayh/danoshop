@@ -1,25 +1,25 @@
 // store.js
-import { configureStore } from '@reduxjs/toolkit';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { combineReducers } from 'redux';
-import menuReducer from '../modules/menuList';
-import cartReducer from '../modules/cartList';
-import userReducer from '../modules/userData';
-import orderList from '../modules/orderList';
+import { configureStore } from "@reduxjs/toolkit";
+import { persistStore, persistReducer } from "redux-persist";
+import sessionStorage from "redux-persist/lib/storage/session"; // 세션 스토리지를 임포트
+import { combineReducers } from "redux";
+import menuReducer from "../modules/menuList";
+import cartReducer from "../modules/cartList";
+import userReducer from "../modules/userData";
+import orderList from "../modules/orderList";
 
 const persistConfig = {
     cart: {
-        key: 'cart',
-        storage,
+        key: "cart",
+        storage: sessionStorage,
     },
     user: {
-        key: 'user',
-        storage,
+        key: "user",
+        storage: sessionStorage,
     },
     order: {
-        key: 'order',
-        storage,
+        key: "order",
+        storage: sessionStorage,
     },
 };
 
@@ -35,7 +35,7 @@ const store = configureStore({
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {
-                ignoredActions: ['persist/PERSIST'],
+                ignoredActions: ["persist/PERSIST"],
             },
         }),
 });

@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
             data: Object,
         },
     ],
+    connectionTime: Number,
 });
 
 const User = mongoose.model("User", UserSchema);

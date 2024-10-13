@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addCartItem, clearCart } from "../modules/cartList";
 import { saveToken } from "../modules/userData";
@@ -12,6 +12,7 @@ function LoginForm() {
     const dispatch = useDispatch();
     const isLoggedIn = useSelector((state) => state.user.token);
     const navigate = useNavigate();
+    const location = useLocation();
 
     function onChange(event) {
         const { name, value } = event.target;
@@ -83,6 +84,18 @@ function LoginForm() {
                 >
                     <span className="btn-square__text">로그인</span>
                 </button>
+                {location.state.prevPage === "/order/cart" ? (
+                    <div className="mt-30">
+                        <Link
+                            to={"/order/order"}
+                            className="btn btn-square btn-square--white"
+                        >
+                            <span className="btn-square__text">
+                                비회원 구매
+                            </span>
+                        </Link>
+                    </div>
+                ) : null}
             </div>
             <div
                 className={`${styles["login__row"]} ${styles["login__row--find"]}`}
@@ -102,7 +115,7 @@ function LoginForm() {
                 <strong>아직 회원이 아니신가요?</strong>
                 <p>지금 회원가입을 하시면 다양한 혜택이 준비되어 있습니다.</p>
                 <div>
-                    <Link to="/user/join" className="btn btn-square">
+                    <Link to="/member/agreement" className="btn btn-square">
                         <span className="btn-square__text">회원가입</span>
                     </Link>
                 </div>

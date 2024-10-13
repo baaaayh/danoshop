@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import {
@@ -23,6 +23,7 @@ function Cart() {
     const [totalQuantity, setTotalQuantity] = useState(0);
     const [selectedOptionList, setSelectedOptionList] = useState([]);
     const [allOptionList, setAllOptionList] = useState([]);
+    const location = useLocation();
 
     useEffect(() => {
         calculateTotal();
@@ -141,9 +142,15 @@ function Cart() {
         dispatch(saveOrder(selectedOptions));
 
         if (userInfo.token) {
-            navigate("/order/order", { state: { orderList: selectedOptions } });
+            navigate("/order/order", {
+                state: {
+                    orderList: selectedOptions,
+                },
+            });
         } else {
-            navigate("/member/login", { state: { title: ["로그인"] } });
+            navigate("/member/login", {
+                state: { title: ["로그인"], prevPage: location.pathname },
+            });
         }
     };
 

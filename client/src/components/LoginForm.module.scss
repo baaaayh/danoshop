@@ -7,6 +7,11 @@
             line-height: 53px;
         }
     }
+    a {
+        span {
+            line-height: 53px;
+        }
+    }
     &__row {
         display: block;
         padding: 8px 0;
@@ -18,7 +23,7 @@
         &--tar {
             text-align: right;
         }
-        
+
         &--find {
             ul {
                 display: flex;
@@ -33,7 +38,7 @@
                     }
 
                     &::after {
-                        content:'';
+                        content: "";
                         display: inline-block;
                         position: absolute;
                         top: 50%;
