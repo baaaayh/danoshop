@@ -47,4 +47,16 @@
         display: inline-block;
         overflow: hidden;
     }
+    &__icon {
+        margin-top: 10px;
+        font-size: 0;
+        span {
+            display: inline-block;
+            padding: 1px 3px;
+            font-size: 11px;
+            border-radius: 3px;
+            background-color: #000;
+            color: #fff;
+        }
+    }
 }

@@ -1,12 +1,17 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import SubContentsXsmall from '../../components/SubContentsXsmall';
-import BreadCrumb from '../../components/BreadCrumb';
-import SubTitle from '../../components/SubTitle';
-import ResultForm from '../../components/ResultForm';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import SubContentsXsmall from '../../components/layout/SubContentsXsmall';
+import BreadCrumb from '../../components/layout/BreadCrumb';
+import SubTitle from '../../components/layout/SubTitle';
+import ResultForm from '../../components/member/ResultForm';
 
 function JoinResult() {
     const params = useParams();
+    const location = useLocation();
+    const navigate = useNavigate();
+    if (!location.state || location.state.prevState !== '/member/join') {
+        navigate(-1);
+    }
 
     return (
         <SubContentsXsmall>

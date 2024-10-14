@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-function JoinForm() {
+function JoinForm({ userInfo }) {
     const navigate = useNavigate();
+    const location = useLocation();
+    const [user, setUser] = useState({});
+    const isModifyPage = location.pathname === '/member/modify';
     const [inputValue, setInputValue] = useState({
         joinType: '',
         userId: '',
@@ -19,10 +22,37 @@ function JoinForm() {
         birthDay: '',
         recommand: '',
     });
+
+    useEffect(() => {
+        if (isModifyPage && user) {
+            setInputValue({
+                joinType: user.joinType || '',
+                userId: user.userId || '',
+                password: '',
+                passwordConfirm: '',
+                userName: user.userName || '',
+                phone1: user.phone1 || '',
+                phone2: user.phone2 || '',
+                phone3: user.phone3 || '',
+                email: user.email || '',
+                birthYear: user.birthYear || '',
+                birthMonth: user.birthMonth || '',
+                birthDay: user.birthDay || '',
+                recommand: user.recommand || '',
+            });
+        }
+    }, [isModifyPage, user]);
+
     const [checkValidId, setCheckValidId] = useState('');
     const [validPassword, setValidPassword] = useState(false);
     const [validPhoneNumber, setValidPhoneNumber] = useState(false);
     const [validEmail, setValidEmail] = useState(false);
+
+    useEffect(() => {
+        if (userInfo) {
+            setUser(userInfo);
+        }
+    }, [userInfo]);
 
     const handleInput = (e) => {
         setInputValue((prevValue) => ({
@@ -66,7 +96,6 @@ function JoinForm() {
     }, [inputValue.userId]);
 
     const validateForm = () => {
-        // Validate Email
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         const emailValid = emailRegex.test(inputValue.email);
         if (!emailValid) {
@@ -93,32 +122,34 @@ function JoinForm() {
         }
         setValidPhoneNumber(true);
 
-        // Validate Password
-        const lengthRegex = /^.{10,16}$/; // 10자 ~ 16자 길이 확인
-        const letterRegex = /[a-zA-Z]/; // 영문 대소문자
-        const numberRegex = /[0-9]/; // 숫자
-        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/; // 특수문자
+        if ((isModifyPage && inputValue.password) || !isModifyPage) {
+            const lengthRegex = /^.{10,16}$/; // 10자 ~ 16자 길이 확인
+            const letterRegex = /[a-zA-Z]/; // 영문 대소문자
+            const numberRegex = /[0-9]/; // 숫자
+            const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/; // 특수문자
 
-        let validCombinations = 0;
-        if (letterRegex.test(inputValue.password)) validCombinations += 1;
-        if (numberRegex.test(inputValue.password)) validCombinations += 1;
-        if (specialCharRegex.test(inputValue.password)) validCombinations += 1;
+            let validCombinations = 0;
+            if (letterRegex.test(inputValue.password)) validCombinations += 1;
+            if (numberRegex.test(inputValue.password)) validCombinations += 1;
+            if (specialCharRegex.test(inputValue.password)) validCombinations += 1;
 
-        if (!lengthRegex.test(inputValue.password)) {
-            alert('비밀번호는 10자에서 16자 사이여야 합니다.');
-            return false;
+            if (!lengthRegex.test(inputValue.password)) {
+                alert('비밀번호는 10자에서 16자 사이여야 합니다.');
+                return false;
+            }
+            if (validCombinations < 2) {
+                alert('비밀번호는 영문 대소문자, 숫자, 특수문자 중 2가지 이상 조합이어야 합니다.');
+                return false;
+            }
+            if (inputValue.password !== inputValue.passwordConfirm) {
+                alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+                return false;
+            }
+            setValidPassword(true);
+        } else {
+            setValidPassword(true);
         }
-        if (validCombinations < 2) {
-            alert('비밀번호는 영문 대소문자, 숫자, 특수문자 중 2가지 이상 조합이어야 합니다.');
-            return false;
-        }
-        if (inputValue.password !== inputValue.passwordConfirm) {
-            alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
-            return false;
-        }
-        setValidPassword(true);
 
-        // All validations passed
         return true;
     };
 
@@ -126,21 +157,29 @@ function JoinForm() {
         try {
             e.preventDefault();
             if (validateForm()) {
-                alert('회원 가입이 완료됐습니다.');
                 const userForm = {
                     joinType: inputValue.joinType,
                     userId: inputValue.userId,
                     password: inputValue.password,
                     userName: inputValue.userName,
                     phone: `${inputValue.phone1}${inputValue.phone2}${inputValue.phone3}`,
+                    phone1: inputValue.phone1,
+                    phone2: inputValue.phone2,
+                    phone3: inputValue.phone3,
                     email: inputValue.email,
                     birth: `${inputValue.birthYear}${inputValue.birthMonth}${inputValue.birthDay}`,
                     recommand: inputValue.recommand,
                     grade: '습관성형 비기너',
                 };
-                const response = await axios.post('http://localhost:4000/api/join', userForm);
-
-                navigate('/member/result', { state: { title: ['로그인'], info: userForm } });
+                const response = await axios.post('http://localhost:4000/api/join', { userForm: userForm, isModifyMode: isModifyPage ? true : false });
+                if (response.data.success) {
+                    if (isModifyPage) {
+                        alert('회원 정보 수정이 완료됐습니다.');
+                        navigate('/', { state: { title: ['메인'] } });
+                    } else {
+                        navigate('/member/result', { state: { title: ['회원가입 완료'], info: userForm } });
+                    }
+                }
             }
         } catch (error) {
             console.error(error);
@@ -152,35 +191,38 @@ function JoinForm() {
     return (
         <div className="join">
             <div className="join__inner">
-                <div className="join__row">
-                    <div className="join__title">
-                        <h3>회원인증</h3>
-                    </div>
-                    <div className="join__box">
-                        <div className="table-container">
-                            <table>
-                                <colgroup>
-                                    <col style={{ width: '190px' }} />
-                                    <col style={{ width: 'auto' }} />
-                                </colgroup>
-                                <tbody>
-                                    <tr>
-                                        <th>
-                                            <span className="star"></span>
-                                            회원구분
-                                        </th>
-                                        <td>
-                                            <span className="radio-group">
-                                                <input type="radio" id="memberType" />
-                                                <label htmlFor="memberType">개인회원</label>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                {location.pathname === '/member/join' ? (
+                    <div className="join__row">
+                        <div className="join__title">
+                            <h3>회원인증</h3>
+                        </div>
+                        <div className="join__box">
+                            <div className="table-container">
+                                <table>
+                                    <colgroup>
+                                        <col style={{ width: '190px' }} />
+                                        <col style={{ width: 'auto' }} />
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <th>
+                                                <span className="star"></span>
+                                                회원구분
+                                            </th>
+                                            <td>
+                                                <span className="radio-group">
+                                                    <input type="radio" id="memberType" />
+                                                    <label htmlFor="memberType">개인회원</label>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
+                ) : null}
+
                 <div className="join__row">
                     <div className="join__title">
                         <h3>기본정보</h3>
@@ -199,15 +241,15 @@ function JoinForm() {
                                             아이디
                                         </th>
                                         <td>
-                                            <input type="text" name="userId" value={inputValue.userId} onChange={handleInput} />
+                                            <input type="text" name="userId" value={inputValue.userId} onChange={handleInput} readOnly={isModifyPage} />
                                             <p>(영문소문자/숫자, 4~16자)</p>
-                                            {checkValidId ? <p className={checkValidId.class}>{checkValidId.msg}</p> : null}
+                                            {checkValidId && !isModifyPage ? <p className={checkValidId.class}>{checkValidId.msg}</p> : null}
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>
                                             <span className="star"></span>
-                                            비밀번호
+                                            {isModifyPage ? '새 비밀번호' : '비밀번호'}
                                         </th>
                                         <td>
                                             <input type="password" name="password" value={inputValue.password} onChange={handleInput} />
@@ -217,7 +259,7 @@ function JoinForm() {
                                     <tr>
                                         <th>
                                             <span className="star"></span>
-                                            비밀번호 확인
+                                            {isModifyPage ? '새 비밀번호 확인' : '비밀번호 확인'}
                                         </th>
                                         <td>
                                             <input type="password" name="passwordConfirm" value={inputValue.passwordConfirm} onChange={handleInput} />
@@ -229,7 +271,7 @@ function JoinForm() {
                                             이름
                                         </th>
                                         <td>
-                                            <input type="text" name="userName" value={inputValue.userName} onChange={handleInput} />
+                                            <input type="text" name="userName" value={inputValue.userName} onChange={handleInput} readOnly={isModifyPage} />
                                         </td>
                                     </tr>
                                     <tr>
@@ -322,12 +364,21 @@ function JoinForm() {
                             </li>
                             <li>
                                 <button type="button" onClick={handleSubmit} className="btn btn-square btn-square--black">
-                                    <span className="btn btn-square__text">가입하기</span>
+                                    <span className="btn btn-square__text">{isModifyPage ? '회원정보 수정' : '가입하기'}</span>
                                 </button>
                             </li>
                         </ul>
                     </div>
                 </div>
+                {isModifyPage ? (
+                    <div className="join__row join__row--mt20">
+                        <div className="join__button">
+                            <button type="button" className="btn btn-square btn-square--xs">
+                                <span className="btn btn-square__text">회원탈퇴</span>
+                            </button>
+                        </div>
+                    </div>
+                ) : null}
             </div>
         </div>
     );

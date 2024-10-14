@@ -6,8 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 import { jwtDecode } from 'jwt-decode';
 import { addMenuItem } from './modules/menuList';
 import { removeToken } from './modules/userData';
-import Header from './components/Header';
-import Footer from './components/Footer';
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
 import Main from './pages/main/Main';
 import Product from './pages/product/Product';
 import View from './pages/product/View';
@@ -17,6 +17,9 @@ import Login from './pages/member/Login';
 import Agreement from './pages/member/Agreement';
 import Join from './pages/member/Join';
 import JoinResult from './pages/member/JoinResult';
+import Validation from './pages/member/Validation';
+import Modify from './pages/member/Modify';
+import FindPass from './pages/member/FindPass';
 import './styles/index.scss';
 
 function App() {
@@ -71,6 +74,9 @@ function App() {
                         <Route path="/member/join" element={<Join />} />
                         <Route path="/member/result" element={<JoinResult />} />
                         <Route path="/member/login" element={<Login />} />
+                        <Route path="/member/validation" element={<Validation />} />
+                        <Route path="/member/modify" element={<Modify />} />
+                        <Route path="/member/findPass" element={<FindPass />} />
                     </Routes>
                 </div>
             )}

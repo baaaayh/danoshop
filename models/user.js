@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
     joinType: String,
@@ -6,8 +6,14 @@ const UserSchema = new mongoose.Schema({
     password: String,
     userName: String,
     phone: String,
+    phone1: String,
+    phone2: String,
+    phone3: String,
     email: String,
     birth: String,
+    birthYear: String,
+    birthMonth: String,
+    birthDay: String,
     recommand: String,
     cart: [
         {
@@ -20,6 +26,6 @@ const UserSchema = new mongoose.Schema({
     connectionTime: Number,
 });
 
-const User = mongoose.model("User", UserSchema);
+const User = mongoose.model('User', UserSchema);
 
 module.exports = User;

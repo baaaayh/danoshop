@@ -4,9 +4,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { addCartItem, updateCartItem, removeCartOption, clearCart } from '../../modules/cartList';
 import { saveOrder, clearOrder, removeOrderOption } from '../../modules/orderList';
-import SubContentsSmall from '../../components/SubContentsSmall';
-import BreadCrumb from '../../components/BreadCrumb';
-import SubTitle from '../../components/SubTitle';
+import SubContentsSmall from '../../components/layout/SubContentsSmall';
+import BreadCrumb from '../../components/layout/BreadCrumb';
+import SubTitle from '../../components/layout/SubTitle';
 import styles from './Cart.module.scss';
 
 function Cart() {

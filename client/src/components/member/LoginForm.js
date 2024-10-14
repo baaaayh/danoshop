@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { addCartItem, clearCart } from '../modules/cartList';
-import { saveToken } from '../modules/userData';
+import { addCartItem, clearCart } from '../../modules/cartList';
+import { saveToken } from '../../modules/userData';
 import axios from 'axios';
 import styles from './LoginForm.module.scss';
 

@@ -1,8 +1,8 @@
 import { useLocation, useParams } from 'react-router-dom';
-import SubContents from '../../components/SubContents';
-import BreadCrumb from '../../components/BreadCrumb';
-import SubTitle from '../../components/SubTitle';
-import ProductList from '../../components/ProductList';
+import SubContents from '../../components/layout/SubContents';
+import BreadCrumb from '../../components/layout/BreadCrumb';
+import SubTitle from '../../components/layout/SubTitle';
+import ProductList from '../../components/layout/ProductList';
 
 function Product() {
     const params = useParams();

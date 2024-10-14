@@ -70,12 +70,12 @@
                 width: 24px;
                 height: 24px;
                 &.btn-user {
-                    background: url(../../public/images/icons/icon_user.svg)
+                    background: url(../../../public/images/icons/icon_user.svg)
                         center / auto no-repeat;
                 }
                 &.btn-cart {
                     position: relative;
-                    background: url(../../public/images/icons/icon_bag.svg)
+                    background: url(../../../public/images/icons/icon_bag.svg)
                         center / auto no-repeat;
                     span {
                         position: absolute;
@@ -99,7 +99,7 @@
                 display: inline-block;
                 width: 24px;
                 height: 24px;
-                background: url(../../public/images/icons/icon_search.svg)
+                background: url(../../../public/images/icons/icon_search.svg)
                     center / auto no-repeat;
                 font-size: 0;
             }

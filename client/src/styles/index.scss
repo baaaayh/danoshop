@@ -21,6 +21,13 @@ input {
     padding: 0;
     appearance: none;
 }
+
+input[type="text"]:read-only,
+input[type="password"]:read-only,
+input[type="number"]:read-only {
+    background-color: #f9f9f9;
+}
+
 input:focus {
     outline: none;
 }
@@ -832,8 +839,17 @@ table {
 
 .join {
     &__row {
-        & + & {
-            margin-top: 50px;
+        margin-top: 50px;
+        button {
+            span {
+                line-height: 53px;
+            }
+        }
+        &:first-child {
+            margin-top: 0;
+        }
+        &--mt20 {
+            margin-top: 20px;
         }
     }
     &__title {
@@ -848,6 +864,10 @@ table {
             }
         }
     }
+}
+
+.join-result + .join {
+    margin-top: 50px;
 }
 .step {
     padding: 0 0 45px 0;
@@ -877,6 +897,22 @@ table {
             }
             &:last-child {
                 padding-right: 0;
+            }
+        }
+    }
+}
+.input-form {
+    max-width: 400px;
+    width: 100%;
+    margin: 0 auto;
+    input {
+        width: 100%;
+    }
+    &__button {
+        margin-top: 20px;
+        button {
+            span {
+                line-height: 53px;
             }
         }
     }
