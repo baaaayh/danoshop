@@ -274,6 +274,8 @@ label {
             background-position: 10px 6px;
             font-size: 0;
             transform: translateY(-50%);
+            z-index: 1;
+            cursor: pointer;
         }
         h2 {
             padding: 0 100px;
@@ -290,6 +292,7 @@ label {
             top: 50%;
             right: 0;
             transform: translateY(-50%);
+            z-index: 1;
             ul {
                 display: flex;
                 justify-content: space-between;
@@ -842,6 +845,38 @@ table {
             column-gap: 20px;
             li {
                 flex-basis: 100%;
+            }
+        }
+    }
+}
+.step {
+    padding: 0 0 45px 0;
+    ol {
+        text-align: center;
+        li {
+            display: inline-block;
+            position: relative;
+            padding: 0 30px;
+            font-size: 14px;
+            color: #1a1a1a;
+            &::after {
+                content: "";
+                display: inline-block;
+                position: absolute;
+                top: 50%;
+                right: -3px;
+                width: 6px;
+                height: 6px;
+                margin-top: 1px;
+                border-top: 1px solid #e0e0e0;
+                border-left: 1px solid #e0e0e0;
+                transform: translateY(-50%) rotate(135deg);
+            }
+            &:first-child {
+                padding-left: 0;
+            }
+            &:last-child {
+                padding-right: 0;
             }
         }
     }
