@@ -34,6 +34,7 @@ function Order() {
         mallAgree: false,
         personalAgree: false,
     });
+    const [optionTotalQuantity, setOptionTotalQuantity] = useState(0);
 
     const handleInputChange = (e) => {
         setInputValue({
@@ -100,6 +101,18 @@ function Order() {
             return acc.concat(calculatedPrices);
         }, [])
         .reduce((acc, price) => acc + price, 0);
+
+    useEffect(() => {
+        const totalQuantity = cartList.reduce((acc, item) => {
+            return (
+                acc +
+                item.options.reduce((optionAcc, option) => {
+                    return optionAcc + option.value.quantity;
+                }, 0)
+            );
+        }, 0);
+        setOptionTotalQuantity(totalQuantity);
+    }, []);
 
     const checkValidOrder = (e) => {
         e.preventDefault();
@@ -186,10 +199,15 @@ function Order() {
                     <div className="user-area">
                         <ul>
                             <li className="user-cart">
-                                <Link to="/order/cart">장바구니</Link>
+                                <Link to="/order/cart">
+                                    장바구니
+                                    <span>{optionTotalQuantity}</span>
+                                </Link>
                             </li>
                             <li className="user-mypage">
-                                <Link to="/">마이페이지</Link>
+                                <Link to="/mypage/orderHistory" state={{ title: ['마이 쇼핑', '주문조회'] }}>
+                                    마이페이지
+                                </Link>
                             </li>
                         </ul>
                     </div>

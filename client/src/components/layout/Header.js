@@ -139,7 +139,7 @@ function Header({ loggedIn, removeToken }) {
                         <div className={styles.user}>
                             <ul>
                                 <li>
-                                    <Link to="" className={styles['btn-user']}>
+                                    <Link to={loggedIn === 'guest' ? 'member/login' : '/mypage/dashboard'} className={styles['btn-user']} state={loggedIn === 'guest' ? { title: ['로그인'] } : { title: ['마이 쇼핑'] }}>
                                         마이페이지
                                     </Link>
                                 </li>

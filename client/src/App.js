@@ -20,6 +20,7 @@ import JoinResult from './pages/member/JoinResult';
 import Validation from './pages/member/Validation';
 import Modify from './pages/member/Modify';
 import FindPass from './pages/member/FindPass';
+import MyPage from './pages/mypage/MyPage';
 import './styles/index.scss';
 
 function App() {
@@ -77,6 +78,7 @@ function App() {
                         <Route path="/member/validation" element={<Validation />} />
                         <Route path="/member/modify" element={<Modify />} />
                         <Route path="/member/findPass" element={<FindPass />} />
+                        <Route path="/mypage/*" element={<MyPage />} />
                     </Routes>
                 </div>
             )}

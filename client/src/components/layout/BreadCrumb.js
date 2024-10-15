@@ -46,13 +46,14 @@ function BreadCrumb({ title, path }) {
                                 })}
                         </React.Fragment>
                     ))}
-                    {filteredMenuList.length <= 0 && (
-                        <li>
-                            <Link to={location.pathname} state={{ title }}>
-                                {title}
+
+                    {title.map((depth, index) => (
+                        <li key={index}>
+                            <Link to={location.pathname} state={{ title: [...title] }}>
+                                {depth}
                             </Link>
                         </li>
-                    )}
+                    ))}
                 </ul>
             </nav>
         </div>

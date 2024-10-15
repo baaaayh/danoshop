@@ -163,7 +163,7 @@ function Cart() {
 
     return (
         <SubContentsSmall>
-            <BreadCrumb title="장바구니" path={['']} />
+            <BreadCrumb title={['장바구니']} path={['']} />
             {cartList && cartList.length > 0 ? (
                 <>
                     <SubTitle title={['장바구니']} />

@@ -13,6 +13,8 @@ function FindPass() {
     const userInfo = useSelector((state) => state.user);
     const params = useParams();
 
+    console.log(params);
+
     const validateUser = async () => {
         const response = await axios.post('http://localhost:4000/api/validateUser', {
             userId: userInfo.userId,
