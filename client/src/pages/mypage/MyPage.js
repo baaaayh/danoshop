@@ -1,11 +1,11 @@
-import { Routes, Route, useLocation, useParams } from 'react-router-dom';
-import SubContentsSmall from '../../components/layout/SubContentsSmall';
-import BreadCrumb from '../../components/layout/BreadCrumb';
-import SubTitle from '../../components/layout/SubTitle';
-import MyPageLayout from '../../components/mypage/MyPageLayout';
-import Dashboard from '../../components/mypage/Dashboard';
-import OrderHistory from '../../components/mypage/OrderHistory';
-import Mileage from '../../components/mypage/Mileage';
+import { Routes, Route, useLocation, useParams } from "react-router-dom";
+import SubContentsSmall from "../../components/layout/SubContentsSmall";
+import BreadCrumb from "../../components/layout/BreadCrumb";
+import MyPageLayout from "../../components/mypage/MyPageLayout";
+import Dashboard from "../../components/mypage/Dashboard";
+import OrderHistory from "../../components/mypage/OrderHistory";
+import RecentView from "../../components/mypage/RecentView";
+import WishList from "../../components/mypage/WishList";
 
 function MyPage() {
     const location = useLocation();
@@ -18,7 +18,8 @@ function MyPage() {
                 <Routes>
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="orderHistory" element={<OrderHistory />} />
-                    <Route path="mileage" element={<Mileage />} />
+                    <Route path="recentView" element={<RecentView />} />
+                    <Route path="wishList" element={<WishList />} />
                 </Routes>
             </MyPageLayout>
         </SubContentsSmall>

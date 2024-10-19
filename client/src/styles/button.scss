@@ -32,10 +32,13 @@ button {
     }
 
     &--white {
-        border: 1px solid #000;
+        border: 1px solid #bcbcbc;
         background-color: #fff;
         .btn-square__text {
             color: #000;
+        }
+        &:hover {
+            border: 1px solid #000;
         }
     }
 

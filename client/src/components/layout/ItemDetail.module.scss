@@ -1,0 +1,47 @@
+.item-row {
+    padding: 25px 0;
+    border-bottom: 1px solid #ddd;
+    &:last-child {
+        border-bottom: none;
+    }
+    &__container {
+        position: relative;
+        display: flex;
+        column-gap: 10px;
+
+        > button {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+    }
+    &__chk {
+    }
+    &__info {
+    }
+    &__detail {
+        display: flex;
+        column-gap: 20px;
+    }
+    &__thumb {
+        flex-basis: 120px;
+        flex-shrink: 0;
+        a {
+            display: block;
+            img {
+                width: 100%;
+            }
+        }
+    }
+    &__text {
+        flex-basis: 100%;
+        padding-right: 20px;
+        > div {
+            font-size: 13px;
+            margin-top: 3px;
+            &:last-child {
+                margin-top: 20px;
+            }
+        }
+    }
+}

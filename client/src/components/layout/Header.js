@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { addCartItem, clearCart } from '../../modules/cartList';
-import axios from 'axios';
-import styles from './Header.module.scss';
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addCartItem, clearCart } from "../../modules/cartList";
+import axios from "axios";
+import styles from "./Header.module.scss";
 
 function Header({ loggedIn, removeToken }) {
     const navigate = useNavigate();
@@ -12,38 +12,47 @@ function Header({ loggedIn, removeToken }) {
     const [scrolled, setScrolled] = useState();
     const dispatch = useDispatch();
     const menuListData = useSelector((state) => state.menu.menuList);
-    const itemsOptions = useSelector((state) => state.cart.cartList?.map((item) => item.options));
+    const itemsOptions = useSelector((state) =>
+        state.cart.cartList?.map((item) => item.options)
+    );
     const userInfo = useSelector((state) => state.user);
     const localCart = useSelector((state) => state.cart.cartList);
 
     useEffect(() => {
-        const cartUpdated = localStorage.getItem('cartUpdated');
+        const cartUpdated = localStorage.getItem("cartUpdated");
         if (userInfo.token && !cartUpdated) {
             fetchCartData().then(() => {
-                localStorage.setItem('cartUpdated', 'true'); // 데이터가 가져와지면 localStorage에 저장
+                localStorage.setItem("cartUpdated", "true"); // 데이터가 가져와지면 localStorage에 저장
             });
         }
     }, [userInfo.token]);
 
     async function fetchCartData() {
         try {
-            if (localStorage.getItem('cartUpdated')) {
+            if (localStorage.getItem("cartUpdated")) {
                 return;
             }
 
-            const response = await axios.post('http://localhost:4000/api/userCart', {
-                loginData: { id: userInfo.userId },
-                localCart: localCart,
-                type: 'update',
-            });
+            const response = await axios.post(
+                "http://localhost:4000/api/userCart",
+                {
+                    loginData: { id: userInfo.userId },
+                    localCart: localCart,
+                    type: "update",
+                }
+            );
 
             if (response.data.success) {
                 dispatch(clearCart());
-                response.data.cart.forEach((item) => dispatch(addCartItem(item)));
+                response.data.cart.forEach((item) =>
+                    dispatch(addCartItem(item))
+                );
             }
         } catch (error) {
-            console.error('Failed to fetch cart data:', error);
-            alert('장바구니 데이터를 가져오는 데 실패했습니다. 서버에 문제가 있을 수 있습니다.');
+            console.error("Failed to fetch cart data:", error);
+            alert(
+                "장바구니 데이터를 가져오는 데 실패했습니다. 서버에 문제가 있을 수 있습니다."
+            );
         }
     }
 
@@ -65,16 +74,16 @@ function Header({ loggedIn, removeToken }) {
     useEffect(() => {
         const handleScroll = () => {
             if (window.scrollY > 0) {
-                setScrolled('active');
+                setScrolled("active");
             } else {
                 setScrolled();
             }
         };
 
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener("scroll", handleScroll);
 
         return () => {
-            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener("scroll", handleScroll);
         };
     }, []);
 
@@ -83,34 +92,47 @@ function Header({ loggedIn, removeToken }) {
     }, [menuListData]);
 
     function logout() {
-        alert('로그아웃 되었습니다.');
+        alert("로그아웃 되었습니다.");
         dispatch(clearCart());
         dispatch(removeToken());
-        localStorage.removeItem('cartUpdated');
-        navigate('/');
+        localStorage.removeItem("cartUpdated");
+        navigate("/");
     }
 
     return (
-        <header className={scrolled ? `${styles.header} ${styles.active}` : styles.header}>
+        <header
+            className={
+                scrolled ? `${styles.header} ${styles.active}` : styles.header
+            }
+        >
             <div className={styles.header__inner}>
                 <div className={styles.header__nav}>
-                    <ul className={styles['menu-nav']}>
-                        {loggedIn === 'guest' ? (
+                    <ul className={styles["menu-nav"]}>
+                        {loggedIn === "guest" ? (
                             <li>
-                                <Link to="/member/agreement" state={{ title: ['회원가입'] }}>
+                                <Link
+                                    to="/member/agreement"
+                                    state={{ title: ["회원가입"] }}
+                                >
                                     회원가입
                                 </Link>
                             </li>
                         ) : (
                             <li>
-                                <Link to="/member/validation" state={{ title: ['비밀번호 입력'] }}>
+                                <Link
+                                    to="/member/validation"
+                                    state={{ title: ["비밀번호 입력"] }}
+                                >
                                     내정보수정
                                 </Link>
                             </li>
                         )}
-                        {loggedIn === 'guest' ? (
+                        {loggedIn === "guest" ? (
                             <li>
-                                <Link to="/member/login" state={{ title: ['로그인'] }}>
+                                <Link
+                                    to="/member/login"
+                                    state={{ title: ["로그인"] }}
+                                >
                                     로그인
                                 </Link>
                             </li>
@@ -122,10 +144,27 @@ function Header({ loggedIn, removeToken }) {
                             </li>
                         )}
                         <li>
-                            <Link to="/inquiry">주문조회</Link>
+                            <Link
+                                to="/mypage/orderHistory"
+                                state={{
+                                    title: ["마이쇼핑", "주문조회"],
+                                }}
+                            >
+                                주문조회
+                            </Link>
                         </li>
+                        {loggedIn === "member" && (
+                            <li>
+                                <Link
+                                    to="/mypage/dashboard"
+                                    state={{ title: ["마이쇼핑"] }}
+                                >
+                                    마이페이지
+                                </Link>
+                            </li>
+                        )}
                         <li>
-                            <Link to="/recent">최근본상품</Link>
+                            <Link to="/mypage/recentView">최근본상품</Link>
                         </li>
                     </ul>
                 </div>
@@ -139,18 +178,37 @@ function Header({ loggedIn, removeToken }) {
                         <div className={styles.user}>
                             <ul>
                                 <li>
-                                    <Link to={loggedIn === 'guest' ? 'member/login' : '/mypage/dashboard'} className={styles['btn-user']} state={loggedIn === 'guest' ? { title: ['로그인'] } : { title: ['마이 쇼핑'] }}>
+                                    <Link
+                                        to={
+                                            loggedIn === "guest"
+                                                ? "member/login"
+                                                : "/mypage/dashboard"
+                                        }
+                                        className={styles["btn-user"]}
+                                        state={
+                                            loggedIn === "guest"
+                                                ? { title: ["로그인"] }
+                                                : { title: ["마이쇼핑"] }
+                                        }
+                                    >
                                         마이페이지
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link to="/order/cart" className={styles['btn-cart']} state={{ title: ['장바구니'] }}>
+                                    <Link
+                                        to="/order/cart"
+                                        className={styles["btn-cart"]}
+                                        state={{ title: ["장바구니"] }}
+                                    >
                                         장바구니
                                         <span>{totalQuantity}</span>
                                     </Link>
                                 </li>
                                 <li>
-                                    <button type="button" className={styles['btn-search']}>
+                                    <button
+                                        type="button"
+                                        className={styles["btn-search"]}
+                                    >
                                         검색
                                     </button>
                                 </li>
@@ -174,18 +232,29 @@ function Header({ loggedIn, removeToken }) {
                                             {item.depth2.length > 0 && (
                                                 <div className={styles.depth2}>
                                                     <ul>
-                                                        {item.depth2.map((dep2) => (
-                                                            <li key={dep2.name}>
-                                                                <Link
-                                                                    to={`/${item.pageType}/${item.category}/${dep2.type}`}
-                                                                    state={{
-                                                                        title: [item.depth1, dep2.name],
-                                                                    }}
+                                                        {item.depth2.map(
+                                                            (dep2) => (
+                                                                <li
+                                                                    key={
+                                                                        dep2.name
+                                                                    }
                                                                 >
-                                                                    {dep2.name}
-                                                                </Link>
-                                                            </li>
-                                                        ))}
+                                                                    <Link
+                                                                        to={`/${item.pageType}/${item.category}/${dep2.type}`}
+                                                                        state={{
+                                                                            title: [
+                                                                                item.depth1,
+                                                                                dep2.name,
+                                                                            ],
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            dep2.name
+                                                                        }
+                                                                    </Link>
+                                                                </li>
+                                                            )
+                                                        )}
                                                     </ul>
                                                 </div>
                                             )}
