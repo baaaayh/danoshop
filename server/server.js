@@ -339,10 +339,10 @@ app.post("/api/addWishList", async (req, res) => {
             if (newItem.wishOption) {
                 const existingItemIndex = user.wishList.findIndex(
                     (existingItem) =>
-                        existingItem.wishOption.key === newItem.wishOption.key
+                        existingItem.wishOption?.key === newItem.wishOption.key
                 );
 
-                if (existingItemIndex > -1) {
+                if (existingItemIndex !== -1) {
                     user.wishList[existingItemIndex] = newItem;
                 } else {
                     user.wishList.push(newItem);
@@ -396,19 +396,39 @@ app.post("/api/removeWishListItem", async (req, res) => {
         const { userId, optionId } = req.body;
         let user = await User.findOne({ userId });
 
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "사용자를 찾을 수 없습니다.",
+            });
+        }
+
         if (typeof optionId === "string") {
             const noWishOptionsItemIndex = user.wishList.findIndex(
-                (item) => item.id === optionId
+                (item) => item.id === optionId && !item.wishOption
             );
 
-            if (noWishOptionsItemIndex > -1) {
-                user.wishList.splice(noWishOptionsItemIndex, 1);
+            if (noWishOptionsItemIndex !== -1) {
+                user.wishList = user.wishList.filter(
+                    (item) => item.id !== optionId || item.wishOption
+                );
             } else {
-                user.wishList = user.wishList.filter((item) => {
-                    return item.wishOption.key !== optionId;
-                });
+                const wishOptionItemIndex = user.wishList.findIndex(
+                    (item) =>
+                        item.wishOption && item.wishOption.key === optionId
+                );
+
+                if (wishOptionItemIndex !== -1) {
+                    user.wishList = user.wishList.filter(
+                        (item) =>
+                            !(
+                                item.wishOption &&
+                                item.wishOption.key === optionId
+                            )
+                    );
+                }
             }
-        } else if (typeof optionId === "object") {
+        } else if (Array.isArray(optionId)) {
             user.wishList = user.wishList.filter((item) => {
                 return !optionId.includes(
                     item.wishOption ? item.wishOption.key : item.id
@@ -421,6 +441,53 @@ app.post("/api/removeWishListItem", async (req, res) => {
         res.json({
             success: true,
             wishList: user.wishList,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "서버 오류" });
+    }
+});
+
+app.post("/api/getRecentView", async (req, res) => {
+    try {
+        const { userId } = req.body;
+        let user = await User.findOne({ userId });
+
+        res.json({
+            success: true,
+            recentView: user.recentView,
+        });
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post("/api/updateRecentView", async (req, res) => {
+    try {
+        const { recentViewItem, userId } = req.body;
+        let user = await User.findOne({ userId });
+
+        user.recentView.push(recentViewItem);
+
+        await user.save();
+        res.json({
+            success: true,
+        });
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+app.post("/api/removeRecentViewItem", async (req, res) => {
+    try {
+        const { recentViewItem, userId } = req.body;
+        let user = await User.findOne({ userId });
+
+        user.recentView.push(recentViewItem);
+
+        await user.save();
+        res.json({
+            success: true,
         });
     } catch (error) {
         console.error(error);

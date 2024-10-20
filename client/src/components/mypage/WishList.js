@@ -86,8 +86,6 @@ function WishList() {
                 return;
             }
 
-            console.log(checkedOptionsArray);
-
             if (window.confirm("해당 상품을 삭제하시겠습니까?")) {
                 if (userInfo.token) {
                     const response = await axios.post(

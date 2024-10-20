@@ -27,6 +27,25 @@ function View() {
     const pageTitle = location.state?.title || ["전상품"];
 
     useEffect(() => {
+        if (userInfo.token && productInfo.id) {
+            const updateRecentView = async () => {
+                try {
+                    await axios.post(
+                        "http://localhost:4000/api/updateRecentView",
+                        {
+                            userId: userInfo.userId,
+                            recentViewItem: productInfo,
+                        }
+                    );
+                } catch (error) {
+                    console.error("Error updating cart:", error);
+                }
+            };
+            updateRecentView();
+        }
+    }, [productInfo, userInfo]);
+
+    useEffect(() => {
         const getProductDetail = async () => {
             try {
                 const response = await axios.get(
@@ -205,12 +224,27 @@ function View() {
         if (userInfo.token) {
             try {
                 let wishList;
+
                 if (selectedOptions.length > 0) {
                     wishList = selectedOptions.map((option) => {
-                        return { ...productInfo, wishOption: option };
+                        const product = {
+                            id: productInfo.id,
+                            options: selectedOptions,
+                            price: String(totalPrice),
+                            wishOption: option,
+                            data: { ...productInfo },
+                        };
+                        return product;
                     });
                 } else {
-                    wishList = [{ ...productInfo }];
+                    wishList = [
+                        {
+                            id: productInfo.id,
+                            options: selectedOptions,
+                            price: String(totalPrice),
+                            data: { ...productInfo },
+                        },
+                    ];
                 }
 
                 await axios.post("http://localhost:4000/api/addWishList", {

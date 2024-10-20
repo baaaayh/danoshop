@@ -129,7 +129,6 @@ function Cart() {
         [cartList]
     );
 
-    console.log(checkedOptions);
     useEffect(() => {
         const selectedOptions = [];
 

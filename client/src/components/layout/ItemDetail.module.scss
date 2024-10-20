@@ -8,6 +8,7 @@
         position: relative;
         display: flex;
         column-gap: 10px;
+        margin-bottom: 15px;
 
         > button {
             position: absolute;
@@ -18,6 +19,8 @@
     &__chk {
     }
     &__info {
+        position: relative;
+        flex-basis: 100%;
     }
     &__detail {
         display: flex;
@@ -28,6 +31,7 @@
         flex-shrink: 0;
         a {
             display: block;
+            font-size: 0;
             img {
                 width: 100%;
             }
@@ -35,13 +39,54 @@
     }
     &__text {
         flex-basis: 100%;
-        padding-right: 20px;
+        padding-right: 200px;
         > div {
             font-size: 13px;
             margin-top: 3px;
             &:last-child {
                 margin-top: 20px;
             }
+        }
+    }
+    &__button {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        ul {
+            display: flex;
+            column-gap: 10px;
+            li {
+                button {
+                    padding: 0 20px;
+                    span {
+                        font-size: 12px;
+                        line-height: 30px;
+                    }
+                }
+            }
+        }
+    }
+    &__option {
+        display: flex;
+        column-gap: 20px;
+        padding: 20px;
+        background-color: #f6f6f6;
+        span {
+            display: flex;
+            align-items: center;
+            flex-basis: 100px;
+            flex-shrink: 0;
+            font-size: 13px;
+            color: #545454;
+        }
+        > div {
+            flex-basis: 100%;
+            select {
+                background-color: #fff;
+            }
+        }
+        & + & {
+            margin-top: 5px;
         }
     }
 }
