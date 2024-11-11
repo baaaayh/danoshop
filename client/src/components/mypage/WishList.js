@@ -4,22 +4,29 @@ import MyPageBox from "./MyPageBox";
 import styles from "./WishList.module.scss";
 import ItemDetail from "../layout/ItemDetail";
 import axios from "axios";
+import Pagination from "../layout/Pagination";
 
 function WishList() {
+    const [pagingButtons, setPagingButtons] = useState(0);
     const [wishList, setWishList] = useState([]);
     const [checkedOptions, setCheckedOptions] = useState({});
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 5;
 
     const userInfo = useSelector((state) => state.user);
 
-    const fetchWishList = async () => {
+    const fetchWishList = async (page) => {
         try {
             if (userInfo.token) {
                 const response = await axios.post(
                     "http://localhost:4000/api/getWishList",
                     {
                         userId: userInfo.userId,
+                        page: currentPage,
+                        itemsPerPage: itemsPerPage,
                     }
                 );
+                setPagingButtons(response.data.pagingButtons);
                 setWishList(response.data.wishList);
             }
         } catch (error) {
@@ -28,13 +35,13 @@ function WishList() {
     };
 
     useEffect(() => {
-        fetchWishList();
-    }, []);
+        fetchWishList(currentPage);
+    }, [currentPage]);
 
-    const handleCheckbox = useCallback((optionId, optionKey) => {
+    const handleCheckbox = useCallback((optionId, uniqueId) => {
         setCheckedOptions((prev) => ({
             ...prev,
-            [optionKey]: !prev[optionKey], // 상태 반전
+            [uniqueId]: !prev[uniqueId], // 상태 반전
         }));
     }, []);
 
@@ -48,6 +55,8 @@ function WishList() {
                             userId: userInfo.userId,
                         }
                     );
+                    setPagingButtons(response.data.pagingButtons);
+                    setWishList(response.data.wishList);
                 }
             }
         } catch (error) {
@@ -55,7 +64,7 @@ function WishList() {
         }
     };
 
-    const removeItem = async (optionKey) => {
+    const removeItem = async (uniqueId) => {
         try {
             if (window.confirm("해당 상품을 삭제하시겠습니까?")) {
                 if (userInfo.token) {
@@ -63,9 +72,12 @@ function WishList() {
                         "http://localhost:4000/api/removeWishListItem",
                         {
                             userId: userInfo.userId,
-                            optionId: optionKey,
+                            itemUniqueId: uniqueId,
+                            page: currentPage,
+                            itemsPerPage: itemsPerPage,
                         }
                     );
+                    setPagingButtons(response.data.pagingButtons);
                     setWishList(response.data.wishList);
                 }
             }
@@ -91,10 +103,13 @@ function WishList() {
                     const response = await axios.post(
                         "http://localhost:4000/api/removeWishListItem",
                         {
+                            itemUniqueId: checkedOptionsArray,
                             userId: userInfo.userId,
-                            optionId: checkedOptionsArray,
+                            page: currentPage,
+                            itemsPerPage: itemsPerPage,
                         }
                     );
+                    setPagingButtons(response.data.pagingButtons);
                     setWishList(response.data.wishList);
                 }
             }
@@ -110,15 +125,14 @@ function WishList() {
                     {wishList.length > 0 ? (
                         <ul>
                             {wishList.map((item, index) => {
-                                const wishOptionValue =
-                                    item.wishOption?.value.id;
+                                const uniqueId = item.uniqueId;
                                 return (
                                     <ItemDetail
                                         itemValue={item}
                                         key={
-                                            wishOptionValue
-                                                ? wishOptionValue
-                                                : `${item.id}-${item.index}`
+                                            uniqueId
+                                                ? uniqueId
+                                                : `${item.id}-${index}`
                                         }
                                         handleCheckbox={handleCheckbox}
                                         setCheckedOptions={setCheckedOptions}
@@ -129,7 +143,7 @@ function WishList() {
                             })}
                         </ul>
                     ) : (
-                        <div className={styles["wish-list__noitem"]}>
+                        <div className={"no-item"}>
                             <p>
                                 <img
                                     src="../images/icons/icon_no_item.svg"
@@ -163,6 +177,11 @@ function WishList() {
                     </li>
                 </ul>
             </div>
+            <Pagination
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                pagingButtons={pagingButtons}
+            />
         </>
     );
 }

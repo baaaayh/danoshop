@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv").config();
 const dbConnection = require("./db");
+const { v4: uuidv4 } = require("uuid");
 dbConnection();
 const PORT = 4000;
 
@@ -331,9 +332,11 @@ app.post("/api/getOrderHistory", async (req, res) => {
 });
 
 app.post("/api/addWishList", async (req, res) => {
+    const { userId, wishList } = req.body;
+    let user = await User.findOne({ userId });
+
     try {
-        const { userId, wishList } = req.body;
-        let user = await User.findOne({ userId });
+        console.log(wishList);
 
         wishList.forEach((newItem) => {
             if (newItem.wishOption) {
@@ -345,10 +348,10 @@ app.post("/api/addWishList", async (req, res) => {
                 if (existingItemIndex !== -1) {
                     user.wishList[existingItemIndex] = newItem;
                 } else {
-                    user.wishList.push(newItem);
+                    user.wishList.push({ ...newItem, uniqueId: uuidv4() });
                 }
             } else {
-                user.wishList.push(newItem);
+                user.wishList.push({ ...newItem, uniqueId: uuidv4() });
             }
         });
 
@@ -363,13 +366,22 @@ app.post("/api/addWishList", async (req, res) => {
 });
 
 app.post("/api/getWishList", async (req, res) => {
+    const { userId, page, itemsPerPage } = req.body;
+    const skip = page * itemsPerPage;
+    let user = await User.findOne({ userId });
+
     try {
-        const { userId } = req.body;
-        let user = await User.findOne({ userId });
+        let totalItem = user.wishList.length;
+        let pagingButtons = Math.ceil(totalItem / itemsPerPage);
+
+        const paginatedWishList = user.wishList
+            .reverse()
+            .slice(skip, skip + itemsPerPage);
 
         res.json({
             success: true,
-            wishList: user.wishList,
+            wishList: paginatedWishList,
+            pagingButtons: pagingButtons,
         });
     } catch (error) {
         console.error(error);
@@ -385,6 +397,8 @@ app.post("/api/clearWishList", async (req, res) => {
         await user.save();
         res.json({
             success: true,
+            wishList: user.wishList,
+            pagingButtons: 1,
         });
     } catch (error) {
         console.error(error);
@@ -392,56 +406,43 @@ app.post("/api/clearWishList", async (req, res) => {
 });
 
 app.post("/api/removeWishListItem", async (req, res) => {
+    const { itemUniqueId, userId, page, itemsPerPage } = req.body;
+    const skip = page * itemsPerPage;
+    let user = await User.findOne({ userId });
+
     try {
-        const { userId, optionId } = req.body;
-        let user = await User.findOne({ userId });
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "사용자를 찾을 수 없습니다.",
-            });
-        }
-
-        if (typeof optionId === "string") {
-            const noWishOptionsItemIndex = user.wishList.findIndex(
-                (item) => item.id === optionId && !item.wishOption
-            );
-
-            if (noWishOptionsItemIndex !== -1) {
+        if (user && user.wishList) {
+            if (typeof itemUniqueId === "string") {
                 user.wishList = user.wishList.filter(
-                    (item) => item.id !== optionId || item.wishOption
+                    (item) => item.uniqueId !== itemUniqueId
                 );
-            } else {
-                const wishOptionItemIndex = user.wishList.findIndex(
-                    (item) =>
-                        item.wishOption && item.wishOption.key === optionId
+            } else if (Array.isArray(itemUniqueId)) {
+                user.wishList = user.wishList.filter(
+                    (item) => !itemUniqueId.includes(item.uniqueId)
                 );
-
-                if (wishOptionItemIndex !== -1) {
-                    user.wishList = user.wishList.filter(
-                        (item) =>
-                            !(
-                                item.wishOption &&
-                                item.wishOption.key === optionId
-                            )
-                    );
-                }
             }
-        } else if (Array.isArray(optionId)) {
-            user.wishList = user.wishList.filter((item) => {
-                return !optionId.includes(
-                    item.wishOption ? item.wishOption.key : item.id
-                );
+
+            await user.save();
+
+            const totalItem = user.wishList.length;
+            const pagingButtons = Math.ceil(totalItem / itemsPerPage);
+
+            const paginatedWishList = user.wishList
+                .slice()
+                .reverse()
+                .slice(skip, skip + itemsPerPage);
+
+            res.json({
+                success: true,
+                wishList: paginatedWishList,
+                pagingButtons: pagingButtons,
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "User or wishlist not found",
             });
         }
-
-        await user.save();
-
-        res.json({
-            success: true,
-            wishList: user.wishList,
-        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: "서버 오류" });
@@ -449,27 +450,45 @@ app.post("/api/removeWishListItem", async (req, res) => {
 });
 
 app.post("/api/getRecentView", async (req, res) => {
-    try {
-        const { userId } = req.body;
-        let user = await User.findOne({ userId });
+    const { userId, page, itemsPerPage } = req.body;
+    const skip = page * itemsPerPage;
+    let user = await User.findOne({ userId });
 
-        res.json({
-            success: true,
-            recentView: user.recentView,
-        });
+    try {
+        if (user && user.recentView) {
+            let totalItem = user.recentView.length;
+            let pagingButtons = Math.ceil(totalItem / itemsPerPage);
+
+            const paginatedRecentView = user.recentView
+                .reverse()
+                .slice(skip, skip + itemsPerPage);
+
+            res.json({
+                success: true,
+                recentView: paginatedRecentView,
+                pagingButtons: pagingButtons,
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "User or recent view not found",
+            });
+        }
     } catch (error) {
         console.error(error);
+        res.status(500).json({ success: false, error: "서버 에러 발생" });
     }
 });
 
 app.post("/api/updateRecentView", async (req, res) => {
-    try {
-        const { recentViewItem, userId } = req.body;
-        let user = await User.findOne({ userId });
+    const { recentViewItem, userId } = req.body;
+    let user = await User.findOne({ userId });
 
-        user.recentView.push(recentViewItem);
+    try {
+        user.recentView.push({ ...recentViewItem, uniqueId: uuidv4() });
 
         await user.save();
+
         res.json({
             success: true,
         });
@@ -479,18 +498,38 @@ app.post("/api/updateRecentView", async (req, res) => {
 });
 
 app.post("/api/removeRecentViewItem", async (req, res) => {
+    const { itemUniqueId, userId, page, itemsPerPage } = req.body;
+    const skip = page * itemsPerPage;
+    let user = await User.findOne({ userId });
+
     try {
-        const { recentViewItem, userId } = req.body;
-        let user = await User.findOne({ userId });
+        if (user && user.recentView) {
+            user.recentView = user.recentView.filter(
+                (item) => item.uniqueId !== itemUniqueId
+            );
+            await user.save();
 
-        user.recentView.push(recentViewItem);
+            let totalItem = user.recentView.length;
+            let pagingButtons = Math.ceil(totalItem / itemsPerPage);
 
-        await user.save();
-        res.json({
-            success: true,
-        });
+            const paginatedRecentView = user.recentView
+                .reverse()
+                .slice(skip, skip + itemsPerPage);
+
+            res.json({
+                success: true,
+                recentView: paginatedRecentView,
+                pagingButtons: pagingButtons,
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "User or recent view not found",
+            });
+        }
     } catch (error) {
         console.error(error);
+        res.status(500).json({ success: false, error: "서버 에러 발생" });
     }
 });
 

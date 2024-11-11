@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { SidePanelContext } from "../../App";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import styles from "./ItemDetail.module.scss";
 import { addCartItem } from "../../modules/cartList";
+import { setSideOrder } from "../../modules/sideOrder";
+import axios from "axios";
 
 function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
+    const sidePanel = useContext(SidePanelContext);
     const location = useLocation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -81,6 +85,14 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
         });
     };
 
+    const callSideOrder = (itemId) => {
+        if (sidePanel && sidePanel.current) {
+            sidePanel.current.open(itemId);
+        } else {
+            console.error("sidePanel ref가 설정되지 않았습니다.");
+        }
+    };
+
     return (
         <li className={styles["item-row"]}>
             <div className={styles["item-row__container"]}>
@@ -88,10 +100,15 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
                     <div className={styles["item-row__chk"]}>
                         <input
                             type="checkbox"
-                            checked={checkedOptions[itemKey] || false}
-                            value={itemKey}
+                            checked={
+                                checkedOptions[itemValue.uniqueId] || false
+                            }
+                            value={itemValue.uniqueId}
                             onChange={() =>
-                                handleCheckbox(itemValue.data.id, itemKey)
+                                handleCheckbox(
+                                    itemValue.data.id,
+                                    itemValue.uniqueId
+                                )
                             }
                         />
                     </div>
@@ -146,14 +163,15 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
                                     type="button"
                                     className="btn btn-square btn-square--white"
                                     value={itemKey}
-                                    onClick={() =>
-                                        addToCart(
-                                            itemValue.data
-                                                ? itemValue.data.id
-                                                : itemValue.id,
-                                            itemValue.wishOption?.value?.id
-                                        )
-                                    }
+                                    onClick={() => {
+                                        // addToCart(
+                                        //     itemValue.data
+                                        //         ? itemValue.data.id
+                                        //         : itemValue.id,
+                                        //     itemValue.wishOption?.value?.id
+                                        // );
+                                        // callSideOrder();
+                                    }}
                                 >
                                     <span className="btn btn-square__text">
                                         장바구니
@@ -165,14 +183,26 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
                                     type="button"
                                     className="btn btn-square btn-square--black"
                                     value={itemKey}
-                                    onClick={() =>
-                                        orderThisItem(
+                                    onClick={() => {
+                                        // orderThisItem(
+                                        //     itemValue.data
+                                        //         ? itemValue.data.id
+                                        //         : itemValue.id,
+                                        //     itemValue.wishOption?.value?.id
+                                        // );
+                                        // dispatch(
+                                        //     setSideOrder(
+                                        //         itemValue.data
+                                        //             ? itemValue.data.id
+                                        //             : itemValue.id
+                                        //     )
+                                        // );
+                                        callSideOrder(
                                             itemValue.data
                                                 ? itemValue.data.id
-                                                : itemValue.id,
-                                            itemValue.wishOption?.value?.id
-                                        )
-                                    }
+                                                : itemValue.id
+                                        );
+                                    }}
                                 >
                                     <span className="btn btn-square__text">
                                         주문하기
@@ -185,21 +215,24 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
                 <button
                     type="button"
                     className="btn btn-remove"
-                    onClick={() => removeItem(itemKey)}
+                    onClick={() => removeItem(itemValue.uniqueId)}
                 >
                     삭제
                 </button>
             </div>
             {itemValue.id &&
-                itemValue.options.map((option) => {
+                itemValue.options.map((option, index) => {
                     const key = Object.keys(option)[0];
 
-                    if (!option[key]) {
+                    if (!option[key].data) {
                         return null;
                     }
 
                     return (
-                        <div className={styles["item-row__option"]} key={key}>
+                        <div
+                            className={styles["item-row__option"]}
+                            key={`${key}-${index}`}
+                        >
                             <span>옵션</span>
                             <div>
                                 <select
@@ -215,13 +248,13 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
                                             value,
                                             selectedOptionValueId
                                         );
-                                        e.target.value = ""; // 선택 후 초기화
                                     }}
                                 >
                                     <option value="">
                                         - [선택] 옵션을 선택해 주세요 -
                                     </option>
-                                    {option[key].data.map((optionValue) => (
+
+                                    {option[key].data?.map((optionValue) => (
                                         <option
                                             value={JSON.stringify(optionValue)}
                                             key={optionValue.id}
