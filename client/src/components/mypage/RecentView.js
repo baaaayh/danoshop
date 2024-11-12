@@ -91,7 +91,7 @@ function RecentView({ setSideOrderItem }) {
                             <p>
                                 <img
                                     src="../images/icons/icon_no_item.svg"
-                                    alt=""
+                                    alt="관심상품 내역이 없습니다."
                                 />
                                 관심상품 내역이 없습니다.
                             </p>

@@ -4,7 +4,6 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import styles from "./ItemDetail.module.scss";
 import { addCartItem } from "../../modules/cartList";
-import { setSideOrder } from "../../modules/sideOrder";
 import axios from "axios";
 
 function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
@@ -63,6 +62,8 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
 
         console.log(selectedOptions);
     };
+
+    console.log(location);
 
     const handleOptionSelect = (selectedOptionValue, key) => {
         setSelectedOptions((prev) => {
@@ -164,13 +165,22 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
                                     className="btn btn-square btn-square--white"
                                     value={itemKey}
                                     onClick={() => {
-                                        // addToCart(
-                                        //     itemValue.data
-                                        //         ? itemValue.data.id
-                                        //         : itemValue.id,
-                                        //     itemValue.wishOption?.value?.id
-                                        // );
-                                        // callSideOrder();
+                                        if (
+                                            location.pathname.includes("mypage")
+                                        ) {
+                                            callSideOrder(
+                                                itemValue.data
+                                                    ? itemValue.data.id
+                                                    : itemValue.id
+                                            );
+                                        } else {
+                                            addToCart(
+                                                itemValue.data
+                                                    ? itemValue.data.id
+                                                    : itemValue.id,
+                                                itemValue.wishOption?.value?.id
+                                            );
+                                        }
                                     }}
                                 >
                                     <span className="btn btn-square__text">
@@ -184,24 +194,22 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
                                     className="btn btn-square btn-square--black"
                                     value={itemKey}
                                     onClick={() => {
-                                        // orderThisItem(
-                                        //     itemValue.data
-                                        //         ? itemValue.data.id
-                                        //         : itemValue.id,
-                                        //     itemValue.wishOption?.value?.id
-                                        // );
-                                        // dispatch(
-                                        //     setSideOrder(
-                                        //         itemValue.data
-                                        //             ? itemValue.data.id
-                                        //             : itemValue.id
-                                        //     )
-                                        // );
-                                        callSideOrder(
-                                            itemValue.data
-                                                ? itemValue.data.id
-                                                : itemValue.id
-                                        );
+                                        if (
+                                            location.pathname.includes("mypage")
+                                        ) {
+                                            callSideOrder(
+                                                itemValue.data
+                                                    ? itemValue.data.id
+                                                    : itemValue.id
+                                            );
+                                        } else {
+                                            orderThisItem(
+                                                itemValue.data
+                                                    ? itemValue.data.id
+                                                    : itemValue.id,
+                                                itemValue.wishOption?.value?.id
+                                            );
+                                        }
                                     }}
                                 >
                                     <span className="btn btn-square__text">

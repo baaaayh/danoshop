@@ -2,17 +2,8 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import {
-    addCartItem,
-    updateCartItem,
-    removeCartOption,
-    clearCart,
-} from "../../modules/cartList";
-import {
-    saveOrder,
-    clearOrder,
-    removeOrderOption,
-} from "../../modules/orderList";
+import { updateCartItem, removeCartOption } from "../../modules/cartList";
+import { saveOrder, clearOrder } from "../../modules/orderList";
 import SubContentsSmall from "../../components/layout/SubContentsSmall";
 import BreadCrumb from "../../components/layout/BreadCrumb";
 import SubTitle from "../../components/layout/SubTitle";
@@ -261,8 +252,6 @@ function Cart() {
                         })
                         .filter(Boolean);
                 });
-
-                console.log(wishList);
 
                 await axios.post("http://localhost:4000/api/addWishList", {
                     userId: userInfo.userId,

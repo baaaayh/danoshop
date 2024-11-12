@@ -533,6 +533,8 @@ app.post("/api/removeRecentViewItem", async (req, res) => {
     }
 });
 
+app.post("/api/orderHistory", async (req, res) => {});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

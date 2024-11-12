@@ -1,18 +1,18 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { addCartItem } from "../../modules/cartList";
 import SubContentsSmall from "../../components/layout/SubContentsSmall";
-import SubTitle from "../../components/layout/SubTitle";
 import BreadCrumb from "../../components/layout/BreadCrumb";
 import styles from "./View.module.scss";
 import LayerPopup from "../../components/layout/LayerPopup";
+import { saveOrder, clearOrder } from "../../modules/orderList";
 
 function View() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const userInfo = useSelector((state) => state.user);
-    const [cartList, setCartList] = useState([]);
     const cartData = useSelector((state) => state.cart.cartList);
     const [updatedLocalCart, setUpdatedLocalCart] = useState([]);
     const [isPopupActive, setIsPopupActive] = useState(false);
@@ -137,7 +137,7 @@ function View() {
         const product = {
             id: productInfo.id,
             options: selectedOptions,
-            price: String(totalPrice),
+            price: productInfo.price,
             data: { ...productInfo },
         };
 
@@ -256,6 +256,26 @@ function View() {
             } catch (error) {
                 console.error("Error updating wish list:", error);
             }
+        }
+    };
+
+    const goToPayment = () => {
+        dispatch(clearOrder());
+        dispatch(saveOrder(selectedOptions));
+        if (selectedOptions.length <= 0) {
+            alert("주문하실 상품을 선택해 주세요.");
+            return;
+        }
+        if (userInfo.token) {
+            navigate("/order/order", {
+                state: {
+                    orderList: selectedOptions,
+                },
+            });
+        } else {
+            navigate("/member/login", {
+                state: { title: ["로그인"], prevPage: location.pathname },
+            });
         }
     };
 
@@ -505,7 +525,10 @@ function View() {
                                 <button
                                     type="button"
                                     className="btn btn-square btn-square--black"
-                                    onClick={handleAddToCart}
+                                    onClick={() => {
+                                        handleAddToCart();
+                                        goToPayment();
+                                    }}
                                 >
                                     <span className="btn btn-square__text">
                                         구매하기
@@ -516,9 +539,7 @@ function View() {
                                 <button
                                     type="button"
                                     className="btn btn-square"
-                                    onClick={() => {
-                                        handleAddToCart();
-                                    }}
+                                    onClick={handleAddToCart}
                                     disabled={isAdding}
                                 >
                                     <span className="btn btn-square__text">

@@ -13,6 +13,7 @@ import Product from "./pages/product/Product";
 import View from "./pages/product/View";
 import Cart from "./pages/order/Cart";
 import Order from "./pages/order/Order";
+import OrderResult from "./pages/order/OrderResult";
 import Login from "./pages/member/Login";
 import Agreement from "./pages/member/Agreement";
 import Join from "./pages/member/Join";
@@ -59,17 +60,20 @@ function App() {
         return decoded.exp * 1000 < Date.now();
     }
 
-    const isOrderPage = location.pathname === "/order/order"; // 현재 경로 확인
+    const isOrderPage = location.pathname === "/order/order";
+    const isResultPage = location.pathname === "/order/orderResult";
 
     return (
         <>
             <SidePanelContext.Provider value={sidePanel}>
                 <div className="container">
-                    {!isOrderPage && (
+                    {!isOrderPage && !isResultPage && (
                         <Header loggedIn={loggedIn} removeToken={removeToken} />
                     )}
                     {isOrderPage ? (
                         <Order />
+                    ) : isResultPage ? (
+                        <OrderResult />
                     ) : (
                         <div className="wrap">
                             <Routes>
@@ -121,7 +125,7 @@ function App() {
                             </Routes>
                         </div>
                     )}
-                    {!isOrderPage && <Footer />}
+                    {!isOrderPage && !isResultPage && <Footer />}
                     <div className="dim"></div>
                 </div>
                 <SideOrder ref={sidePanel} />
