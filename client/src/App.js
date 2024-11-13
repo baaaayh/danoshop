@@ -32,7 +32,6 @@ function App() {
     const loggedIn = useSelector((state) => state.user.state);
     const token = useSelector((state) => state.user.token);
     const location = useLocation();
-    const [sideOrderItem, setSideOrderItem] = useState({});
 
     const sidePanel = useRef();
 

@@ -269,8 +269,26 @@ label {
     &__inner {
     }
     &__header {
+        position: fixed;
+        top: 0;
+        max-width: 889px;
+        width: 100%;
+        z-index: 2;
+
+        h3 {
+            padding: 0 20px;
+            background-color: #111;
+            font-size: 20px;
+            font-weight: 500;
+            color: #fff;
+            text-align: center;
+            line-height: 62px;
+        }
+    }
+    &__nav {
         position: relative;
         padding: 18px 0;
+        background-color: #fff;
         > button {
             position: absolute;
             top: 50%;
@@ -354,16 +372,8 @@ label {
         }
     }
     &__body {
+        padding-top: 128px;
         background-color: #ededed;
-        h3 {
-            padding: 0 20px;
-            background-color: #111;
-            font-size: 20px;
-            font-weight: 500;
-            color: #fff;
-            text-align: center;
-            line-height: 62px;
-        }
     }
     &__box {
         margin-top: 10px;
@@ -773,6 +783,9 @@ label {
         .order__image {
             flex-shrink: 0;
             flex-basis: 90px;
+            img {
+                width: 100%;
+            }
         }
         .order__desc {
             flex-basis: 100%;

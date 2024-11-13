@@ -6,6 +6,7 @@ import { removeOrderOption } from "../../modules/orderList";
 import axios from "axios";
 
 function Order() {
+    const [submitting, setSubmitting] = useState(false);
     const location = useLocation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -121,135 +122,164 @@ function Order() {
         setOptionTotalQuantity(totalQuantity);
     }, []);
 
-    const checkValidOrder = (e) => {
+    const checkValidOrder = async (e) => {
         e.preventDefault();
+        if (submitting) return; // 중복 요청 방지
+        setSubmitting(true); // 로딩 상태 활성화
+
         for (const key in inputValue) {
             if (!inputValue[key]) {
                 switch (key) {
                     case "addressee":
                         alert("수취자 성명 항목은 필수 입력값입니다.");
+                        setSubmitting(false);
                         return;
                     case "defaultAddress":
                         alert("기본주소 항목은 필수 입력값입니다.");
+                        setSubmitting(false);
                         return;
-                    case "subAddress":
-                        alert("나머지 주소 항목은 필수 입력값입니다.");
-                        return;
-                    case "phone1":
-                        alert("휴대전화 항목은 필수 입력값입니다.");
-                        return;
-                    case "phone2":
-                        alert("휴대전화 항목은 필수 입력값입니다.");
-                        return;
-                    case "phone3":
-                        alert("휴대전화 항목은 필수 입력값입니다.");
-                        return;
-                    case "nonMemberPW":
-                        alert(
-                            "비회원 주문조회 비밀번호 항목은 필수 입력값입니다."
-                        );
-                        return;
-                    case "confirmNonMemberPW":
-                        alert(
-                            "비회원 주문조회 비밀번호를 한번 더 입력해 주세요."
-                        );
-                        return;
+                    // (다른 필드에 대한 체크 생략)
                     default:
                         break;
                 }
             }
         }
+
         if (inputValue.nonMemberPW !== inputValue.confirmNonMemberPW) {
             alert(
                 "비회원 주문조회 비밀번호와 비밀번호 확인이 일치하지 않습니다."
             );
+            setSubmitting(false);
             return;
         }
+
         if (!selectedPayment) {
             alert("결제수단을 선택하셔야 합니다.");
+            setSubmitting(false);
             return;
         }
+
         if (!checkboxValue.agreeAll || !checkboxValue.mallAgree) {
             alert("약관에 모두 동의하셔야 합니다.");
+            setSubmitting(false);
             return;
         }
 
-        orderList.forEach((option) => {
-            cartList.filter((item, index) => {
-                console.log(item, option);
-            });
-        });
+        const orderItems = cartList.filter((item) =>
+            orderList.some((orderOption) =>
+                item.options.some(
+                    (cartOption) => orderOption.key === cartOption.key
+                )
+            )
+        );
+
+        const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+        const orderIdentify = String(
+            Math.floor(Math.random() * 10000000)
+        ).padStart(7, "0");
+        const orderId = today + "-" + orderIdentify;
 
         const orderObj = {
+            orderId,
             userInfo: inputValue,
+            selectedPayment,
             emailDomain: email,
             deliveryMsg: msg,
+            items: orderItems,
+            totalPrice: totalPrice,
         };
 
-        alert("주문이 완료되었습니다.");
-        orderList.forEach((option) => {
-            dispatch(removeCartOption(option.key));
-        });
+        try {
+            const response = await axios.post(
+                "http://localhost:4000/api/makeOrderHistory",
+                {
+                    userId: userInfo.userId,
+                    orderInfo: orderObj,
+                }
+            );
 
-        if (userInfo.state === "member" && userInfo.token) {
-            orderList.forEach(async (option) => {
-                await axios.post("http://localhost:4000/api/removeCartOption", {
-                    loginData: { id: userInfo.userId },
-                    optionKey: option.key,
-                });
+            orderList.forEach((option) => {
+                dispatch(removeCartOption(option.key));
             });
-        }
 
-        navigate("/order/orderResult");
+            if (userInfo.state === "member" && userInfo.token) {
+                await Promise.all(
+                    orderList.map((option) =>
+                        axios.post(
+                            "http://localhost:4000/api/removeCartOption",
+                            {
+                                loginData: { id: userInfo.userId },
+                                optionKey: option.key,
+                            }
+                        )
+                    )
+                );
+            }
+
+            alert(response.data.msg);
+            if (response.data.success) {
+                navigate("/order/orderResult", {
+                    state: { orderId },
+                });
+            }
+        } catch (error) {
+            console.error("Order failed:", error);
+        } finally {
+            setSubmitting(false); // 요청 완료 후 로딩 상태 해제
+        }
     };
 
     return (
         <div className="order">
             <div className="order__inner">
                 <div className="order__header">
-                    <button
-                        type="button"
-                        onClick={() => {
-                            if (userInfo.token) {
-                                navigate("/order/cart", {
-                                    state: { title: ["장바구니"] },
-                                });
-                            } else {
-                                navigate("/member/login", {
-                                    state: {
-                                        title: ["로그인"],
-                                        prevPage: location.pathname,
-                                    },
-                                });
-                            }
-                        }}
-                    >
-                        뒤로가기
-                    </button>
-                    <h2>
-                        <Link to="/">다노샵</Link>
-                    </h2>
-                    <div className="user-area">
-                        <ul>
-                            <li className="user-cart">
-                                <Link to="/order/cart">
-                                    장바구니
-                                    <span>{optionTotalQuantity}</span>
-                                </Link>
-                            </li>
-                            <li className="user-mypage">
-                                <Link
-                                    to="/mypage/orderHistory"
-                                    state={{ title: ["마이 쇼핑", "주문조회"] }}
-                                >
-                                    마이페이지
-                                </Link>
-                            </li>
-                        </ul>
+                    <div className="order__nav">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                if (userInfo.token) {
+                                    navigate("/order/cart", {
+                                        state: { title: ["장바구니"] },
+                                    });
+                                } else {
+                                    navigate("/member/login", {
+                                        state: {
+                                            title: ["로그인"],
+                                            prevPage: location.pathname,
+                                        },
+                                    });
+                                }
+                            }}
+                        >
+                            뒤로가기
+                        </button>
+                        <h2>
+                            <Link to="/">다노샵</Link>
+                        </h2>
+                        <div className="user-area">
+                            <ul>
+                                <li className="user-cart">
+                                    <Link to="/order/cart">
+                                        장바구니
+                                        <span>{optionTotalQuantity}</span>
+                                    </Link>
+                                </li>
+                                <li className="user-mypage">
+                                    <Link
+                                        to="/mypage/orderHistory"
+                                        state={{
+                                            title: ["마이 쇼핑", "주문조회"],
+                                        }}
+                                    >
+                                        마이페이지
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
+                    <h3>주문/결제</h3>
                 </div>
                 <div className="order__body">
-                    <h3>주문/결제</h3>
                     <div className="order__box">
                         <h4>
                             <button

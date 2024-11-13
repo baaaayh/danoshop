@@ -320,23 +320,10 @@ app.post("/api/validateUser", async (req, res) => {
     }
 });
 
-app.post("/api/getOrderHistory", async (req, res) => {
-    const { userId } = req.body;
-    let user = await User.findOne({ userId });
-
-    console.log(user.orderHistory);
-
-    // res.json({
-    //     success: true,
-    // });
-});
-
 app.post("/api/addWishList", async (req, res) => {
-    const { userId, wishList } = req.body;
-    let user = await User.findOne({ userId });
-
     try {
-        console.log(wishList);
+        const { userId, wishList } = req.body;
+        let user = await User.findOne({ userId });
 
         wishList.forEach((newItem) => {
             if (newItem.wishOption) {
@@ -366,11 +353,10 @@ app.post("/api/addWishList", async (req, res) => {
 });
 
 app.post("/api/getWishList", async (req, res) => {
-    const { userId, page, itemsPerPage } = req.body;
-    const skip = page * itemsPerPage;
-    let user = await User.findOne({ userId });
-
     try {
+        const { userId, page, itemsPerPage } = req.body;
+        const skip = page * itemsPerPage;
+        let user = await User.findOne({ userId });
         let totalItem = user.wishList.length;
         let pagingButtons = Math.ceil(totalItem / itemsPerPage);
 
@@ -406,11 +392,10 @@ app.post("/api/clearWishList", async (req, res) => {
 });
 
 app.post("/api/removeWishListItem", async (req, res) => {
-    const { itemUniqueId, userId, page, itemsPerPage } = req.body;
-    const skip = page * itemsPerPage;
-    let user = await User.findOne({ userId });
-
     try {
+        const { itemUniqueId, userId, page, itemsPerPage } = req.body;
+        const skip = page * itemsPerPage;
+        let user = await User.findOne({ userId });
         if (user && user.wishList) {
             if (typeof itemUniqueId === "string") {
                 user.wishList = user.wishList.filter(
@@ -450,11 +435,10 @@ app.post("/api/removeWishListItem", async (req, res) => {
 });
 
 app.post("/api/getRecentView", async (req, res) => {
-    const { userId, page, itemsPerPage } = req.body;
-    const skip = page * itemsPerPage;
-    let user = await User.findOne({ userId });
-
     try {
+        const { userId, page, itemsPerPage } = req.body;
+        const skip = page * itemsPerPage;
+        let user = await User.findOne({ userId });
         if (user && user.recentView) {
             let totalItem = user.recentView.length;
             let pagingButtons = Math.ceil(totalItem / itemsPerPage);
@@ -481,10 +465,9 @@ app.post("/api/getRecentView", async (req, res) => {
 });
 
 app.post("/api/updateRecentView", async (req, res) => {
-    const { recentViewItem, userId } = req.body;
-    let user = await User.findOne({ userId });
-
     try {
+        const { recentViewItem, userId } = req.body;
+        let user = await User.findOne({ userId });
         user.recentView.push({ ...recentViewItem, uniqueId: uuidv4() });
 
         await user.save();
@@ -498,11 +481,10 @@ app.post("/api/updateRecentView", async (req, res) => {
 });
 
 app.post("/api/removeRecentViewItem", async (req, res) => {
-    const { itemUniqueId, userId, page, itemsPerPage } = req.body;
-    const skip = page * itemsPerPage;
-    let user = await User.findOne({ userId });
-
     try {
+        const { itemUniqueId, userId, page, itemsPerPage } = req.body;
+        const skip = page * itemsPerPage;
+        let user = await User.findOne({ userId });
         if (user && user.recentView) {
             user.recentView = user.recentView.filter(
                 (item) => item.uniqueId !== itemUniqueId
@@ -533,7 +515,39 @@ app.post("/api/removeRecentViewItem", async (req, res) => {
     }
 });
 
-app.post("/api/orderHistory", async (req, res) => {});
+app.post("/api/makeOrderHistory", async (req, res) => {
+    try {
+        const { userId, orderInfo } = req.body;
+        let user = await User.findOne({ userId });
+        user.orderHistory.push(orderInfo);
+        user.save();
+
+        res.json({
+            success: true,
+            msg: "주문이 완료되었습니다.",
+        });
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+app.post("/api/getOrderHistory", async (req, res) => {
+    try {
+        const { userId, orderId } = req.body;
+        let user = await User.findOne({ userId });
+
+        const orderObj = await user.orderHistory.filter(
+            (order) => order.orderId === orderId
+        );
+
+        res.json({
+            success: true,
+            orderObj,
+        });
+    } catch (error) {
+        console.log(error);
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
