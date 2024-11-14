@@ -15,7 +15,7 @@ function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
             setCurrentPage(index);
 
             // 페이지 번호가 현재 그룹 범위를 벗어날 경우 그룹을 이동
-            if (index > endNumber) {
+            if (index >= endNumber) {
                 setCurrentPageGroup((prevGroup) => prevGroup + 1);
             } else if (index < startNumber) {
                 setCurrentPageGroup((prevGroup) => Math.max(prevGroup - 1, 0));

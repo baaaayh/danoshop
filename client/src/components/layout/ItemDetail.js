@@ -49,21 +49,17 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
     };
 
     const orderThisItem = (itemId, optionKey) => {
-        // addToState(itemId, optionKey);
-        // navigate("/order/order", {
-        //     state: {
-        //         orderList: [selectedOption],
-        //     },
-        // });
+        addToState(itemId, optionKey);
+        navigate("/order/order", {
+            state: {
+                orderList: [selectedOption],
+            },
+        });
     };
 
     const addToCart = (itemId, optionKey) => {
-        // addToState(itemId, optionKey);
-
-        console.log(selectedOptions);
+        addToState(itemId, optionKey);
     };
-
-    console.log(location);
 
     const handleOptionSelect = (selectedOptionValue, key) => {
         setSelectedOptions((prev) => {
@@ -229,7 +225,7 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
                 </button>
             </div>
             {itemValue.id &&
-                itemValue.options.map((option, index) => {
+                itemValue.options?.map((option, index) => {
                     const key = Object.keys(option)[0];
 
                     if (!option[key].data) {

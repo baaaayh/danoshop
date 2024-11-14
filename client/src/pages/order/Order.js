@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { removeCartOption } from "../../modules/cartList";
 import { removeOrderOption } from "../../modules/orderList";
+import { useDaumPostcodePopup } from "react-daum-postcode";
 import axios from "axios";
 
 function Order() {
@@ -15,6 +16,7 @@ function Order() {
     const cartList = useSelector((state) => state.cart.cartList);
     const orderList = useSelector((state) => state.order.orderList);
     const [inputValue, setInputValue] = useState({
+        zoneCode: "",
         addressee: "",
         defaultAddress: "",
         subAddress: "",
@@ -25,6 +27,7 @@ function Order() {
         nonMemberPW: "",
         confirmNonMemberPW: "",
     });
+
     const [selectedValue, setSelectedValue] = useState({
         email: "",
         msg: "",
@@ -39,23 +42,102 @@ function Order() {
         personalAgree: false,
     });
     const [optionTotalQuantity, setOptionTotalQuantity] = useState(0);
+    const [phoneMsg, setPhoneMsg] = useState({
+        phone1: null,
+        phone2: null,
+        phone3: null,
+    });
 
-    const handleInputChange = (e) => {
-        setInputValue({
-            ...inputValue,
-            [e.target.name]: e.target.value,
-        });
-    };
+    const handleInputChange = useCallback(
+        (e) => {
+            const value = e.target.value;
+
+            if (e.target.name === "phone1") {
+                if (
+                    value === "010" ||
+                    value === "016" ||
+                    value === "019" ||
+                    value === "011"
+                ) {
+                    setPhoneMsg({
+                        ...phoneMsg,
+                        phone1: null,
+                    });
+                } else {
+                    setPhoneMsg({
+                        ...phoneMsg,
+                        phone1: "휴대전화 번호 첫째 자리를 정확히 입력해 주세요.",
+                    });
+                }
+            }
+            if (e.target.name === "phone2") {
+                if (value.length < 3) {
+                    setPhoneMsg({
+                        ...phoneMsg,
+                        phone2: "휴대전화 번호의 가운데 자리는 최소 3자리 이상 입력해야 합니다.",
+                    });
+                }
+                if (value.length === 3 || value.length === 4) {
+                    setPhoneMsg({
+                        ...phoneMsg,
+                        phone2: null,
+                    });
+                }
+                if (value.length > 4) {
+                    setPhoneMsg({
+                        ...phoneMsg,
+                        phone2: "휴대전화 번호의 가운데 자리는 최대 4자리까지 입력 가능합니다.",
+                    });
+                }
+            }
+            if (e.target.name === "phone3") {
+                if (value.length < 4) {
+                    setPhoneMsg({
+                        ...phoneMsg,
+                        phone3: "휴대전화 번호의 마지막 자리는 4자리로 입력 가능합니다.",
+                    });
+                }
+                if (value.length === 4) {
+                    setPhoneMsg({
+                        ...phoneMsg,
+                        phone3: null,
+                    });
+                }
+                if (value.length > 4) {
+                    setPhoneMsg({
+                        ...phoneMsg,
+                        phone3: "휴대전화 번호의 마지막 자리는 최대 4자리까지 입력 가능합니다.",
+                    });
+                    return;
+                }
+            }
+            setInputValue({
+                ...inputValue,
+                [e.target.name]: e.target.value,
+            });
+        },
+        [inputValue]
+    );
 
     const handlePaymentChange = (e) => {
         setSelectedPayment(e.target.value);
     };
 
-    const handleSelectChange = (e) => {
-        setSelectedValue({
-            [e.target.name]: e.target.value,
-        });
-    };
+    const handleSelectChange = useCallback(
+        (e) => {
+            setSelectedValue({
+                [e.target.name]: e.target.value,
+            });
+
+            if (e.target.name === "email") {
+                directInput.current.style.display = "none";
+                if (e.target.value === "직접입력") {
+                    directInput.current.style.display = "block";
+                }
+            }
+        },
+        [selectedValue]
+    );
 
     const handleCheck = (e) => {
         const { name, checked } = e.target;
@@ -124,8 +206,8 @@ function Order() {
 
     const checkValidOrder = async (e) => {
         e.preventDefault();
-        if (submitting) return; // 중복 요청 방지
-        setSubmitting(true); // 로딩 상태 활성화
+        if (submitting) return;
+        setSubmitting(true);
 
         for (const key in inputValue) {
             if (!inputValue[key]) {
@@ -138,7 +220,18 @@ function Order() {
                         alert("기본주소 항목은 필수 입력값입니다.");
                         setSubmitting(false);
                         return;
-                    // (다른 필드에 대한 체크 생략)
+                    case "phone1":
+                        alert("휴대전화 항목은 필수 입력값입니다.");
+                        setSubmitting(false);
+                        return;
+                    case "phone2":
+                        alert("휴대전화 항목은 필수 입력값입니다.");
+                        setSubmitting(false);
+                        return;
+                    case "phone3":
+                        alert("휴대전화 항목은 필수 입력값입니다.");
+                        setSubmitting(false);
+                        return;
                     default:
                         break;
                 }
@@ -229,6 +322,40 @@ function Order() {
         }
     };
 
+    const directInput = useRef();
+
+    const scriptUrl =
+        "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    const open = useDaumPostcodePopup(scriptUrl);
+
+    const [fullAddress, setFullAddress] = useState("");
+    const [zoneCode, setZoneCode] = useState("");
+
+    const handleComplete = (data) => {
+        let zoneCode = data.zonecode;
+        let fullAddress = data.address;
+        let extraAddress = "";
+
+        if (data.addressType === "R") {
+            if (data.bname !== "") {
+                extraAddress += data.bname;
+            }
+            if (data.buildingName !== "") {
+                extraAddress +=
+                    extraAddress !== ""
+                        ? `, ${data.buildingName}`
+                        : data.buildingName;
+            }
+            fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
+        }
+        setZoneCode(zoneCode);
+        setFullAddress(fullAddress); // e.g. '서울 성동구 왕십리로2길 20 (성수동1가)'
+    };
+
+    const handleClick = () => {
+        open({ onComplete: handleComplete });
+    };
+
     return (
         <div className="order">
             <div className="order__inner">
@@ -317,9 +444,22 @@ function Order() {
                                                 <ul>
                                                     <li>
                                                         <div className="zip-code">
-                                                            <input type="text" />
-                                                            <button type="button">
-                                                                주소검색
+                                                            <input
+                                                                type="text"
+                                                                name="zoneCode"
+                                                                readOnly={true}
+                                                                value={zoneCode}
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-square--black"
+                                                                onClick={
+                                                                    handleClick
+                                                                }
+                                                            >
+                                                                <span className="btn btn-square__text">
+                                                                    주소검색
+                                                                </span>
                                                             </button>
                                                         </div>
                                                     </li>
@@ -328,12 +468,8 @@ function Order() {
                                                             type="text"
                                                             placeholder="기본주소"
                                                             name="defaultAddress"
-                                                            value={
-                                                                inputValue.defaultAddress
-                                                            }
-                                                            onChange={
-                                                                handleInputChange
-                                                            }
+                                                            value={fullAddress}
+                                                            readOnly={true}
                                                         />
                                                     </li>
                                                     <li>
@@ -352,32 +488,55 @@ function Order() {
                                                 </ul>
                                             </div>
                                         </div>
-                                        <div className="form__row">
+                                        <div className="form__row form__row--vertical">
                                             <div className="form__tit">
                                                 휴대전화
                                                 <span className="star">*</span>
                                             </div>
-                                            <div className="form__content form__content--cols">
-                                                <input
-                                                    type="number"
-                                                    name="phone1"
-                                                    value={inputValue.phone1}
-                                                    onChange={handleInputChange}
-                                                />
-                                                -
-                                                <input
-                                                    type="number"
-                                                    name="phone2"
-                                                    value={inputValue.phone2}
-                                                    onChange={handleInputChange}
-                                                />
-                                                -
-                                                <input
-                                                    type="number"
-                                                    name="phone3"
-                                                    value={inputValue.phone3}
-                                                    onChange={handleInputChange}
-                                                />
+                                            <div className="form__content ">
+                                                <div className="form__phone">
+                                                    <input
+                                                        type="number"
+                                                        name="phone1"
+                                                        value={
+                                                            inputValue.phone1
+                                                        }
+                                                        onChange={
+                                                            handleInputChange
+                                                        }
+                                                    />
+                                                    -
+                                                    <input
+                                                        type="number"
+                                                        name="phone2"
+                                                        value={
+                                                            inputValue.phone2
+                                                        }
+                                                        onChange={
+                                                            handleInputChange
+                                                        }
+                                                    />
+                                                    -
+                                                    <input
+                                                        type="number"
+                                                        name="phone3"
+                                                        value={
+                                                            inputValue.phone3
+                                                        }
+                                                        onChange={
+                                                            handleInputChange
+                                                        }
+                                                    />
+                                                </div>
+                                                <p className="red-text">
+                                                    {phoneMsg.phone1}
+                                                </p>
+                                                <p className="red-text">
+                                                    {phoneMsg.phone2}
+                                                </p>
+                                                <p className="red-text">
+                                                    {phoneMsg.phone3}
+                                                </p>
                                             </div>
                                         </div>
                                         <div className="form__row">
@@ -392,6 +551,7 @@ function Order() {
                                                             type="text"
                                                             placeholder="직접입력"
                                                             name="emailId"
+                                                            ref={directInput}
                                                             value={
                                                                 inputValue.emailId
                                                             }
@@ -411,14 +571,17 @@ function Order() {
                                                             <option value="none">
                                                                 -이메일 선택-
                                                             </option>
-                                                            <option value="@naver.com">
-                                                                @naver.com
+                                                            <option value="직접입력">
+                                                                직접입력
                                                             </option>
-                                                            <option value="@daum.net">
-                                                                @daum.net
+                                                            <option value="naver.com">
+                                                                naver.com
                                                             </option>
-                                                            <option value="@nate.com">
-                                                                @nate.com
+                                                            <option value="daum.net">
+                                                                daum.net
+                                                            </option>
+                                                            <option value="nate.com">
+                                                                nate.com
                                                             </option>
                                                         </select>
                                                     </div>
