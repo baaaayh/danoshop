@@ -24,7 +24,6 @@ import FindPass from "./pages/member/FindPass";
 import MyPage from "./pages/mypage/MyPage";
 import "./styles/index.scss";
 import SideOrder from "./components/layout/SideOrder";
-
 export const SidePanelContext = createContext(null);
 
 function App() {
@@ -32,6 +31,11 @@ function App() {
     const loggedIn = useSelector((state) => state.user.state);
     const token = useSelector((state) => state.user.token);
     const location = useLocation();
+    const { pathname } = location;
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
 
     const sidePanel = useRef();
 

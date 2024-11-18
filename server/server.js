@@ -159,16 +159,14 @@ app.post("/api/removeCartOption", async (req, res) => {
             return res.status(404).send("User not found");
         }
 
-        // 장바구니에서 해당 optionKey 삭제
         user.cart = user.cart
             .map((item) => {
                 const updatedOptions = item.options.filter(
                     (option) => option.key !== optionKey
                 );
 
-                // 옵션이 없으면 아이템을 삭제
                 if (updatedOptions.length === 0) {
-                    return null; // null 반환
+                    return null;
                 }
 
                 return {
@@ -176,10 +174,11 @@ app.post("/api/removeCartOption", async (req, res) => {
                     options: updatedOptions,
                 };
             })
-            .filter((item) => item !== null); // null인 아이템 제거
+            .filter((item) => item !== null);
 
-        user.markModified("cart");
-        await user.save(); // 변경사항 저장
+        await user.markModified("cart");
+        await user.save({ validateBeforeSave: false });
+        await user.save();
 
         res.json({ success: true, msg: "Item removed successfully" });
     } catch (error) {
@@ -533,16 +532,30 @@ app.post("/api/makeOrderHistory", async (req, res) => {
 
 app.post("/api/getOrderHistory", async (req, res) => {
     try {
-        const { userId, orderId } = req.body;
+        const { userId, orderId, page, itemsPerPage } = req.body;
+        const skip = page * itemsPerPage;
+        let totalItem;
+        let pagingButtons;
+        let paginatedOrderHistoryView;
         let user = await User.findOne({ userId });
 
-        const orderObj = await user.orderHistory.filter(
-            (order) => order.orderId === orderId
-        );
+        let orderObj;
+        if (orderId) {
+            orderObj = user.orderHistory.filter(
+                (order) => order.orderId === orderId
+            );
+            pagingButtons = false;
+        } else {
+            orderObj = user.orderHistory;
+            totalItem = orderObj.length;
+            pagingButtons = Math.ceil(totalItem / itemsPerPage);
+            orderObj = orderObj.reverse().slice(skip, skip + itemsPerPage);
+        }
 
         res.json({
             success: true,
             orderObj,
+            pagingButtons: pagingButtons,
         });
     } catch (error) {
         console.log(error);

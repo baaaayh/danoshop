@@ -155,7 +155,7 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
 
                     <div className={styles["item-row__button"]}>
                         <ul>
-                            <li>
+                            {/* <li>
                                 <button
                                     type="button"
                                     className="btn btn-square btn-square--white"
@@ -183,7 +183,7 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
                                         장바구니
                                     </span>
                                 </button>
-                            </li>
+                            </li> */}
                             <li>
                                 <button
                                     type="button"

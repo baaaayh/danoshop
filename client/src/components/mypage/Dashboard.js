@@ -1,11 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import OrderHistoryList from "../layout/OrderHistoryList";
+import Pagination from "../layout/Pagination";
+import axios from "axios";
 
 function Dashboard() {
     const location = useLocation();
-    const params = useParams();
-
+    const userInfo = useSelector((state) => state.user);
+    const [orderObj, setOrderObj] = useState();
     const title = location.state.title;
+    const [pagingButtons, setPagingButtons] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 5;
+
+    const getOrderHistory = async () => {
+        const response = await axios.post(
+            "http://localhost:4000/api/getOrderHistory",
+            {
+                userId: userInfo.userId,
+                page: currentPage,
+                itemsPerPage,
+            }
+        );
+        setOrderObj(response.data.orderObj);
+        setPagingButtons(response.data.pagingButtons);
+    };
+
+    useEffect(() => {
+        getOrderHistory();
+    }, [currentPage]);
 
     return (
         <div>
@@ -32,7 +56,7 @@ function Dashboard() {
                                 <span>배송중</span>
                             </li>
                             <li>
-                                <b>0</b>
+                                <b>{orderObj && orderObj.length + 1}</b>
                                 <span>배송완료</span>
                             </li>
                         </ul>
@@ -60,12 +84,14 @@ function Dashboard() {
                     <h3>주문내역 조회</h3>
                 </div>
                 <div className="mypage-box__contents">
-                    <p className="mypage-box__noitem">
-                        <img src="../images/icons/icon_no_item.svg" alt="" />
-                        주문 내역이 없습니다.
-                    </p>
+                    {orderObj && <OrderHistoryList orderObj={orderObj} />}
                 </div>
             </div>
+            <Pagination
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                pagingButtons={pagingButtons}
+            />
         </div>
     );
 }

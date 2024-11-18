@@ -1685,3 +1685,186 @@ table {
         }
     }
 }
+
+.order-history {
+    &__list {
+        > li {
+            border-bottom: 1px solid #ddd;
+        }
+    }
+    &__id {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 15px;
+        background-color: #f6f6f6;
+        span {
+            display: inline-block;
+            font-size: 13px;
+            line-height: 20px;
+            strong {
+                display: inline-block;
+            }
+        }
+        a {
+            position: relative;
+            display: inline-block;
+            font-size: 13px;
+            line-height: 20px;
+            padding-right: 15px;
+            &::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                right: 5px;
+                display: inline-block;
+                width: 8px;
+                height: 8px;
+                margin-top: -1px;
+                border: 1px solid #000;
+                border-left: none;
+                border-bottom: none;
+                transform: rotate(45deg) translateY(-50%);
+            }
+        }
+    }
+    &__desc {
+        padding: 25px 0;
+        display: flex;
+        column-gap: 20px;
+    }
+    &__figure {
+        flex-shrink: 0;
+        flex-basis: 140px;
+        img {
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+    &__info {
+        flex-basis: 100%;
+        font-size: 13px;
+        strong {
+            display: block;
+            font-weight: 500;
+        }
+        p {
+            margin-top: 3px;
+        }
+    }
+    &__bottom {
+        padding: 20px 0;
+        border-top: 1px solid #e5e5e5;
+    }
+    &__result {
+        display: flex;
+        justify-content: space-between;
+    }
+    &__button {
+        ul {
+            display: flex;
+            button {
+                padding: 0 20px;
+                span {
+                    line-height: 30px;
+                    font-size: 12px;
+                    font-weight: 300;
+                }
+            }
+        }
+    }
+    &__total {
+        margin-top: 20px;
+        font-size: 13px;
+        text-align: right;
+    }
+    &__foot {
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-top: 1px solid #e5e5e5;
+        ul {
+            li {
+                font-size: 13px;
+                line-height: 20px;
+                & + li {
+                    margin-top: 10px;
+                }
+            }
+        }
+    }
+}
+
+.order-detail {
+    &__box {
+        > button {
+            position: relative;
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding-right: 30px;
+            cursor: pointer;
+            strong {
+                display: block;
+                padding: 20px 0;
+                font-size: 13px;
+                color: #000;
+                span {
+                    display: inline-block;
+                    font-weight: 400;
+                    padding-left: 10px;
+                }
+            }
+
+            &::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                right: 4px;
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+                margin-top: 4px;
+                padding: 0;
+                border: 1px solid #000;
+                border-left: none;
+                border-bottom: none;
+                transform: translateY(-50%) rotate(-45deg);
+                transition: 0.23s ease;
+            }
+        }
+        & + & {
+            margin-top: 30px;
+        }
+
+        &.hidden {
+            .order-detail__toggle {
+                display: none;
+            }
+            > button {
+                &::after {
+                    margin-top: -2px;
+                    transform: translateY(-50%) rotate(135deg);
+                }
+            }
+        }
+    }
+    &__content {
+        border-top: 2px solid #1a1a1a;
+    }
+    &__toggle {
+        table {
+            table-layout: fixed;
+            width: 100%;
+            th {
+                padding: 16px 30px;
+                font-size: 13px;
+                line-height: 20px;
+            }
+            td {
+                padding: 16px 20px;
+                font-size: 13px;
+                line-height: 20px;
+            }
+        }
+    }
+}

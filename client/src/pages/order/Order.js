@@ -205,84 +205,84 @@ function Order() {
     }, []);
 
     const checkValidOrder = async (e) => {
-        e.preventDefault();
-        if (submitting) return;
-        setSubmitting(true);
+        try {
+            e.preventDefault(); // 이벤트 전파 차단
+            if (submitting) return; // 중복 호출 방지
+            setSubmitting(true); // 제출 상태 설정
 
-        for (const key in inputValue) {
-            if (!inputValue[key]) {
-                switch (key) {
-                    case "addressee":
-                        alert("수취자 성명 항목은 필수 입력값입니다.");
-                        setSubmitting(false);
-                        return;
-                    case "defaultAddress":
-                        alert("기본주소 항목은 필수 입력값입니다.");
-                        setSubmitting(false);
-                        return;
-                    case "phone1":
-                        alert("휴대전화 항목은 필수 입력값입니다.");
-                        setSubmitting(false);
-                        return;
-                    case "phone2":
-                        alert("휴대전화 항목은 필수 입력값입니다.");
-                        setSubmitting(false);
-                        return;
-                    case "phone3":
-                        alert("휴대전화 항목은 필수 입력값입니다.");
-                        setSubmitting(false);
-                        return;
-                    default:
-                        break;
+            // 유효성 검사
+            for (const key in inputValue) {
+                if (!inputValue[key]) {
+                    let alertMsg = "";
+                    switch (key) {
+                        case "addressee":
+                            alertMsg = "수취자 성명 항목은 필수 입력값입니다.";
+                            break;
+                        case "defaultAddress":
+                            alertMsg = "기본주소 항목은 필수 입력값입니다.";
+                            break;
+                        case "phone1":
+                        case "phone2":
+                        case "phone3":
+                            alertMsg = "휴대전화 항목은 필수 입력값입니다.";
+                            break;
+                        default:
+                            break;
+                    }
+                    if (alertMsg) {
+                        alert(alertMsg);
+                        return; // 유효성 검사 실패 시 종료
+                    }
                 }
             }
-        }
 
-        if (inputValue.nonMemberPW !== inputValue.confirmNonMemberPW) {
-            alert(
-                "비회원 주문조회 비밀번호와 비밀번호 확인이 일치하지 않습니다."
-            );
-            setSubmitting(false);
-            return;
-        }
+            if (inputValue.nonMemberPW !== inputValue.confirmNonMemberPW) {
+                alert(
+                    "비회원 주문조회 비밀번호와 비밀번호 확인이 일치하지 않습니다."
+                );
+                return;
+            }
 
-        if (!selectedPayment) {
-            alert("결제수단을 선택하셔야 합니다.");
-            setSubmitting(false);
-            return;
-        }
+            if (!selectedPayment) {
+                alert("결제수단을 선택하셔야 합니다.");
+                return;
+            }
 
-        if (!checkboxValue.agreeAll || !checkboxValue.mallAgree) {
-            alert("약관에 모두 동의하셔야 합니다.");
-            setSubmitting(false);
-            return;
-        }
+            if (!checkboxValue.agreeAll || !checkboxValue.mallAgree) {
+                alert("약관에 모두 동의하셔야 합니다.");
+                return;
+            }
 
-        const orderItems = cartList.filter((item) =>
-            orderList.some((orderOption) =>
-                item.options.some(
-                    (cartOption) => orderOption.key === cartOption.key
+            // 주문 처리 로직
+            const orderItems = cartList.filter((item) =>
+                orderList.some((orderOption) =>
+                    item.options.some(
+                        (cartOption) => orderOption.key === cartOption.key
+                    )
                 )
-            )
-        );
+            );
 
-        const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-        const orderIdentify = String(
-            Math.floor(Math.random() * 10000000)
-        ).padStart(7, "0");
-        const orderId = today + "-" + orderIdentify;
+            const today = new Date()
+                .toISOString()
+                .slice(0, 10)
+                .replace(/-/g, "");
+            const orderIdentify = String(
+                Math.floor(Math.random() * 10000000)
+            ).padStart(7, "0");
+            const orderId = today + "-" + orderIdentify;
+            const orderDate = new Date().toISOString().slice(0, 10);
 
-        const orderObj = {
-            orderId,
-            userInfo: inputValue,
-            selectedPayment,
-            emailDomain: email,
-            deliveryMsg: msg,
-            items: orderItems,
-            totalPrice: totalPrice,
-        };
+            const orderObj = {
+                orderDate,
+                orderId,
+                userInfo: inputValue,
+                selectedPayment,
+                emailDomain: email,
+                deliveryMsg: msg,
+                items: orderItems,
+                totalPrice: totalPrice,
+            };
 
-        try {
             const response = await axios.post(
                 "http://localhost:4000/api/makeOrderHistory",
                 {
@@ -291,6 +291,7 @@ function Order() {
                 }
             );
 
+            // 성공 시 처리
             orderList.forEach((option) => {
                 dispatch(removeCartOption(option.key));
             });
@@ -318,7 +319,7 @@ function Order() {
         } catch (error) {
             console.error("Order failed:", error);
         } finally {
-            setSubmitting(false); // 요청 완료 후 로딩 상태 해제
+            setSubmitting(false); // 항상 상태 해제
         }
     };
 
@@ -327,9 +328,6 @@ function Order() {
     const scriptUrl =
         "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
     const open = useDaumPostcodePopup(scriptUrl);
-
-    const [fullAddress, setFullAddress] = useState("");
-    const [zoneCode, setZoneCode] = useState("");
 
     const handleComplete = (data) => {
         let zoneCode = data.zonecode;
@@ -348,8 +346,12 @@ function Order() {
             }
             fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
         }
-        setZoneCode(zoneCode);
-        setFullAddress(fullAddress); // e.g. '서울 성동구 왕십리로2길 20 (성수동1가)'
+
+        setInputValue({
+            ...inputValue,
+            zoneCode: zoneCode,
+            defaultAddress: fullAddress,
+        });
     };
 
     const handleClick = () => {
@@ -447,8 +449,13 @@ function Order() {
                                                             <input
                                                                 type="text"
                                                                 name="zoneCode"
+                                                                value={
+                                                                    inputValue.zoneCode
+                                                                }
+                                                                onChange={
+                                                                    handleInputChange
+                                                                }
                                                                 readOnly={true}
-                                                                value={zoneCode}
                                                             />
                                                             <button
                                                                 type="button"
@@ -468,7 +475,12 @@ function Order() {
                                                             type="text"
                                                             placeholder="기본주소"
                                                             name="defaultAddress"
-                                                            value={fullAddress}
+                                                            value={
+                                                                inputValue.defaultAddress
+                                                            }
+                                                            onChange={
+                                                                handleInputChange
+                                                            }
                                                             readOnly={true}
                                                         />
                                                     </li>
