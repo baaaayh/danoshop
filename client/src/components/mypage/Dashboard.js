@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useParams, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect, useCallback } from "react";
+import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import OrderHistoryList from "../layout/OrderHistoryList";
 import Pagination from "../layout/Pagination";
 import axios from "axios";
@@ -14,7 +14,7 @@ function Dashboard() {
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 5;
 
-    const getOrderHistory = async () => {
+    const getOrderHistory = useCallback(async () => {
         const response = await axios.post(
             "http://localhost:4000/api/getOrderHistory",
             {
@@ -25,11 +25,11 @@ function Dashboard() {
         );
         setOrderObj(response.data.orderObj);
         setPagingButtons(response.data.pagingButtons);
-    };
+    }, [userInfo.userId, currentPage, itemsPerPage]);
 
     useEffect(() => {
         getOrderHistory();
-    }, [currentPage]);
+    }, [getOrderHistory]);
 
     return (
         <div>

@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import MyPageBox from "./MyPageBox";
-import styles from "./RecentView.module.scss";
 import ItemDetail from "../layout/ItemDetail";
 import axios from "axios";
 import Pagination from "../layout/Pagination";
-import { sideOrderInfo } from "../../modules/sideOrder";
 
 function RecentView({ setSideOrderItem }) {
     const [pagingButtons, setPagingButtons] = useState(0);
@@ -16,7 +14,7 @@ function RecentView({ setSideOrderItem }) {
 
     const userInfo = useSelector((state) => state.user);
 
-    const fetchRecentView = async () => {
+    const fetchRecentView = useCallback(async () => {
         try {
             if (userInfo.token) {
                 const response = await axios.post(
@@ -33,11 +31,11 @@ function RecentView({ setSideOrderItem }) {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, [userInfo.token, userInfo.userId, currentPage, itemsPerPage]);
 
     useEffect(() => {
         fetchRecentView(currentPage);
-    }, [currentPage]);
+    }, [fetchRecentView, currentPage]);
 
     const handleCheckbox = useCallback((optionId, uniqueId) => {
         setCheckedOptions((prev) => ({

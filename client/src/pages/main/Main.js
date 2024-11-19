@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import SectionKV from "../../components/main/SectionKV";
 import MainContents from "../../components/main/MainContents";
 import SectionEvents from "../../components/main/SectionEvents";

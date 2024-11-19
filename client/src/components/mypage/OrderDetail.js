@@ -1,9 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { set } from "mongoose";
-import OrderHistoryList from "../layout/OrderHistoryList";
 
 function OrderDetail() {
     const toggleBoxes = useRef([]);
@@ -13,7 +11,7 @@ function OrderDetail() {
     const [orderObj, serOrderObj] = useState({});
     const [totalQuantity, setTotalQuantity] = useState(0);
 
-    const fetchOrder = async () => {
+    const fetchOrder = useCallback(async () => {
         try {
             if (userInfo.token) {
                 const response = await axios.post(
@@ -29,11 +27,11 @@ function OrderDetail() {
         } catch (error) {
             console.error(error);
         }
-    };
+    }, [userInfo.token, userInfo.userId, orderId]);
 
     useEffect(() => {
         fetchOrder();
-    }, []);
+    }, [fetchOrder]);
 
     useEffect(() => {
         toggleBoxes.current.forEach((button) => {

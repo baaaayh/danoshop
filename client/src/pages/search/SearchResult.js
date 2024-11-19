@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import SubContents from "../../components/layout/SubContents";
 import BreadCrumb from "../../components/layout/BreadCrumb";
@@ -19,7 +19,7 @@ function SearchResult() {
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 20;
 
-    const getSearchResults = async () => {
+    const getSearchResults = useCallback(async () => {
         try {
             const response = await axios.post(
                 "http://localhost:4000/api/searchItems",
@@ -34,13 +34,11 @@ function SearchResult() {
         } catch (error) {
             console.error("Error fetching product list:", error);
         }
-    };
+    }, [text, currentPage, itemsPerPage]);
 
     useEffect(() => {
         getSearchResults();
-    }, [text]);
-
-    console.log(pagingButtons);
+    }, [getSearchResults]);
 
     return (
         <SubContents>

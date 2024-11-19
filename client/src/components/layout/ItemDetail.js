@@ -1,10 +1,9 @@
 import React, { useContext, useState, useEffect } from "react";
 import { SidePanelContext } from "../../App";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import styles from "./ItemDetail.module.scss";
 import { addCartItem } from "../../modules/cartList";
-import axios from "axios";
 
 function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
     const sidePanel = useContext(SidePanelContext);
@@ -13,7 +12,7 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
     const navigate = useNavigate();
     const [itemKey, setItemKey] = useState("");
     const [selectedOption, setSelectedOption] = useState({});
-    const [selectedOptions, setSelectedOptions] = useState([]);
+    const [setSelectedOptions] = useState([]);
 
     useEffect(() => {
         if (itemValue?.wishOption?.value) {
@@ -55,10 +54,6 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
                 orderList: [selectedOption],
             },
         });
-    };
-
-    const addToCart = (itemId, optionKey) => {
-        addToState(itemId, optionKey);
     };
 
     const handleOptionSelect = (selectedOptionValue, key) => {

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import TabMenu from "./TabMenu";

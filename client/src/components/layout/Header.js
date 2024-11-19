@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addCartItem, clearCart } from "../../modules/cartList";
-import { showDim, hiddenDim, toggleDim } from "../../modules/dimToggle";
+import { showDim, hiddenDim } from "../../modules/dimToggle";
 
 import axios from "axios";
 
@@ -20,16 +20,7 @@ function Header({ loggedIn, removeToken }) {
     const localCart = useSelector((state) => state.cart.cartList);
     const [searchText, setSearchText] = useState("");
 
-    useEffect(() => {
-        const cartUpdated = localStorage.getItem("cartUpdated");
-        if (userInfo.token && !cartUpdated) {
-            fetchCartData().then(() => {
-                localStorage.setItem("cartUpdated", "true"); // 데이터가 가져와지면 localStorage에 저장
-            });
-        }
-    }, [userInfo.token]);
-
-    async function fetchCartData() {
+    const fetchCartData = useCallback(async () => {
         try {
             if (localStorage.getItem("cartUpdated")) {
                 return;
@@ -56,7 +47,16 @@ function Header({ loggedIn, removeToken }) {
                 "장바구니 데이터를 가져오는 데 실패했습니다. 서버에 문제가 있을 수 있습니다."
             );
         }
-    }
+    }, [userInfo.userId, localCart, dispatch]);
+
+    useEffect(() => {
+        const cartUpdated = localStorage.getItem("cartUpdated");
+        if (userInfo.token && !cartUpdated) {
+            fetchCartData().then(() => {
+                localStorage.setItem("cartUpdated", "true"); // 데이터가 가져와지면 localStorage에 저장
+            });
+        }
+    }, [fetchCartData, userInfo.token]);
 
     useEffect(() => {
         const total = itemsOptions.reduce((acc, options) => {
@@ -112,7 +112,7 @@ function Header({ loggedIn, removeToken }) {
                 dispatch(hiddenDim());
             });
         });
-    }, [menuList]);
+    }, [menuList, dispatch]);
 
     const searchForm = useRef();
     const openSearchForm = useRef();
@@ -127,7 +127,7 @@ function Header({ loggedIn, removeToken }) {
             dispatch(hiddenDim());
             searchForm.current.classList.remove("search-form--active");
         });
-    }, []);
+    }, [dispatch]);
 
     const onSubmit = (e) => {
         e.preventDefault();

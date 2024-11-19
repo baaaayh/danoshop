@@ -1,11 +1,7 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { showDim, hiddenDim, toggleDim } from "../../modules/dimToggle";
 
 function SearchInput() {
-    const searchForm = useRef();
-    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [searchText, setSearchText] = useState("");
 

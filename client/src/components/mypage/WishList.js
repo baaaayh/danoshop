@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import MyPageBox from "./MyPageBox";
 import styles from "./WishList.module.scss";
 import ItemDetail from "../layout/ItemDetail";
@@ -15,28 +15,31 @@ function WishList() {
 
     const userInfo = useSelector((state) => state.user);
 
-    const fetchWishList = async (page) => {
-        try {
-            if (userInfo.token) {
-                const response = await axios.post(
-                    "http://localhost:4000/api/getWishList",
-                    {
-                        userId: userInfo.userId,
-                        page: currentPage,
-                        itemsPerPage: itemsPerPage,
-                    }
-                );
-                setPagingButtons(response.data.pagingButtons);
-                setWishList(response.data.wishList);
+    const fetchWishList = useCallback(
+        async (page) => {
+            try {
+                if (userInfo.token) {
+                    const response = await axios.post(
+                        "http://localhost:4000/api/getWishList",
+                        {
+                            userId: userInfo.userId,
+                            page: currentPage,
+                            itemsPerPage: itemsPerPage,
+                        }
+                    );
+                    setPagingButtons(response.data.pagingButtons);
+                    setWishList(response.data.wishList);
+                }
+            } catch (error) {
+                console.error(error);
             }
-        } catch (error) {
-            console.error(error);
-        }
-    };
+        },
+        [userInfo.token, userInfo.userId, currentPage, itemsPerPage]
+    );
 
     useEffect(() => {
-        fetchWishList(currentPage);
-    }, [currentPage]);
+        fetchWishList();
+    }, [fetchWishList]);
 
     const handleCheckbox = useCallback((optionId, uniqueId) => {
         setCheckedOptions((prev) => ({

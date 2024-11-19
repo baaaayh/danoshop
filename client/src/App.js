@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useRef } from "react";
+import { createContext, useEffect, useRef, useCallback } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -52,19 +52,19 @@ function App() {
 
     useEffect(() => {
         !isLoading && dispatch(addMenuItem(data));
-    }, [data, error, isLoading]);
+    }, [data, error, isLoading, dispatch]);
 
-    useEffect(() => {
-        if (CheckValidToken(token)) {
-            dispatch(removeToken());
-        }
-    }, [token]);
-
-    function CheckValidToken(token) {
+    const checkValidToken = useCallback((token) => {
         if (!token) return true;
         const decoded = jwtDecode(token);
         return decoded.exp * 1000 < Date.now();
-    }
+    }, []);
+
+    useEffect(() => {
+        if (checkValidToken(token)) {
+            dispatch(removeToken());
+        }
+    }, [checkValidToken, dispatch, token]);
 
     const isOrderPage = location.pathname === "/order/order";
     const isResultPage = location.pathname === "/order/orderResult";

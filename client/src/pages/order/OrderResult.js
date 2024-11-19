@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import axios from "axios";
 
 function OrderResult() {
@@ -21,26 +21,27 @@ function OrderResult() {
             );
         }, 0);
         setOptionTotalQuantity(totalQuantity);
-    }, []);
+    }, [cartList]);
 
     const orderId = location.state.orderId;
 
-    useEffect(() => {
-        const fetchOrderData = async () => {
-            const response = await axios.post(
-                "http://localhost:4000/api/getOrderHistory",
-                {
-                    userId: userInfo.userId,
-                    orderId,
-                }
-            );
-
-            if (response.data.success) {
-                setOrderInfo(...response.data.orderObj);
+    const fetchOrderData = useCallback(async () => {
+        const response = await axios.post(
+            "http://localhost:4000/api/getOrderHistory",
+            {
+                userId: userInfo.userId,
+                orderId,
             }
-        };
+        );
+
+        if (response.data.success) {
+            setOrderInfo(...response.data.orderObj);
+        }
+    }, [userInfo.userId, orderId]);
+
+    useEffect(() => {
         fetchOrderData();
-    }, []);
+    }, [fetchOrderData]);
 
     return (
         <div className="order order--result">

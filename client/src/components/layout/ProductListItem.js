@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styles from "./ProductListItem.module.scss";
 
 function ProductListItem({ list, title, prevPage }) {

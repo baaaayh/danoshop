@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import MyPageBox from "./MyPageBox";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import OrderHistoryList from "../layout/OrderHistoryList";
 import Pagination from "../layout/Pagination";
+
 function OrderHistory() {
     const userInfo = useSelector((state) => state.user);
     const [orderObj, setOrderObj] = useState();
@@ -11,7 +12,7 @@ function OrderHistory() {
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 5;
 
-    const getOrderHistory = async () => {
+    const getOrderHistory = useCallback(async () => {
         const response = await axios.post(
             "http://localhost:4000/api/getOrderHistory",
             {
@@ -22,11 +23,11 @@ function OrderHistory() {
         );
         setOrderObj(response.data.orderObj);
         setPagingButtons(response.data.pagingButtons);
-    };
+    }, [userInfo.userId, currentPage, itemsPerPage]);
 
     useEffect(() => {
         getOrderHistory();
-    }, [currentPage]);
+    }, [getOrderHistory]);
 
     return (
         <>
