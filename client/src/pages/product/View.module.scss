@@ -205,3 +205,42 @@
         }
     }
 }
+
+@media screen and (max-width: 1024px) {
+    .detail-view {
+        &__top {
+            flex-direction: column;
+            row-gap: 25px;
+        }
+        &__selectbox {
+            flex-direction: column;
+            .detail-view__tit {
+                flex-basis: auto;
+            }
+        }
+        &__total {
+            .detail-view__row {
+                &:last-child {
+                    border-top: 1px solid #e5e5e5;
+                    border-bottom: 1px solid #e5e5e5;
+                    margin-top: 15px;
+                }
+            }
+        }
+        &__button {
+            flex-direction: column;
+            row-gap: 10px;
+            > div {
+            }
+        }
+        &__contents {
+            margin-top: 50px;
+        }
+        &__inner {
+            img {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+    }
+}

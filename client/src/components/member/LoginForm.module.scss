@@ -78,3 +78,9 @@
         }
     }
 }
+
+@media screen and (max-width: 1024px) {
+    .login {
+        max-width: none;
+    }
+}

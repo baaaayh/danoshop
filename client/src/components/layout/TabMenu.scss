@@ -1,5 +1,6 @@
 .tab-menu {
     margin-bottom: 25px;
+    overflow-x: auto;
     ul {
         display: flex;
         justify-content: center;
@@ -14,6 +15,7 @@
                 color: #8a8a8a;
                 background-color: #f4f4f4;
                 border: 1px solid #f4f4f4;
+                white-space: nowrap;
                 &.active {
                     border: 1px solid #1a1a1a;
                     background-color: #fff;
