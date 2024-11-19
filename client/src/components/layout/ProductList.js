@@ -68,7 +68,7 @@ function ProductList({ type, path, title, productList }) {
                     <p>
                         상품 검색 결과 <strong>{list.length}</strong>
                     </p>
-                ) : (
+                ) : location.pathname === "/" ? null : (
                     <p>
                         총<strong>{list.length}</strong> 개의 상품이 있습니다.
                     </p>

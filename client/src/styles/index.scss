@@ -2026,12 +2026,12 @@ table {
     > ul {
         display: flex;
         > li {
+            padding: 0 25px;
             > a {
                 position: relative;
                 display: inline-flex;
                 align-items: center;
                 height: 80px;
-                padding: 0 25px;
                 font-size: 16px;
                 color: #1a1a1a;
                 &::after {
