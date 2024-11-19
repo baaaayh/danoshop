@@ -1,5 +1,5 @@
 .breadcrumb {
-    max-width: 1680px;
+    max-width: 1780px;
     width: 100%;
     margin: 0 auto;
     padding: 20px 0;
@@ -33,5 +33,11 @@
                 }
             }
         }
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .breadcrumb {
+        padding: 10px 0;
     }
 }

@@ -210,6 +210,9 @@ function Header({ loggedIn, removeToken }) {
                 </div>
                 <div className="header__menu">
                     <div className="header__top">
+                        <button type="button" className="btn btn-mobmenu">
+                            <span>모바일 메뉴</span>
+                        </button>
                         <h1 className="header__logo">
                             <Link to="/">
                                 <img src="../images/common/logo.png" alt="" />

@@ -4,8 +4,8 @@ import styles from "./Pagination.module.scss";
 function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
     const [activePage, setActivePage] = useState(0);
     const [currentPageGroup, setCurrentPageGroup] = useState(0);
-
     const itemsPerPageGroup = 10;
+    const totalGroups = Math.ceil(pagingButtons / itemsPerPageGroup);
     const startNumber = currentPageGroup * itemsPerPageGroup;
     const endNumber = Math.min(startNumber + itemsPerPageGroup, pagingButtons);
 
@@ -16,7 +16,7 @@ function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
 
             if (index >= endNumber) {
                 setCurrentPageGroup((prevGroup) => prevGroup + 1);
-            } else if (index < startNumber) {
+            } else if (index <= startNumber) {
                 setCurrentPageGroup((prevGroup) => Math.max(prevGroup - 1, 0));
             }
         },
@@ -57,7 +57,10 @@ function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
                     <button
                         type="button"
                         className={`${styles.pagination__button} ${styles.pagination__first} ${styles.pagination__nav}`}
-                        onClick={() => handlePageClick(0)}
+                        onClick={() => {
+                            setCurrentPage(0);
+                            setCurrentPageGroup(0);
+                        }}
                     >
                         FIRST
                     </button>
@@ -66,9 +69,16 @@ function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
                     <button
                         type="button"
                         className={`${styles.pagination__button} ${styles.pagination__prev} ${styles.pagination__nav}`}
-                        onClick={() =>
-                            handlePageClick(Math.max(activePage - 1, 0))
-                        }
+                        onClick={() => {
+                            if (currentPageGroup > 0) {
+                                setCurrentPageGroup(
+                                    (prevGroup) => prevGroup - 1
+                                );
+                                setCurrentPage(
+                                    currentPageGroup * itemsPerPageGroup - 1
+                                );
+                            }
+                        }}
                     >
                         PREV
                     </button>
@@ -80,11 +90,16 @@ function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
                     <button
                         type="button"
                         className={`${styles.pagination__button} ${styles.pagination__next} ${styles.pagination__nav}`}
-                        onClick={() =>
-                            handlePageClick(
-                                Math.min(activePage + 1, pagingButtons - 1)
-                            )
-                        }
+                        onClick={() => {
+                            if (currentPageGroup < totalGroups - 1) {
+                                setCurrentPageGroup(
+                                    (prevGroup) => prevGroup + 1
+                                );
+                                setCurrentPage(
+                                    (currentPageGroup + 1) * itemsPerPageGroup
+                                );
+                            }
+                        }}
                     >
                         NEXT
                     </button>
@@ -93,7 +108,13 @@ function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
                     <button
                         type="button"
                         className={`${styles.pagination__button} ${styles.pagination__last} ${styles.pagination__nav}`}
-                        onClick={() => handlePageClick(pagingButtons - 1)}
+                        onClick={() => {
+                            const lastPage = pagingButtons - 1;
+                            setCurrentPage(lastPage);
+                            setCurrentPageGroup(
+                                Math.floor(lastPage / itemsPerPageGroup)
+                            );
+                        }}
                     >
                         LAST
                     </button>

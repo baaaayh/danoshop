@@ -5,3 +5,11 @@
     color: #1a1a1a;
     text-align: center;
 }
+
+@media screen and (max-width: 1024px) {
+    .title {
+        padding: 25px 0;
+        font-size: 22px;
+        line-height: 30px;
+    }
+}

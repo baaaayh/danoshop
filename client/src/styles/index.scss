@@ -154,6 +154,12 @@ label {
     &:last-child {
         padding-bottom: 0;
     }
+    &__title {
+        margin-bottom: 25px;
+        font-size: 22px;
+        font-weight: 600;
+        color: #222;
+    }
     &--product {
         .product {
             ul {
@@ -1980,36 +1986,6 @@ table {
         column-gap: 30px;
         li {
             font-size: 0;
-            a {
-                display: inline-block;
-                width: 24px;
-                height: 24px;
-                &.btn-user {
-                    background: url(../../public/images/icons/icon_user.svg)
-                        center / auto no-repeat;
-                }
-                &.btn-cart {
-                    position: relative;
-                    background: url(../../public/images/icons/icon_bag.svg)
-                        center / auto no-repeat;
-                    span {
-                        position: absolute;
-                        bottom: -6px;
-                        right: -6px;
-                        display: inline-block;
-                        width: 18px;
-                        height: 18px;
-                        font-size: 11px;
-                        font-weight: 700;
-                        line-height: 17px;
-                        color: #fff;
-                        background-color: #000;
-                        border-radius: 50%;
-                        overflow: hidden;
-                        text-align: center;
-                    }
-                }
-            }
         }
     }
 }
@@ -2023,6 +1999,7 @@ table {
     cursor: pointer;
 }
 .gnb {
+    padding: 0 40px;
     > ul {
         display: flex;
         > li {
@@ -2047,14 +2024,10 @@ table {
                 }
             }
             &:first-child {
-                > a {
-                    padding-left: 0;
-                }
+                padding-left: 0;
             }
             &:last-child {
-                > a {
-                    padding-right: 0;
-                }
+                padding-right: 0;
             }
             .depth2 {
                 display: none;
@@ -2067,10 +2040,11 @@ table {
                 background-color: #fff;
                 ul {
                     display: flex;
-                    max-width: 1680px;
+                    max-width: 1780px;
                     width: 100%;
                     margin: 0 auto;
-                    column-gap: 90px;
+                    padding: 0 50px;
+                    column-gap: 50px;
                     li {
                         font-size: 0;
                         a {
@@ -2160,6 +2134,110 @@ table {
             background-color: transparent;
             border: none;
             border-bottom: 1px solid #000;
+        }
+    }
+}
+
+.floating-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 0;
+    background-color: #fff;
+    &__inner {
+        padding: 0 30px;
+        ul {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            li {
+                font-size: 0;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .header {
+        &__nav {
+            display: none;
+        }
+        &__inner {
+            padding: 0;
+        }
+        &__menu {
+            padding-top: 0;
+        }
+        &__logo {
+            img {
+                height: 30px;
+            }
+        }
+        &__top {
+            position: relative;
+            margin-bottom: 10px;
+            padding: 15px 170px;
+            justify-content: center;
+        }
+        &__bottom {
+            border-top: 1px solid #e8e8e8;
+            max-width: 1124px;
+            width: 100%;
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+    }
+    .gnb {
+        > ul {
+            > li {
+                padding: 0 15px;
+                a {
+                    font-size: 14px;
+                    line-height: 45px;
+                    height: 45px;
+                    white-space: nowrap;
+                }
+                .depth2 {
+                    display: none !important;
+                }
+            }
+        }
+    }
+    .dim {
+        display: none !important;
+    }
+    .user {
+        position: absolute;
+        top: 50%;
+        right: 40px;
+        margin-top: 4px;
+        transform: translateY(-50%);
+        ul {
+            column-gap: 15px;
+        }
+    }
+    .wrap {
+        padding-top: 116px;
+    }
+    .section {
+        padding: 30px 0;
+        &--kv {
+            padding: 0;
+        }
+        &--product {
+            .product {
+                ul {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+        }
+    }
+    .product {
+        ul {
+            grid-template-columns: repeat(3, 1fr);
+            column-gap: 15px;
+            row-gap: 40px;
         }
     }
 }

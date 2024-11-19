@@ -97,7 +97,7 @@ function LoginForm() {
                     </div>
                 ) : null}
             </div>
-            <div
+            {/* <div
                 className={`${styles["login__row"]} ${styles["login__row--find"]}`}
             >
                 <ul>
@@ -108,7 +108,7 @@ function LoginForm() {
                         <Link to="">비밀번호 찾기</Link>
                     </li>
                 </ul>
-            </div>
+            </div> */}
             <div
                 className={`${styles["login__row"]} ${styles["login__row--join"]}`}
             >

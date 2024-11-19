@@ -32,3 +32,28 @@
         }
     }
 }
+
+@media screen and (max-width: 1024px) {
+    .events {
+        ul {
+            display: block;
+            a {
+                img {
+                    max-width: 100%;
+                    width: 100%;
+                }
+            }
+        }
+        h3 {
+            margin-top: 20px;
+            font-size: 22px;
+        }
+        &__viewmore {
+            margin-top: 10px;
+            span {
+                font-size: 13px;
+                line-height: 20px;
+            }
+        }
+    }
+}

@@ -319,6 +319,7 @@ function OrderResult() {
                             <Link
                                 to="/mypage/orderHistory"
                                 className="btn btn-square btn-square--white"
+                                state={{ title: ["주문조회"] }}
                             >
                                 <span className="btn btn-square__text">
                                     주문확인하기
