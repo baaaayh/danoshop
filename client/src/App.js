@@ -24,6 +24,7 @@ import FindPass from "./pages/member/FindPass";
 import MyPage from "./pages/mypage/MyPage";
 import "./styles/index.scss";
 import SideOrder from "./components/layout/SideOrder";
+import Membership from "./pages/events/Membership";
 export const SidePanelContext = createContext(null);
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
     const token = useSelector((state) => state.user.token);
     const location = useLocation();
     const { pathname } = location;
+    const dimState = useSelector((state) => state.dim.dimVisible);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -78,58 +80,78 @@ function App() {
                     ) : isResultPage ? (
                         <OrderResult />
                     ) : (
-                        <div className="wrap">
-                            <Routes>
-                                <Route exact path="/" element={<Main />} />
-                                <Route path="/product" element={<Product />} />
-                                <Route
-                                    path="/product/:category"
-                                    element={<Product />}
-                                />
-                                <Route
-                                    path="/product/:category/:type"
-                                    element={<Product />}
-                                />
-                                <Route
-                                    path="/product/detail/:category/:id"
-                                    element={<View />}
-                                />
-                                <Route
-                                    path="/product/detail/:category/:type/:id"
-                                    element={<View />}
-                                />
-                                <Route path="/order/cart" element={<Cart />} />
-                                <Route
-                                    path="/member/agreement"
-                                    element={<Agreement />}
-                                />
-                                <Route path="/member/join" element={<Join />} />
-                                <Route
-                                    path="/member/result"
-                                    element={<JoinResult />}
-                                />
-                                <Route
-                                    path="/member/login"
-                                    element={<Login />}
-                                />
-                                <Route
-                                    path="/member/validation"
-                                    element={<Validation />}
-                                />
-                                <Route
-                                    path="/member/modify"
-                                    element={<Modify />}
-                                />
-                                <Route
-                                    path="/member/findPass"
-                                    element={<FindPass />}
-                                />
-                                <Route path="/mypage/*" element={<MyPage />} />
-                            </Routes>
-                        </div>
+                        <>
+                            <div
+                                className={`dim ${dimState ? "visible" : ""}`}
+                            ></div>
+                            <div className="wrap">
+                                <Routes>
+                                    <Route exact path="/" element={<Main />} />
+                                    <Route
+                                        path="/product"
+                                        element={<Product />}
+                                    />
+                                    <Route
+                                        path="/product/:category"
+                                        element={<Product />}
+                                    />
+                                    <Route
+                                        path="/product/:category/:type"
+                                        element={<Product />}
+                                    />
+                                    <Route
+                                        path="/events/membership"
+                                        element={<Membership />}
+                                    />
+                                    <Route
+                                        path="/product/detail/:category/:id"
+                                        element={<View />}
+                                    />
+                                    <Route
+                                        path="/product/detail/:category/:type/:id"
+                                        element={<View />}
+                                    />
+                                    <Route
+                                        path="/order/cart"
+                                        element={<Cart />}
+                                    />
+                                    <Route
+                                        path="/member/agreement"
+                                        element={<Agreement />}
+                                    />
+                                    <Route
+                                        path="/member/join"
+                                        element={<Join />}
+                                    />
+                                    <Route
+                                        path="/member/result"
+                                        element={<JoinResult />}
+                                    />
+                                    <Route
+                                        path="/member/login"
+                                        element={<Login />}
+                                    />
+                                    <Route
+                                        path="/member/validation"
+                                        element={<Validation />}
+                                    />
+                                    <Route
+                                        path="/member/modify"
+                                        element={<Modify />}
+                                    />
+                                    <Route
+                                        path="/member/findPass"
+                                        element={<FindPass />}
+                                    />
+                                    <Route
+                                        path="/mypage/*"
+                                        element={<MyPage />}
+                                    />
+                                </Routes>
+                            </div>
+                        </>
                     )}
                     {!isOrderPage && !isResultPage && <Footer />}
-                    <div className="dim"></div>
                 </div>
                 <SideOrder ref={sidePanel} />
             </SidePanelContext.Provider>

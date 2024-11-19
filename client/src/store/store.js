@@ -8,6 +8,7 @@ import cartReducer from "../modules/cartList";
 import userReducer from "../modules/userData";
 import orderList from "../modules/orderList";
 import sideOrderReducer from "../modules/sideOrder";
+import dimReducer from "../modules/dimToggle";
 
 const persistConfig = {
     cart: {
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
     user: persistReducer(persistConfig.user, userReducer),
     order: persistReducer(persistConfig.order, orderList),
     sideOrder: sideOrderReducer,
+    dim: dimReducer,
 });
 
 const store = configureStore({

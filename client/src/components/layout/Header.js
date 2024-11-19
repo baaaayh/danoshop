@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addCartItem, clearCart } from "../../modules/cartList";
+import { showDim, hiddenDim, toggleDim } from "../../modules/dimToggle";
+
 import axios from "axios";
 import styles from "./Header.module.scss";
 
@@ -98,6 +100,19 @@ function Header({ loggedIn, removeToken }) {
         localStorage.removeItem("cartUpdated");
         navigate("/");
     }
+
+    const hoverMenu = useRef([]);
+
+    useEffect(() => {
+        hoverMenu.current.forEach((menu) => {
+            menu.addEventListener("mouseenter", (e) => {
+                dispatch(showDim());
+            });
+            menu.addEventListener("mouseleave", (e) => {
+                dispatch(hiddenDim());
+            });
+        });
+    }, [menuList]);
 
     return (
         <header
@@ -220,7 +235,12 @@ function Header({ loggedIn, removeToken }) {
                             <ul>
                                 {menuList &&
                                     menuList.menu.map((item, index) => (
-                                        <li key={index}>
+                                        <li
+                                            key={index}
+                                            ref={(el) =>
+                                                (hoverMenu.current[index] = el)
+                                            }
+                                        >
                                             <Link
                                                 to={`/${item.pageType}/${item.category}`}
                                                 state={{
@@ -263,6 +283,26 @@ function Header({ loggedIn, removeToken }) {
                             </ul>
                         </nav>
                     </div>
+                </div>
+            </div>
+            <div className={styles["search-form"]}>
+                <div className={styles["search-form__inner"]}>
+                    <form action="">
+                        <div className={styles["search-form__box"]}>
+                            <div className={styles["search-form__input"]}>
+                                <input type="text" />
+                                <button
+                                    type="submit"
+                                    className={styles["btn-search"]}
+                                >
+                                    검색
+                                </button>
+                            </div>
+                            <button type="button" className="btn btn-close">
+                                <span>닫기</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </header>

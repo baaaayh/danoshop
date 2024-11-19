@@ -26,7 +26,7 @@ function Slogan() {
                         당신의 더 나은 삶을 위한 DANO의 제품을 만나보세요.
                         <br />
                         <br />
-                        <Link to="">회원가입</Link>
+                        <Link to="/member/agreement">회원가입</Link>
                     </p>
                 </div>
             </div>
