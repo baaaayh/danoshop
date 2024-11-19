@@ -1,30 +1,18 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import TabMenu from "./TabMenu";
 import ProudctListItem from "./ProductListItem";
 
-function ProductList({ type, path, title }) {
+function ProductList({ type, path, title, productList }) {
     const [params, setParams] = useState([]);
+    const location = useLocation();
     const [menuList, setMenuList] = useState({ menu: [] });
-    const [productList, setProductList] = useState([]);
     const menuListData = useSelector((state) => state.menu.menuList);
-
-    const getProductList = async () => {
-        try {
-            const response = await axios.get(
-                "http://localhost:4000/api/product"
-            );
-            setProductList(response.data);
-        } catch (error) {
-            console.error("Error fetching product list:", error);
-        }
-    };
-
-    useEffect(() => {
-        getProductList();
-    }, []);
+    const { category, type: paramType } = useParams();
+    const { pathname } = useLocation();
+    const [list, setList] = useState([]);
 
     useEffect(() => {
         setMenuList(menuListData[0]);
@@ -33,6 +21,32 @@ function ProductList({ type, path, title }) {
     useEffect(() => {
         setParams(path);
     }, [path]);
+
+    useEffect(() => {
+        if (productList.length === 0) return;
+
+        let filteredList = productList;
+
+        if (pathname === "/") {
+            filteredList = filteredList.filter(
+                (item) => item.type === type && item.mainExpose === "true"
+            );
+        } else if (pathname === "/search/searchResult") {
+            filteredList = productList;
+        } else if (category !== "all") {
+            if (paramType === undefined) {
+                filteredList = filteredList.filter(
+                    (item) => item.category === category
+                );
+            } else {
+                filteredList = filteredList.filter(
+                    (item) => item.type === paramType
+                );
+            }
+        }
+
+        setList(filteredList);
+    }, [productList, type, paramType, pathname, category]);
 
     return (
         <>
@@ -49,15 +63,43 @@ function ProductList({ type, path, title }) {
                         />
                     ) : null;
                 })}
+
             <div className="product">
-                <ul>
-                    <ProudctListItem
-                        productList={productList}
-                        type={type}
-                        title={title}
-                        prevPage={params}
-                    />
-                </ul>
+                {location.pathname === "/search/searchResult" ? (
+                    <p>
+                        상품 검색 결과 <strong>{list.length}</strong>
+                    </p>
+                ) : (
+                    <p>
+                        총<strong>{list.length}</strong> 개의 상품이 있습니다.
+                    </p>
+                )}
+
+                {productList.length > 0 ? (
+                    <ul>
+                        <ProudctListItem
+                            list={list}
+                            type={type}
+                            title={title}
+                            prevPage={params}
+                        />
+                    </ul>
+                ) : (
+                    <div className="no-item">
+                        <p>
+                            <img
+                                src="../images/icons/icon_no_item.svg"
+                                alt="검색 결과가 없습니다."
+                            />
+                            검색 결과가 없습니다.
+                        </p>
+                        <span>
+                            검색어/제외검색어의 입력이 정확한지 확인해 보세요.
+                            <br />두 단어 이상의 검색어인 경우, 띄어쓰기를
+                            확인해 보세요.
+                        </span>
+                    </div>
+                )}
             </div>
         </>
     );

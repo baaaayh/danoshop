@@ -18,6 +18,7 @@ function Header({ loggedIn, removeToken }) {
     );
     const userInfo = useSelector((state) => state.user);
     const localCart = useSelector((state) => state.cart.cartList);
+    const [searchText, setSearchText] = useState("");
 
     useEffect(() => {
         const cartUpdated = localStorage.getItem("cartUpdated");
@@ -127,6 +128,20 @@ function Header({ loggedIn, removeToken }) {
             searchForm.current.classList.remove("search-form--active");
         });
     }, []);
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+        dispatch(hiddenDim());
+        searchForm.current.classList.remove("search-form--active");
+        navigate(
+            `/search/searchResult?search=${encodeURIComponent(searchText)}`
+        );
+        setSearchText("");
+    };
+
+    const handleChange = (e) => {
+        setSearchText(e.target.value);
+    };
 
     return (
         <header className={scrolled ? "header active" : "header"}>
@@ -298,29 +313,30 @@ function Header({ loggedIn, removeToken }) {
             </div>
             <div className="search-form " ref={searchForm}>
                 <div className="search-form__inner">
-                    <form action="" method="POST">
-                        <div className="search-form__box">
-                            <div className="search-form__input">
-                                <input
-                                    type="text"
-                                    placeholder="검색어를 입력해 주세요."
-                                />
-                                <button
-                                    type="submit"
-                                    className="btn btn-search"
-                                >
-                                    검색
-                                </button>
-                            </div>
+                    <div className="search-form__box">
+                        <div className="search-form__input">
+                            <input
+                                type="text"
+                                placeholder="검색어를 입력해 주세요."
+                                value={searchText}
+                                onChange={handleChange}
+                            />
                             <button
-                                type="button"
-                                className="btn btn-close"
-                                ref={closeSearchForm}
+                                type="submit"
+                                className="btn btn-search"
+                                onClick={onSubmit}
                             >
-                                <span>닫기</span>
+                                검색
                             </button>
                         </div>
-                    </form>
+                        <button
+                            type="button"
+                            className="btn btn-close"
+                            ref={closeSearchForm}
+                        >
+                            <span>닫기</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </header>

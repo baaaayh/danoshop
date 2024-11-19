@@ -149,7 +149,7 @@ function App() {
                                         element={<MyPage />}
                                     />
                                     <Route
-                                        path="/searcj/seachResult"
+                                        path="/search/searchResult"
                                         element={<SearchResult />}
                                     />
                                 </Routes>

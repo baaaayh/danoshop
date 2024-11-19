@@ -562,6 +562,34 @@ app.post("/api/getOrderHistory", async (req, res) => {
     }
 });
 
+app.post("/api/searchItems", async (req, res) => {
+    try {
+        const { searchText, page, itemsPerPage } = req.body;
+        const skip = page * itemsPerPage;
+        const allItems = await Product.find();
+
+        const result = allItems.filter((item) =>
+            item.title.includes(searchText)
+        );
+
+        let pagingButtons = Math.ceil(result.length / itemsPerPage);
+        let paginatedSearchView;
+        if (searchText !== "") {
+            paginatedSearchView = result.slice(skip, skip + itemsPerPage);
+        } else {
+            paginatedSearchView = [];
+        }
+
+        res.json({
+            success: true,
+            pagingButtons,
+            searchResult: paginatedSearchView,
+        });
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

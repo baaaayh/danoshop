@@ -108,6 +108,17 @@ label {
 }
 
 .product {
+    > p {
+        margin-bottom: 20px;
+        font-size: 13px;
+        line-height: 40px;
+        color: #7d7d7d;
+        strong {
+            display: inline-block;
+            color: #000;
+            margin-left: 10px;
+        }
+    }
     ul {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -117,6 +128,17 @@ label {
             img {
                 width: 100%;
             }
+        }
+    }
+    .no-item {
+        border-top: 1px solid #eee;
+        border-bottom: none;
+        span {
+            display: block;
+            margin-top: 30px;
+            font-size: 13px;
+            line-height: 20px;
+            color: #7d7d7d;
         }
     }
 }
@@ -2122,6 +2144,22 @@ table {
             width: 60px;
             height: 60px;
             transform: translateY(-50%);
+        }
+    }
+}
+
+.search-row {
+    .search-form {
+        position: static;
+        display: block;
+        border-top: none;
+        max-width: 650px;
+        width: 100%;
+        margin: 0 auto;
+        input[type="text"] {
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid #000;
         }
     }
 }
