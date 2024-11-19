@@ -5,7 +5,6 @@ import { addCartItem, clearCart } from "../../modules/cartList";
 import { showDim, hiddenDim, toggleDim } from "../../modules/dimToggle";
 
 import axios from "axios";
-import styles from "./Header.module.scss";
 
 function Header({ loggedIn, removeToken }) {
     const navigate = useNavigate();
@@ -114,15 +113,26 @@ function Header({ loggedIn, removeToken }) {
         });
     }, [menuList]);
 
+    const searchForm = useRef();
+    const openSearchForm = useRef();
+    const closeSearchForm = useRef();
+
+    useEffect(() => {
+        openSearchForm.current.addEventListener("click", (e) => {
+            dispatch(showDim());
+            searchForm.current.classList.add("search-form--active");
+        });
+        closeSearchForm.current.addEventListener("click", (e) => {
+            dispatch(hiddenDim());
+            searchForm.current.classList.remove("search-form--active");
+        });
+    }, []);
+
     return (
-        <header
-            className={
-                scrolled ? `${styles.header} ${styles.active}` : styles.header
-            }
-        >
-            <div className={styles.header__inner}>
-                <div className={styles.header__nav}>
-                    <ul className={styles["menu-nav"]}>
+        <header className={scrolled ? "header active" : "header"}>
+            <div className="header__inner">
+                <div className="header__nav">
+                    <ul className="menu-nav">
                         {loggedIn === "guest" ? (
                             <li>
                                 <Link
@@ -183,14 +193,14 @@ function Header({ loggedIn, removeToken }) {
                         </li>
                     </ul>
                 </div>
-                <div className={styles.header__menu}>
-                    <div className={styles.header__top}>
-                        <h1 className={styles.header__logo}>
+                <div className="header__menu">
+                    <div className="header__top">
+                        <h1 className="header__logo">
                             <Link to="/">
                                 <img src="../images/common/logo.png" alt="" />
                             </Link>
                         </h1>
-                        <div className={styles.user}>
+                        <div className="user">
                             <ul>
                                 <li>
                                     <Link
@@ -199,7 +209,7 @@ function Header({ loggedIn, removeToken }) {
                                                 ? "member/login"
                                                 : "/mypage/dashboard"
                                         }
-                                        className={styles["btn-user"]}
+                                        className="btn btn-user"
                                         state={
                                             loggedIn === "guest"
                                                 ? { title: ["로그인"] }
@@ -212,7 +222,7 @@ function Header({ loggedIn, removeToken }) {
                                 <li>
                                     <Link
                                         to="/order/cart"
-                                        className={styles["btn-cart"]}
+                                        className="btn btn-cart"
                                         state={{ title: ["장바구니"] }}
                                     >
                                         장바구니
@@ -222,7 +232,8 @@ function Header({ loggedIn, removeToken }) {
                                 <li>
                                     <button
                                         type="button"
-                                        className={styles["btn-search"]}
+                                        className="btn btn-search"
+                                        ref={openSearchForm}
                                     >
                                         검색
                                     </button>
@@ -230,8 +241,8 @@ function Header({ loggedIn, removeToken }) {
                             </ul>
                         </div>
                     </div>
-                    <div className={styles.header__bottom}>
-                        <nav className={styles.gnb}>
+                    <div className="header__bottom">
+                        <nav className="gnb">
                             <ul>
                                 {menuList &&
                                     menuList.menu.map((item, index) => (
@@ -250,7 +261,7 @@ function Header({ loggedIn, removeToken }) {
                                                 {item.depth1}
                                             </Link>
                                             {item.depth2.length > 0 && (
-                                                <div className={styles.depth2}>
+                                                <div className="depth2">
                                                     <ul>
                                                         {item.depth2.map(
                                                             (dep2) => (
@@ -285,20 +296,27 @@ function Header({ loggedIn, removeToken }) {
                     </div>
                 </div>
             </div>
-            <div className={styles["search-form"]}>
-                <div className={styles["search-form__inner"]}>
-                    <form action="">
-                        <div className={styles["search-form__box"]}>
-                            <div className={styles["search-form__input"]}>
-                                <input type="text" />
+            <div className="search-form " ref={searchForm}>
+                <div className="search-form__inner">
+                    <form action="" method="POST">
+                        <div className="search-form__box">
+                            <div className="search-form__input">
+                                <input
+                                    type="text"
+                                    placeholder="검색어를 입력해 주세요."
+                                />
                                 <button
                                     type="submit"
-                                    className={styles["btn-search"]}
+                                    className="btn btn-search"
                                 >
                                     검색
                                 </button>
                             </div>
-                            <button type="button" className="btn btn-close">
+                            <button
+                                type="button"
+                                className="btn btn-close"
+                                ref={closeSearchForm}
+                            >
                                 <span>닫기</span>
                             </button>
                         </div>

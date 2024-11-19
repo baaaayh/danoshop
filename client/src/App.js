@@ -25,6 +25,7 @@ import MyPage from "./pages/mypage/MyPage";
 import "./styles/index.scss";
 import SideOrder from "./components/layout/SideOrder";
 import Membership from "./pages/events/Membership";
+import SearchResult from "./pages/search/SearchResult";
 export const SidePanelContext = createContext(null);
 
 function App() {
@@ -146,6 +147,10 @@ function App() {
                                     <Route
                                         path="/mypage/*"
                                         element={<MyPage />}
+                                    />
+                                    <Route
+                                        path="/searcj/seachResult"
+                                        element={<SearchResult />}
                                     />
                                 </Routes>
                             </div>
