@@ -215,13 +215,15 @@ function OrderResult() {
                                                     </li>
                                                     <li>
                                                         상품구매금액:{" "}
-                                                        {Number(
-                                                            item.data.price
-                                                        ) +
+                                                        {(
+                                                            Number(
+                                                                item.data.price
+                                                            ) +
                                                             Number(
                                                                 option.value
                                                                     .price
-                                                            )?.toLocaleString()}
+                                                            )
+                                                        ).toLocaleString()}
                                                         원
                                                     </li>
                                                     <li>기본배송</li>

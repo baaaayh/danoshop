@@ -289,9 +289,11 @@ function Order() {
             );
 
             // 성공 시 처리
-            orderList.forEach((option) => {
-                dispatch(removeCartOption(option.key));
-            });
+
+            location.state.updateCart &&
+                orderList.forEach((option) => {
+                    dispatch(removeCartOption(option.key));
+                });
 
             if (userInfo.state === "member" && userInfo.token) {
                 await Promise.all(

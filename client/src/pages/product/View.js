@@ -20,6 +20,7 @@ function View() {
     const [productInfo, setProductInfo] = useState({ price: 0 });
     const [totalPrice, setTotalPrice] = useState(0);
     const [isAdding, setIsAdding] = useState(false);
+    const [duplicateConfirm, setDuplicateConfirm] = useState(false);
 
     const params = useParams();
     const location = useLocation();
@@ -125,7 +126,37 @@ function View() {
         );
     };
 
-    const handleAddToCart = async () => {
+    const handleDuplicateOptions = (existingCartItems) => {
+        existingCartItems.forEach((item) => {
+            const selectedOptionKeys = selectedOptions.map(
+                (option) => option.key
+            );
+            const existingOptionKeys = item.options.map((option) => option.key);
+
+            if (
+                existingOptionKeys.some((key) =>
+                    selectedOptionKeys.includes(key)
+                )
+            ) {
+                selectedOptions.forEach((selectedOption) => {
+                    const existingOption = item.options.find(
+                        (option) => option.key === selectedOption.key
+                    );
+                    if (existingOption) {
+                        // Create a new object for selectedOption.value
+                        selectedOption.value = {
+                            ...selectedOption.value,
+                            quantity:
+                                selectedOption.value.quantity +
+                                existingOption.value.quantity,
+                        };
+                    }
+                });
+            }
+        });
+    };
+
+    const handleAddToCart = async (confirm) => {
         if (isAdding) return;
         if (selectedOptions.length <= 0) {
             alert("옵션을 선택해 주세요.");
@@ -134,17 +165,11 @@ function View() {
 
         setIsAdding(true);
 
-        const product = {
-            id: productInfo.id,
-            options: selectedOptions,
-            price: productInfo.price,
-            data: { ...productInfo },
-        };
-
         try {
             const existingCartItems = cartData || [];
             let isDuplicate = false;
 
+            // 장바구니 내 중복 옵션 확인
             existingCartItems.forEach((item) => {
                 const selectedOptionKeys = selectedOptions.map(
                     (option) => option.key
@@ -163,13 +188,22 @@ function View() {
             });
 
             if (isDuplicate) {
-                const isConfirmed = window.confirm(
-                    "동일한 상품이 장바구니에 있습니다. 추가하시겠습니까?"
-                );
+                const isConfirmed =
+                    confirm &&
+                    window.confirm(
+                        "동일한 상품이 장바구니에 있습니다. 장바구니에 추가하시겠습니까?"
+                    );
                 if (!isConfirmed) {
                     return;
                 }
             }
+
+            const product = {
+                id: productInfo.id,
+                options: selectedOptions,
+                price: productInfo.price,
+                data: { ...productInfo },
+            };
 
             dispatch(addCartItem(product));
             setUpdatedLocalCart((prev) => [...prev, product]);
@@ -178,6 +212,37 @@ function View() {
             console.error("Failed to add to cart:", error);
         } finally {
             setIsAdding(false);
+        }
+    };
+
+    const goToPayment = () => {
+        let updateCart = true;
+        const existingCartItems = cartData || [];
+        const confirm = window.confirm(
+            "동일한 상품이 장바구니에 있습니다. 함께 구매하시겠습니까?"
+        );
+        if (confirm) {
+            handleDuplicateOptions(existingCartItems);
+        } else {
+            updateCart = false;
+        }
+        dispatch(clearOrder());
+        dispatch(saveOrder(selectedOptions));
+        if (selectedOptions.length <= 0) {
+            alert("주문하실 상품을 선택해 주세요.");
+            return;
+        }
+        if (userInfo.token) {
+            navigate("/order/order", {
+                state: {
+                    orderList: selectedOptions,
+                    updateCart,
+                },
+            });
+        } else {
+            navigate("/member/login", {
+                state: { title: ["로그인"], prevPage: location.pathname },
+            });
         }
     };
 
@@ -256,26 +321,6 @@ function View() {
             } catch (error) {
                 console.error("Error updating wish list:", error);
             }
-        }
-    };
-
-    const goToPayment = () => {
-        dispatch(clearOrder());
-        dispatch(saveOrder(selectedOptions));
-        if (selectedOptions.length <= 0) {
-            alert("주문하실 상품을 선택해 주세요.");
-            return;
-        }
-        if (userInfo.token) {
-            navigate("/order/order", {
-                state: {
-                    orderList: selectedOptions,
-                },
-            });
-        } else {
-            navigate("/member/login", {
-                state: { title: ["로그인"], prevPage: location.pathname },
-            });
         }
     };
 
@@ -526,7 +571,7 @@ function View() {
                                     type="button"
                                     className="btn btn-square btn-square--black"
                                     onClick={() => {
-                                        handleAddToCart();
+                                        handleAddToCart(false);
                                         goToPayment();
                                     }}
                                 >
@@ -539,7 +584,7 @@ function View() {
                                 <button
                                     type="button"
                                     className="btn btn-square"
-                                    onClick={handleAddToCart}
+                                    onClick={() => handleAddToCart(true)}
                                     disabled={isAdding}
                                 >
                                     <span className="btn btn-square__text">

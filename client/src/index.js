@@ -1,20 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import store from './store/store';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import './styles/index.scss';
-import reportWebVitals from './reportWebVitals';
-import App from './App';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import store from "./store/store";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import "./styles/index.scss";
+import reportWebVitals from "./reportWebVitals";
+import App from "./App";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 const queryClient = new QueryClient();
 
 root.render(
     <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-            <Provider store={store}>
+            <Provider store={store} stabilityCheck="never">
                 <App />
             </Provider>
         </QueryClientProvider>

@@ -41,7 +41,7 @@ function BreadCrumb({ title, path }) {
                                 {path.type &&
                                     item.depth2 &&
                                     item.depth2.length > 0 &&
-                                    item.depth2.forEach(
+                                    item.depth2.map(
                                         (depth2Item, depth2Index) => {
                                             if (depth2Item.type === path.type) {
                                                 return (
@@ -72,7 +72,13 @@ function BreadCrumb({ title, path }) {
                                 <li key={index}>
                                     <Link
                                         to={
-                                            index === 0
+                                            location.pathname.startsWith(
+                                                "/mypage"
+                                            )
+                                                ? index === 0
+                                                    ? "/mypage/dashboard"
+                                                    : `${location.pathname}`
+                                                : index === 0
                                                 ? `/${result[0]}/${result[1]}`
                                                 : `${location.pathname}`
                                         }
