@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { showDim, hiddenDim } from "../../modules/dimToggle";
+import { showDim } from "../../modules/dimToggle";
 import styles from "./Footer.module.scss";
 
 function Footer({ mobileMenu }) {

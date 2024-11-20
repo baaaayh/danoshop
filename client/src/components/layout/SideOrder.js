@@ -174,17 +174,7 @@ const SideOrder = forwardRef((props, ref) => {
         }
     };
 
-    const {
-        title,
-        summary,
-        price,
-        config,
-        deliveryType,
-        deliveryCharge,
-        detail,
-        view,
-        thumb,
-    } = productInfo;
+    const { title, price, thumb } = productInfo;
 
     const options = productInfo.options || [];
 

@@ -157,7 +157,7 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
     const toggleButtons = useRef([]);
 
     useEffect(() => {
-        toggleButtons.current.map((button) => {
+        toggleButtons.current.forEach((button) => {
             button.addEventListener("click", function (e) {
                 this.closest("li").classList.toggle("active");
                 const $sibling = this.closest("li").querySelector(".depth2");
@@ -179,7 +179,7 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
 
     const closeMobileMenu = useCallback(() => {
         dispatch(hiddenDim());
-        toggleButtons.current.map((button) => {
+        toggleButtons.current.forEach((button) => {
             const $sibling = button.closest("li").querySelector(".depth2");
             button.closest("li").classList.remove("active");
             $sibling.style.height = "0px";

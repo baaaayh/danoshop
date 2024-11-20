@@ -23,7 +23,7 @@ function Main({ menu }) {
 
     useEffect(() => {
         getProductList();
-    }, []);
+    }, [getProductList]);
 
     useEffect(() => {
         setMenuList(menu);

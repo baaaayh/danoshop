@@ -22,12 +22,7 @@ function Cart() {
     const [isAllChecked, setIsAllChecked] = useState(false);
     const location = useLocation();
 
-    useEffect(() => {
-        calculateTotal();
-        updateAllOptionList();
-    }, [cartList]);
-
-    const calculateTotal = () => {
+    const calculateTotal = useCallback(() => {
         let price = 0;
         let quantity = 0;
 
@@ -44,12 +39,17 @@ function Cart() {
 
         setTotalPrice(price);
         setTotalQuantity(quantity);
-    };
+    }, [cartList]);
 
-    const updateAllOptionList = () => {
+    const updateAllOptionList = useCallback(() => {
         const optionList = cartList.flatMap((item) => item.options);
         setAllOptionList(optionList);
-    };
+    }, [cartList]);
+
+    useEffect(() => {
+        calculateTotal();
+        updateAllOptionList();
+    }, [cartList, calculateTotal, updateAllOptionList]);
 
     const handleQuantityChange = async (itemId, optionKey, change) => {
         const existingItem = cartList.find((item) => item.id === itemId);
@@ -110,15 +110,12 @@ function Cart() {
         }
     };
 
-    const handleCheckbox = useCallback(
-        (optionId, optionKey) => {
-            setCheckedOptions((prev) => ({
-                ...prev,
-                [`${optionKey}`]: !prev[`${optionKey}`], // 해당 항목의 상태를 반전
-            }));
-        },
-        [cartList]
-    );
+    const handleCheckbox = useCallback((optionId, optionKey) => {
+        setCheckedOptions((prev) => ({
+            ...prev,
+            [`${optionKey}`]: !prev[`${optionKey}`], // 해당 항목의 상태를 반전
+        }));
+    }, []);
 
     useEffect(() => {
         const selectedOptions = [];
@@ -209,7 +206,7 @@ function Cart() {
 
     const removeCheckedOptions = async () => {
         if (window.confirm("선택된 제품을 삭제하시겠습니까?")) {
-            selectedOptionList.map((option) => {
+            selectedOptionList.forEach((option) => {
                 dispatch(removeCartOption(option.key));
             });
 

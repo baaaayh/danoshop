@@ -116,28 +116,25 @@ function Order() {
                 [e.target.name]: e.target.value,
             });
         },
-        [inputValue]
+        [inputValue, phoneMsg]
     );
 
     const handlePaymentChange = (e) => {
         setSelectedPayment(e.target.value);
     };
 
-    const handleSelectChange = useCallback(
-        (e) => {
-            setSelectedValue({
-                [e.target.name]: e.target.value,
-            });
+    const handleSelectChange = useCallback((e) => {
+        setSelectedValue({
+            [e.target.name]: e.target.value,
+        });
 
-            if (e.target.name === "email") {
-                directInput.current.style.display = "none";
-                if (e.target.value === "직접입력") {
-                    directInput.current.style.display = "block";
-                }
+        if (e.target.name === "email") {
+            directInput.current.style.display = "none";
+            if (e.target.value === "직접입력") {
+                directInput.current.style.display = "block";
             }
-        },
-        [selectedValue]
-    );
+        }
+    }, []);
 
     const handleCheck = (e) => {
         const { name, checked } = e.target;
@@ -202,7 +199,7 @@ function Order() {
             );
         }, 0);
         setOptionTotalQuantity(totalQuantity);
-    }, []);
+    }, [cartList]);
 
     const checkValidOrder = async (e) => {
         try {

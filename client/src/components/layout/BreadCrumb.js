@@ -41,7 +41,7 @@ function BreadCrumb({ title, path }) {
                                 {path.type &&
                                     item.depth2 &&
                                     item.depth2.length > 0 &&
-                                    item.depth2.map(
+                                    item.depth2.forEach(
                                         (depth2Item, depth2Index) => {
                                             if (depth2Item.type === path.type) {
                                                 return (
