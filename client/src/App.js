@@ -34,7 +34,6 @@ function App() {
     const token = useSelector((state) => state.user.token);
     const location = useLocation();
     const { pathname } = location;
-    const dimState = useSelector((state) => state.dim.dimVisible);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -69,12 +68,18 @@ function App() {
     const isOrderPage = location.pathname === "/order/order";
     const isResultPage = location.pathname === "/order/orderResult";
 
+    const mobileMenu = useRef(null);
+
     return (
         <>
             <SidePanelContext.Provider value={sidePanel}>
                 <div className="container">
                     {!isOrderPage && !isResultPage && (
-                        <Header loggedIn={loggedIn} removeToken={removeToken} />
+                        <Header
+                            loggedIn={loggedIn}
+                            removeToken={removeToken}
+                            mobileMenu={mobileMenu}
+                        />
                     )}
                     {isOrderPage ? (
                         <Order />
@@ -82,9 +87,6 @@ function App() {
                         <OrderResult />
                     ) : (
                         <>
-                            <div
-                                className={`dim ${dimState ? "visible" : ""}`}
-                            ></div>
                             <div className="wrap">
                                 <Routes>
                                     <Route exact path="/" element={<Main />} />
@@ -156,7 +158,9 @@ function App() {
                             </div>
                         </>
                     )}
-                    {!isOrderPage && !isResultPage && <Footer />}
+                    {!isOrderPage && !isResultPage && (
+                        <Footer mobileMenu={mobileMenu} />
+                    )}
                 </div>
                 <SideOrder ref={sidePanel} />
             </SidePanelContext.Provider>

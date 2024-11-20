@@ -4,10 +4,19 @@ import styles from "./Pagination.module.scss";
 function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
     const [activePage, setActivePage] = useState(0);
     const [currentPageGroup, setCurrentPageGroup] = useState(0);
-    const itemsPerPageGroup = 10;
+    const [itemsPerPageGroup, setItemsPerPageGroup] = useState(10);
     const totalGroups = Math.ceil(pagingButtons / itemsPerPageGroup);
     const startNumber = currentPageGroup * itemsPerPageGroup;
     const endNumber = Math.min(startNumber + itemsPerPageGroup, pagingButtons);
+
+    window.addEventListener("resize", () => {
+        const ww = window.innerWidth;
+        if (ww > 1024) {
+            setItemsPerPageGroup(10);
+        } else {
+            setItemsPerPageGroup(5);
+        }
+    });
 
     const handlePageClick = useCallback(
         (index) => {

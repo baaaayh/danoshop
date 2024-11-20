@@ -28,17 +28,17 @@ const SideOrder = forwardRef((props, ref) => {
 
     const [isAdding, setIsAdding] = useState(false);
 
-    const getProductInfo = async (itemId) => {
+    const getProductInfo = useCallback(async (itemId) => {
         try {
-            const response = await axios.get(
+            const response = await axios.post(
                 "http://localhost:4000/api/product",
-                { params: { id: itemId } }
+                { id: itemId }
             );
-            setProductInfo(response.data[0]);
+            setProductInfo(response.data.productView[0]);
         } catch (error) {
             console.error("Failed to update cart on server:", error);
         }
-    };
+    }, []);
 
     useImperativeHandle(ref, () => ({
         open: (itemId) => {

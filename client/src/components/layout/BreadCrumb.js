@@ -18,6 +18,8 @@ function BreadCrumb({ title, path }) {
         (item) => path.category === item.category
     );
 
+    const result = location.pathname.split("/").filter(Boolean);
+
     return (
         <div className={`breadCrumb ${styles.breadcrumb}`}>
             <nav>
@@ -71,7 +73,7 @@ function BreadCrumb({ title, path }) {
                                     <Link
                                         to={
                                             index === 0
-                                                ? "/mypage/dashboard"
+                                                ? `/${result[0]}/${result[1]}`
                                                 : `${location.pathname}`
                                         }
                                         state={{ title: [depth] }}

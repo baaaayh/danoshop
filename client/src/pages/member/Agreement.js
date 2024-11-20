@@ -7,6 +7,7 @@ import AgreementForm from "../../components/member/AgreementForm";
 
 function Agreement() {
     const params = useParams();
+
     return (
         <SubContentsXsmall>
             <BreadCrumb title={["약관 동의"]} path={params} />

@@ -25,8 +25,6 @@ function SectionKV() {
         getKVList();
     }, [getKVList]);
 
-    console.log(kvList);
-
     return (
         <section className="section section--kv">
             <div className={styles.section__inner}>

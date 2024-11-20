@@ -79,7 +79,7 @@ function Dashboard() {
                     </div>
                 </div>
             </div>
-            <div className="mypage-box">
+            <div className="mypage-box pcv">
                 <div className="mypage-box__head">
                     <h3>주문내역 조회</h3>
                 </div>

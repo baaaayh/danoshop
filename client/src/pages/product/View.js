@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useLocation, useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { addCartItem } from "../../modules/cartList";
@@ -48,11 +48,11 @@ function View() {
     useEffect(() => {
         const getProductDetail = async () => {
             try {
-                const response = await axios.get(
+                const response = await axios.post(
                     "http://localhost:4000/api/product",
-                    { params: { id: productId } }
+                    { id: productId }
                 );
-                setProductInfo(response.data[0]);
+                setProductInfo(response.data.productView[0]);
             } catch (error) {
                 console.error("Error fetching product details:", error);
             }
@@ -563,19 +563,16 @@ function View() {
                     <div className="detail-tab">
                         <ul>
                             <li className="active">
-                                <a href="">상세정보</a>
+                                <Link>상세정보</Link>
                             </li>
                             <li>
-                                <a href="">상품후기</a>
+                                <Link>상품후기</Link>
                             </li>
                             <li>
-                                <a href="">상품</a>
+                                <Link>상품문의</Link>
                             </li>
                             <li>
-                                <a href="">상품문의</a>
-                            </li>
-                            <li>
-                                <a href="">배송/교환/환불 안내</a>
+                                <Link>배송/교환/환불 안내</Link>
                             </li>
                         </ul>
                     </div>

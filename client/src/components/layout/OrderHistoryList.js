@@ -43,10 +43,14 @@ function OrderHistory({ orderObj }) {
                                                             >
                                                                 <div className="order-history__desc">
                                                                     <div className="order-history__figure">
-                                                                        <img
-                                                                            src={`/uploads/product/${orderItem.data.thumb}`}
-                                                                            alt=""
-                                                                        />
+                                                                        <Link
+                                                                            to={`/product/detail/all/${orderItem.data.type}/${orderItem.data.id}`}
+                                                                        >
+                                                                            <img
+                                                                                src={`/uploads/product/${orderItem.data.thumb}`}
+                                                                                alt=""
+                                                                            />
+                                                                        </Link>
                                                                     </div>
                                                                     <div className="order-history__info">
                                                                         <strong>
@@ -122,15 +126,45 @@ function OrderHistory({ orderObj }) {
                                                     </div>
                                                 </div>
                                                 <div className="order-history__total">
-                                                    상품구매금액{" "}
-                                                    {order.totalPrice.toLocaleString()}
-                                                    + 3,500 = 총 결제금액{" "}
-                                                    {(
-                                                        Number(
-                                                            order.totalPrice
-                                                        ) + 3500
-                                                    ).toLocaleString()}{" "}
-                                                    원
+                                                    <div className="pcv">
+                                                        상품구매금액{" "}
+                                                        {order.totalPrice.toLocaleString()}{" "}
+                                                        + 3,500 = 총 결제금액{" "}
+                                                        {(
+                                                            Number(
+                                                                order.totalPrice
+                                                            ) + 3500
+                                                        ).toLocaleString()}{" "}
+                                                        원
+                                                    </div>
+                                                    <div className="mov">
+                                                        <div className="order-history__row">
+                                                            <span>
+                                                                총 결제금액
+                                                            </span>
+                                                            <strong>
+                                                                {(
+                                                                    Number(
+                                                                        order.totalPrice
+                                                                    ) + 3500
+                                                                ).toLocaleString()}
+                                                                원
+                                                            </strong>
+                                                        </div>
+                                                        <div className="order-history__row">
+                                                            <small>
+                                                                상품구매금액{" "}
+                                                                {order.totalPrice.toLocaleString()}{" "}
+                                                                + 3,500 = 총
+                                                                결제금액{" "}
+                                                                {(
+                                                                    Number(
+                                                                        order.totalPrice
+                                                                    ) + 3500
+                                                                ).toLocaleString()}{" "}
+                                                            </small>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </li>

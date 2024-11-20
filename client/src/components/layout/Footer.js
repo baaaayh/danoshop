@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { showDim, hiddenDim } from "../../modules/dimToggle";
 import styles from "./Footer.module.scss";
 
-function Footer() {
+function Footer({ mobileMenu }) {
+    const dispatch = useDispatch();
     const [totalQuantity, setTotalQuantity] = useState(0);
     const itemsOptions = useSelector((state) =>
         state.cart.cartList?.map((item) => item.options)
@@ -23,6 +25,11 @@ function Footer() {
             setTotalQuantity(total);
         }
     }, [itemsOptions, totalQuantity]);
+
+    const openMobileMenu = useCallback(() => {
+        dispatch(showDim());
+        mobileMenu.current.classList.add("active");
+    }, [dispatch, mobileMenu]);
 
     return (
         <>
@@ -277,13 +284,14 @@ function Footer() {
                     </div>
                 </div>
             </footer>
-            <div className="floating-nav">
+            <div className="floating-nav mov">
                 <div className="floating-nav__inner">
                     <ul>
                         <li>
                             <button
                                 type="button"
                                 className="btn btn-mobmenu btn-mobmenu--static"
+                                onClick={openMobileMenu}
                             >
                                 <span>모바일 메뉴</span>
                             </button>
@@ -299,7 +307,11 @@ function Footer() {
                             </Link>
                         </li>
                         <li>
-                            <Link to="/order/cart" className="btn btn-cart">
+                            <Link
+                                to="/order/cart"
+                                className="btn btn-cart"
+                                state={{ title: ["장바구니"] }}
+                            >
                                 장바구니<span>{totalQuantity}</span>
                             </Link>
                         </li>
@@ -307,6 +319,7 @@ function Footer() {
                             <Link
                                 to="/mypage/dashboard"
                                 className="btn btn-user"
+                                state={{ title: ["마이쇼핑"] }}
                             >
                                 유저메뉴<span></span>
                             </Link>

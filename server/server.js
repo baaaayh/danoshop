@@ -45,13 +45,33 @@ app.get("/api/kv", async (req, res) => {
     }
 });
 
-app.get("/api/product", async (req, res) => {
+app.post("/api/product", async (req, res) => {
     try {
-        const { id } = req.query;
+        const { id, page, itemsPerPage } = req.body;
+        const skip = page * itemsPerPage;
+
         const productItems = id
             ? await Product.find({ id })
             : await Product.find();
-        res.json(productItems);
+
+        const pagingButtons = Math.ceil(productItems.length / itemsPerPage);
+
+        const paginatedProductList = productItems
+            .reverse()
+            .slice(skip, skip + itemsPerPage);
+
+        let result;
+        if (!page || !itemsPerPage) {
+            result = productItems;
+        } else {
+            result = paginatedProductList;
+        }
+
+        res.json({
+            success: true,
+            productView: result,
+            pagingButtons: pagingButtons,
+        });
     } catch (error) {
         console.error("Error fetching main product items:", error);
         res.status(500).send("Error fetching product items");

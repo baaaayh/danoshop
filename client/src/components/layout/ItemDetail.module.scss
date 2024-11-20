@@ -90,3 +90,30 @@
         }
     }
 }
+
+@media screen and (max-width: 1024px) {
+    .item-row {
+        &__text {
+            padding-right: 30px;
+            > div {
+                margin-top: 0;
+            }
+        }
+        &__button {
+            position: static;
+            ul {
+                margin-top: 10px;
+                justify-content: flex-end;
+            }
+        }
+        &__detail {
+            column-gap: 15px;
+        }
+        &__thumb {
+            flex-basis: 80px;
+        }
+        &__option {
+            padding: 10px;
+        }
+    }
+}

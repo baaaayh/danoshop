@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import SubContentsXsmall from '../../components/layout/SubContentsXsmall';
-import BreadCrumb from '../../components/layout/BreadCrumb';
-import SubTitle from '../../components/layout/SubTitle';
-import ResultForm from '../../components/member/ResultForm';
-import JoinForm from '../../components/member/JoinForm';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { useParams, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import SubContentsXsmall from "../../components/layout/SubContentsXsmall";
+import BreadCrumb from "../../components/layout/BreadCrumb";
+import SubTitle from "../../components/layout/SubTitle";
+import ResultForm from "../../components/member/ResultForm";
+import JoinForm from "../../components/member/JoinForm";
+import axios from "axios";
 
 function Modify() {
-    const dispatch = useDispatch();
     const params = useParams();
     const location = useLocation();
     const userId = useSelector((state) => state.user.userId);
@@ -18,12 +17,15 @@ function Modify() {
     useEffect(() => {
         const userDataFetch = async () => {
             try {
-                const response = await axios.post('http://localhost:4000/api/userInfo', {
-                    userId: userId,
-                });
+                const response = await axios.post(
+                    "http://localhost:4000/api/userInfo",
+                    {
+                        userId: userId,
+                    }
+                );
                 setUserInfo(response.data.user);
             } catch (error) {
-                console.error('User data fetch error:', error);
+                console.error("User data fetch error:", error);
             }
         };
         userDataFetch();

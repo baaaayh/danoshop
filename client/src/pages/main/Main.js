@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import SectionKV from "../../components/main/SectionKV";
 import MainContents from "../../components/main/MainContents";
 import SectionEvents from "../../components/main/SectionEvents";
@@ -10,16 +10,16 @@ function Main({ menu }) {
     const [menuList, setMenuList] = useState({ menu: [] });
     const [productList, setProductList] = useState([]);
 
-    const getProductList = async () => {
+    const getProductList = useCallback(async () => {
         try {
-            const response = await axios.get(
+            const response = await axios.post(
                 "http://localhost:4000/api/product"
             );
-            setProductList(response.data);
+            setProductList(response.data.productView);
         } catch (error) {
             console.error("Error fetching product list:", error);
         }
-    };
+    }, []);
 
     useEffect(() => {
         getProductList();

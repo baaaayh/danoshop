@@ -12,7 +12,7 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
     const navigate = useNavigate();
     const [itemKey, setItemKey] = useState("");
     const [selectedOption, setSelectedOption] = useState({});
-    const [setSelectedOptions] = useState([]);
+    const [selectedOptions, setSelectedOptions] = useState([]);
 
     useEffect(() => {
         if (itemValue?.wishOption?.value) {

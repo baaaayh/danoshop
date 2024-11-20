@@ -1,8 +1,21 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { clearCart } from "../../modules/cartList";
+import { removeToken } from "../../modules/userData";
 
-function MyPageLayout({ children }) {
+function MyPageLayout({ children, loggedIn }) {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const location = useLocation();
+
+    function logout() {
+        alert("로그아웃 되었습니다.");
+        dispatch(clearCart());
+        dispatch(removeToken());
+        localStorage.removeItem("cartUpdated");
+        navigate("/");
+    }
 
     return (
         <div className="mypage">
@@ -158,7 +171,9 @@ function MyPageLayout({ children }) {
                                         </Link>
                                     </li>
                                     <li>
-                                        <button type="button">로그아웃</button>
+                                        <button type="button" onClick={logout}>
+                                            로그아웃
+                                        </button>
                                     </li>
                                 </ul>
                             </li>

@@ -110,7 +110,11 @@ button {
 
 .btn-mobmenu {
     display: none;
-    position: absolute;
+    flex-direction: column;
+    justify-content: center;
+    row-gap: 6px;
+    width: 24px;
+    height: 24px;
     font-size: 0;
     cursor: pointer;
     &::before,
@@ -178,20 +182,23 @@ button {
 @media screen and (max-width: 1024px) {
     .btn-mobmenu {
         display: inline-flex;
-        position: absolute;
         flex-direction: column;
         justify-content: center;
         row-gap: 6px;
-        top: 50%;
-        left: 40px;
         width: 24px;
         height: 26px;
-        margin-top: 4px;
         font-size: 0;
-        transform: translateY(-50%);
         &--static {
             position: static;
             transform: translate(0);
         }
+    }
+    .btn-square {
+        &__text {
+            line-height: 48px;
+        }
+    }
+    .btn-mobmenu {
+        left: 15px;
     }
 }

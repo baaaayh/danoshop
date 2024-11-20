@@ -1,5 +1,6 @@
 .join-result {
-    &__inner {}
+    &__inner {
+    }
     &__view {
         padding: 40px 100px;
         text-align: center;
@@ -62,6 +63,17 @@
         margin-top: 30px;
         a {
             border: 1px solid #d6d6d6;
+        }
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .join-result {
+        &__view {
+            padding: 20px 50px;
+        }
+        &__text {
+            padding: 10px 0;
         }
     }
 }

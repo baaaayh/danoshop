@@ -6,12 +6,12 @@ import { showDim, hiddenDim } from "../../modules/dimToggle";
 
 import axios from "axios";
 
-function Header({ loggedIn, removeToken }) {
+function Header({ loggedIn, removeToken, mobileMenu }) {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [totalQuantity, setTotalQuantity] = useState(0);
     const [menuList, setMenuList] = useState({ menu: [] });
     const [scrolled, setScrolled] = useState();
-    const dispatch = useDispatch();
     const menuListData = useSelector((state) => state.menu.menuList);
     const itemsOptions = useSelector((state) =>
         state.cart.cartList?.map((item) => item.options)
@@ -19,6 +19,7 @@ function Header({ loggedIn, removeToken }) {
     const userInfo = useSelector((state) => state.user);
     const localCart = useSelector((state) => state.cart.cartList);
     const [searchText, setSearchText] = useState("");
+    const dimState = useSelector((state) => state.dim.dimVisible);
 
     const fetchCartData = useCallback(async () => {
         try {
@@ -103,19 +104,26 @@ function Header({ loggedIn, removeToken }) {
 
     const hoverMenu = useRef([]);
 
+    let ww = window.innerWidth;
+
+    window.addEventListener("resize", () => (ww = window.innerWidth));
+
     useEffect(() => {
-        let ww = window.innerWidth;
-        if (ww > 1024) {
+        if (hoverMenu.current.length > 0) {
+            const handleMouseEnter = () => {
+                ww > 1024 && dispatch(showDim());
+            };
+
+            const handleMouseLeave = () => {
+                ww > 1024 && dispatch(hiddenDim());
+            };
+
             hoverMenu.current.forEach((menu) => {
-                menu.addEventListener("mouseenter", (e) => {
-                    dispatch(showDim());
-                });
-                menu.addEventListener("mouseleave", (e) => {
-                    dispatch(hiddenDim());
-                });
+                menu.addEventListener("mouseenter", handleMouseEnter);
+                menu.addEventListener("mouseleave", handleMouseLeave);
             });
         }
-    }, [menuList, dispatch]);
+    }, [ww, menuList, dispatch]);
 
     const searchForm = useRef();
     const openSearchForm = useRef();
@@ -145,6 +153,39 @@ function Header({ loggedIn, removeToken }) {
     const handleChange = (e) => {
         setSearchText(e.target.value);
     };
+
+    const toggleButtons = useRef([]);
+
+    useEffect(() => {
+        toggleButtons.current.map((button) => {
+            button.addEventListener("click", function (e) {
+                this.closest("li").classList.toggle("active");
+                const $sibling = this.closest("li").querySelector(".depth2");
+                const sc =
+                    this.closest("li").querySelector(".depth2").scrollHeight;
+                if (this.closest("li").classList.contains("active")) {
+                    $sibling.style.height = sc + "px";
+                } else {
+                    $sibling.style.height = "0px";
+                }
+            });
+        });
+    }, [menuList]);
+
+    const openMobileMenu = useCallback(() => {
+        dispatch(showDim());
+        mobileMenu.current.classList.add("active");
+    }, [dispatch, mobileMenu]);
+
+    const closeMobileMenu = useCallback(() => {
+        dispatch(hiddenDim());
+        toggleButtons.current.map((button) => {
+            const $sibling = button.closest("li").querySelector(".depth2");
+            button.closest("li").classList.remove("active");
+            $sibling.style.height = "0px";
+        });
+        mobileMenu.current.classList.remove("active");
+    }, [dispatch, mobileMenu]);
 
     return (
         <>
@@ -208,15 +249,38 @@ function Header({ loggedIn, removeToken }) {
                                 </li>
                             )}
                             <li>
-                                <Link to="/mypage/recentView">최근본상품</Link>
+                                <Link
+                                    to="/mypage/recentView"
+                                    state={{
+                                        title: ["마이쇼핑", "최근 본 상품"],
+                                    }}
+                                >
+                                    최근본상품
+                                </Link>
                             </li>
                         </ul>
                     </div>
                     <div className="header__menu">
                         <div className="header__top">
-                            <button type="button" className="btn btn-mobmenu">
-                                <span>모바일 메뉴</span>
-                            </button>
+                            <div className="header__mob">
+                                <ul>
+                                    <li>
+                                        <button
+                                            type="button"
+                                            className="btn btn-mobmenu"
+                                            onClick={openMobileMenu}
+                                        >
+                                            <span>모바일 메뉴</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            type="button"
+                                            className="btn btn-search"
+                                        ></button>
+                                    </li>
+                                </ul>
+                            </div>
                             <h1 className="header__logo">
                                 <Link to="/">
                                     <img src="/images/common/logo.png" alt="" />
@@ -349,31 +413,132 @@ function Header({ loggedIn, removeToken }) {
                     </div>
                 </div>
             </header>
-            <aside className="mob-menu">
+            <aside className="mob-menu" ref={mobileMenu}>
                 <div className="mob-menu__inner">
+                    <div className="mob-menu__head">
+                        <button
+                            type="button"
+                            className="btn btn-close"
+                            onClick={closeMobileMenu}
+                        >
+                            <span>닫기</span>
+                        </button>
+                    </div>
                     <div className="mob-menu__top">
                         <ul>
                             <li>
-                                <Link to="">회원가입</Link>
+                                <Link
+                                    to="/member/join"
+                                    state={{ title: ["회원가입"] }}
+                                >
+                                    회원가입
+                                </Link>
                             </li>
                             <li>
-                                <Link to="">로그인</Link>
+                                <Link
+                                    to="/member/login"
+                                    state={{ title: ["로그인"] }}
+                                >
+                                    로그인
+                                </Link>
                             </li>
                             <li>
-                                <Link to="">주문조회</Link>
+                                <Link
+                                    to="/mypage/orderHistory"
+                                    state={{ title: ["마이쇼핑", "주문조회"] }}
+                                >
+                                    주문조회
+                                </Link>
                             </li>
                             <li>
-                                <Link to="">최근본상품</Link>
+                                <Link
+                                    to="/mypage/recentView"
+                                    state={{
+                                        title: ["마이쇼핑", "최근 본 상품"],
+                                    }}
+                                >
+                                    최근본상품
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="mob-menu__tab">
+                        <ul>
+                            <li className="active">
+                                <button type="button">
+                                    <span>카테고리</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button">
+                                    <span>고객센터</span>
+                                </button>
                             </li>
                         </ul>
                     </div>
                     <nav className="mob-menu__gnb">
                         <ul>
-                            <li></li>
+                            {menuList &&
+                                menuList.menu.map((item, index) => (
+                                    <li key={index}>
+                                        {item.depth2.length > 0 ? (
+                                            <button
+                                                type="button"
+                                                className="depth1"
+                                                ref={(el) =>
+                                                    (toggleButtons.current[
+                                                        index
+                                                    ] = el)
+                                                }
+                                            >
+                                                <span>{item.depth1}</span>
+                                            </button>
+                                        ) : (
+                                            <Link
+                                                to={`/${item.pageType}/${item.category}`}
+                                                state={{
+                                                    title: [item.depth1],
+                                                }}
+                                                onClick={closeMobileMenu}
+                                            >
+                                                {item.depth1}
+                                            </Link>
+                                        )}
+
+                                        {item.depth2.length > 0 && (
+                                            <div className="depth2">
+                                                <ul>
+                                                    {item.depth2.map((dep2) => (
+                                                        <li key={dep2.name}>
+                                                            <Link
+                                                                to={`/${item.pageType}/${item.category}/${dep2.type}`}
+                                                                state={{
+                                                                    title: [
+                                                                        item.depth1,
+                                                                        dep2.name,
+                                                                    ],
+                                                                }}
+                                                                onClick={
+                                                                    closeMobileMenu
+                                                                }
+                                                            >
+                                                                {dep2.name}
+                                                            </Link>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </li>
+                                ))}
                         </ul>
                     </nav>
                 </div>
             </aside>
+            <div
+                className={`dim ${dimState ? "visible" : ""}`}
+                onClick={closeMobileMenu}
+            ></div>
         </>
     );
 }

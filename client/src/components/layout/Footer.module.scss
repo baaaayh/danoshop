@@ -199,3 +199,23 @@
         }
     }
 }
+
+@media screen and (max-width: 768px) {
+    .footer {
+        &__inner {
+            padding: 0 15px;
+        }
+        &__bottom {
+            .footer__box {
+                ul {
+                    li {
+                        flex-direction: column;
+                        .row-box {
+                            display: inline-flex;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
