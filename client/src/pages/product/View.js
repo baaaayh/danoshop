@@ -167,7 +167,6 @@ function View() {
                             (option) => option.key === selectedOption.key
                         );
                         if (existingOption) {
-                            // Create a new object for selectedOption.value
                             selectedOption.value = {
                                 ...selectedOption.value,
                                 quantity:
@@ -259,7 +258,7 @@ function View() {
     );
 
     const goToPayment = useCallback(() => {
-        let updateCart = true;
+        let passRemoveCart = true;
         const existingCartItems = cartData || [];
         let isDuplicate = false;
 
@@ -288,7 +287,7 @@ function View() {
         if (confirm) {
             handleDuplicateOptions(existingCartItems);
         } else {
-            updateCart = false;
+            passRemoveCart = false;
         }
         dispatch(clearOrder());
         dispatch(saveOrder(selectedOptions));
@@ -300,7 +299,7 @@ function View() {
             navigate("/order/order", {
                 state: {
                     orderList: selectedOptions,
-                    updateCart,
+                    passRemoveCart,
                 },
             });
         } else {

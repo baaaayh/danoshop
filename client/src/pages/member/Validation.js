@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import SubContentsXsmall from "../../components/layout/SubContentsXsmall";
@@ -13,7 +13,7 @@ function Validation() {
     const userInfo = useSelector((state) => state.user);
     const params = useParams();
 
-    const validateUser = async () => {
+    const validateUser = useCallback(async () => {
         const response = await axios.post(
             "http://localhost:4000/api/validateUser",
             {
@@ -30,11 +30,15 @@ function Validation() {
             setPassword("");
             alert("비밀번호가 일치하지 않습니다. 다시 입력해 주세요.");
         }
-    };
+    }, [userInfo.token, userInfo.userId, navigate, password]);
 
-    const handleInput = (e) => {
+    useEffect(() => {
+        validateUser();
+    }, [validateUser]);
+
+    const handleInput = useCallback((e) => {
         setPassword(e.target.value);
-    };
+    }, []);
 
     return (
         <SubContentsXsmall>

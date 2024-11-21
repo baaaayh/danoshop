@@ -6,7 +6,7 @@ import { removeOrderOption } from "../../modules/orderList";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 import axios from "axios";
 
-function Order() {
+function Order({ previousPath }) {
     const [submitting, setSubmitting] = useState(false);
     const location = useLocation();
     const dispatch = useDispatch();
@@ -291,10 +291,14 @@ function Order() {
                     }
                 );
 
-                location.state.updateCart &&
+                if (
+                    !location.state.passRemoveCart ||
+                    previousPath === "/order/cart"
+                ) {
                     orderList.forEach((option) => {
                         dispatch(removeCartOption(option.key));
                     });
+                }
 
                 if (userInfo.state === "member" && userInfo.token) {
                     await Promise.all(
@@ -329,7 +333,8 @@ function Order() {
             dispatch,
             email,
             inputValue,
-            location.state.updateCart,
+            location.state,
+            previousPath,
             msg,
             navigate,
             orderList,

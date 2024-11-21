@@ -37,7 +37,7 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
             );
 
             if (response.data.success) {
-                dispatch(clearCart());
+                await dispatch(clearCart());
                 response.data.cart.forEach((item) =>
                     dispatch(addCartItem(item))
                 );

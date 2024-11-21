@@ -129,7 +129,6 @@ app.post("/api/userCart", async (req, res) => {
             return res.send({ user: "GUEST" });
         }
 
-        // 로컬 장바구니가 비어있지 않은 경우
         if (localCart.length > 0) {
             localCart.forEach((localItem) => {
                 const existingDBItem = user.cart.find(
@@ -150,11 +149,11 @@ app.post("/api/userCart", async (req, res) => {
                                     localOption.value.quantity;
                             }
                         } else {
-                            existingDBItem.options.push(localOption); // 신규 옵션 추가
+                            existingDBItem.options.push(localOption);
                         }
                     });
                 } else {
-                    user.cart.push(localItem); // 신규 상품 추가
+                    user.cart.push(localItem);
                 }
             });
         }
@@ -181,26 +180,20 @@ app.post("/api/removeCartOption", async (req, res) => {
 
         user.cart = user.cart
             .map((item) => {
-                const updatedOptions = item.options.filter(
+                const filteredOptions = item.options.filter(
                     (option) => option.key !== optionKey
                 );
 
-                if (updatedOptions.length === 0) {
-                    return null;
-                }
-
-                return {
-                    ...item,
-                    options: updatedOptions,
-                };
+                return filteredOptions.length > 0
+                    ? { ...item, options: filteredOptions }
+                    : null;
             })
-            .filter((item) => item !== null);
+            .filter(Boolean); // null 제거
 
-        await user.markModified("cart");
-        await user.save({ validateBeforeSave: false });
+        user.markModified("cart");
         await user.save();
 
-        res.json({ success: true, msg: "Item removed successfully" });
+        res.json({ success: true, msg: "Option removed successfully" });
     } catch (error) {
         console.error("Error removing item from cart:", error);
         res.status(500).send("Error removing item");

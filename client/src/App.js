@@ -1,4 +1,4 @@
-import { createContext, useEffect, useRef, useCallback } from "react";
+import { createContext, useState, useEffect, useRef, useCallback } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,6 +34,11 @@ function App() {
     const token = useSelector((state) => state.user.token);
     const location = useLocation();
     const { pathname } = location;
+    const [previousPath, setPreviousPath] = useState("");
+
+    useEffect(() => {
+        setPreviousPath(location.pathname);
+    }, []);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -82,7 +87,7 @@ function App() {
                         />
                     )}
                     {isOrderPage ? (
-                        <Order />
+                        <Order previousPath={previousPath} />
                     ) : isResultPage ? (
                         <OrderResult />
                     ) : (
