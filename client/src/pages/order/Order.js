@@ -119,9 +119,9 @@ function Order() {
         [inputValue, phoneMsg]
     );
 
-    const handlePaymentChange = (e) => {
+    const handlePaymentChange = useCallback((e) => {
         setSelectedPayment(e.target.value);
-    };
+    }, []);
 
     const handleSelectChange = useCallback((e) => {
         setSelectedValue({
@@ -136,7 +136,7 @@ function Order() {
         }
     }, []);
 
-    const handleCheck = (e) => {
+    const handleCheck = useCallback((e) => {
         const { name, checked } = e.target;
 
         if (name === "agreeAll") {
@@ -151,12 +151,15 @@ function Order() {
                 [name]: checked,
             }));
         }
-    };
+    }, []);
 
-    const removeOption = (e) => {
-        const optionId = e.target.value;
-        dispatch(removeOrderOption(optionId));
-    };
+    const removeOption = useCallback(
+        (e) => {
+            const optionId = e.target.value;
+            dispatch(removeOrderOption(optionId));
+        },
+        [dispatch]
+    );
 
     useEffect(() => {
         toggleButton.current.forEach((button, index) => {
@@ -201,126 +204,143 @@ function Order() {
         setOptionTotalQuantity(totalQuantity);
     }, [cartList]);
 
-    const checkValidOrder = async (e) => {
-        try {
-            e.preventDefault(); // 이벤트 전파 차단
-            if (submitting) return; // 중복 호출 방지
-            setSubmitting(true); // 제출 상태 설정
+    const checkValidOrder = useCallback(
+        async (e) => {
+            try {
+                e.preventDefault();
+                if (submitting) return;
+                setSubmitting(true);
 
-            // 유효성 검사
-            for (const key in inputValue) {
-                if (!inputValue[key]) {
-                    let alertMsg = "";
-                    switch (key) {
-                        case "addressee":
-                            alertMsg = "수취자 성명 항목은 필수 입력값입니다.";
-                            break;
-                        case "defaultAddress":
-                            alertMsg = "기본주소 항목은 필수 입력값입니다.";
-                            break;
-                        case "phone1":
-                        case "phone2":
-                        case "phone3":
-                            alertMsg = "휴대전화 항목은 필수 입력값입니다.";
-                            break;
-                        default:
-                            break;
-                    }
-                    if (alertMsg) {
-                        alert(alertMsg);
-                        return; // 유효성 검사 실패 시 종료
+                for (const key in inputValue) {
+                    if (!inputValue[key]) {
+                        let alertMsg = "";
+                        switch (key) {
+                            case "addressee":
+                                alertMsg =
+                                    "수취자 성명 항목은 필수 입력값입니다.";
+                                break;
+                            case "defaultAddress":
+                                alertMsg = "기본주소 항목은 필수 입력값입니다.";
+                                break;
+                            case "phone1":
+                            case "phone2":
+                            case "phone3":
+                                alertMsg = "휴대전화 항목은 필수 입력값입니다.";
+                                break;
+                            default:
+                                break;
+                        }
+                        if (alertMsg) {
+                            alert(alertMsg);
+                            return;
+                        }
                     }
                 }
-            }
 
-            if (inputValue.nonMemberPW !== inputValue.confirmNonMemberPW) {
-                alert(
-                    "비회원 주문조회 비밀번호와 비밀번호 확인이 일치하지 않습니다."
-                );
-                return;
-            }
-
-            if (!selectedPayment) {
-                alert("결제수단을 선택하셔야 합니다.");
-                return;
-            }
-
-            if (!checkboxValue.agreeAll || !checkboxValue.mallAgree) {
-                alert("약관에 모두 동의하셔야 합니다.");
-                return;
-            }
-
-            // 주문 처리 로직
-            const orderItems = cartList.filter((item) =>
-                orderList.some((orderOption) =>
-                    item.options.some(
-                        (cartOption) => orderOption.key === cartOption.key
-                    )
-                )
-            );
-
-            const today = new Date()
-                .toISOString()
-                .slice(0, 10)
-                .replace(/-/g, "");
-            const orderIdentify = String(
-                Math.floor(Math.random() * 10000000)
-            ).padStart(7, "0");
-            const orderId = today + "-" + orderIdentify;
-            const orderDate = new Date().toISOString().slice(0, 10);
-
-            const orderObj = {
-                orderDate,
-                orderId,
-                userInfo: inputValue,
-                selectedPayment,
-                emailDomain: email,
-                deliveryMsg: msg,
-                items: orderItems,
-                totalPrice: totalPrice,
-            };
-
-            const response = await axios.post(
-                "http://localhost:4000/api/makeOrderHistory",
-                {
-                    userId: userInfo.userId,
-                    orderInfo: orderObj,
+                if (inputValue.nonMemberPW !== inputValue.confirmNonMemberPW) {
+                    alert(
+                        "비회원 주문조회 비밀번호와 비밀번호 확인이 일치하지 않습니다."
+                    );
+                    return;
                 }
-            );
 
-            // 성공 시 처리
+                if (!selectedPayment) {
+                    alert("결제수단을 선택하셔야 합니다.");
+                    return;
+                }
 
-            location.state.updateCart &&
-                orderList.forEach((option) => {
-                    dispatch(removeCartOption(option.key));
-                });
+                if (!checkboxValue.agreeAll || !checkboxValue.mallAgree) {
+                    alert("약관에 모두 동의하셔야 합니다.");
+                    return;
+                }
 
-            if (userInfo.state === "member" && userInfo.token) {
-                await Promise.all(
-                    orderList.map((option) =>
-                        axios.post(
-                            "http://localhost:4000/api/removeCartOption",
-                            {
-                                loginData: { id: userInfo.userId },
-                                optionKey: option.key,
-                            }
+                const orderItems = cartList.filter((item) =>
+                    orderList.some((orderOption) =>
+                        item.options.some(
+                            (cartOption) => orderOption.key === cartOption.key
                         )
                     )
                 );
-            }
 
-            alert(response.data.msg);
-            if (response.data.success) {
-                navigate("/order/orderResult", {
-                    state: { orderId },
-                });
+                const today = new Date()
+                    .toISOString()
+                    .slice(0, 10)
+                    .replace(/-/g, "");
+                const orderIdentify = String(
+                    Math.floor(Math.random() * 10000000)
+                ).padStart(7, "0");
+                const orderId = today + "-" + orderIdentify;
+                const orderDate = new Date().toISOString().slice(0, 10);
+
+                const orderObj = {
+                    orderDate,
+                    orderId,
+                    userInfo: inputValue,
+                    selectedPayment,
+                    emailDomain: email,
+                    deliveryMsg: msg,
+                    items: orderItems,
+                    totalPrice: totalPrice,
+                };
+
+                const response = await axios.post(
+                    "http://localhost:4000/api/makeOrderHistory",
+                    {
+                        userId: userInfo.userId,
+                        orderInfo: orderObj,
+                    }
+                );
+
+                location.state.updateCart &&
+                    orderList.forEach((option) => {
+                        dispatch(removeCartOption(option.key));
+                    });
+
+                if (userInfo.state === "member" && userInfo.token) {
+                    await Promise.all(
+                        orderList.map((option) =>
+                            axios.post(
+                                "http://localhost:4000/api/removeCartOption",
+                                {
+                                    loginData: { id: userInfo.userId },
+                                    optionKey: option.key,
+                                }
+                            )
+                        )
+                    );
+                }
+
+                alert(response.data.msg);
+                if (response.data.success) {
+                    navigate("/order/orderResult", {
+                        state: { orderId },
+                    });
+                }
+            } catch (error) {
+                console.error("Order failed:", error);
+            } finally {
+                setSubmitting(false);
             }
-        } catch (error) {
-            console.error("Order failed:", error);
-        } finally {
-            setSubmitting(false); // 항상 상태 해제
-        }
-    };
+        },
+        [
+            cartList,
+            checkboxValue.agreeAll,
+            checkboxValue.mallAgree,
+            dispatch,
+            email,
+            inputValue,
+            location.state.updateCart,
+            msg,
+            navigate,
+            orderList,
+            selectedPayment,
+            submitting,
+            totalPrice,
+            userInfo.state,
+            userInfo.token,
+            userInfo.userId,
+        ]
+    );
 
     const directInput = useRef();
 
@@ -328,34 +348,37 @@ function Order() {
         "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
     const open = useDaumPostcodePopup(scriptUrl);
 
-    const handleComplete = (data) => {
-        let zoneCode = data.zonecode;
-        let fullAddress = data.address;
-        let extraAddress = "";
+    const handleComplete = useCallback(
+        (data) => {
+            let zoneCode = data.zonecode;
+            let fullAddress = data.address;
+            let extraAddress = "";
 
-        if (data.addressType === "R") {
-            if (data.bname !== "") {
-                extraAddress += data.bname;
+            if (data.addressType === "R") {
+                if (data.bname !== "") {
+                    extraAddress += data.bname;
+                }
+                if (data.buildingName !== "") {
+                    extraAddress +=
+                        extraAddress !== ""
+                            ? `, ${data.buildingName}`
+                            : data.buildingName;
+                }
+                fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
             }
-            if (data.buildingName !== "") {
-                extraAddress +=
-                    extraAddress !== ""
-                        ? `, ${data.buildingName}`
-                        : data.buildingName;
-            }
-            fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
-        }
 
-        setInputValue({
-            ...inputValue,
-            zoneCode: zoneCode,
-            defaultAddress: fullAddress,
-        });
-    };
+            setInputValue({
+                ...inputValue,
+                zoneCode: zoneCode,
+                defaultAddress: fullAddress,
+            });
+        },
+        [inputValue]
+    );
 
-    const handleClick = () => {
+    const handleClick = useCallback(() => {
         open({ onComplete: handleComplete });
-    };
+    }, [open, handleComplete]);
 
     return (
         <div className="order">

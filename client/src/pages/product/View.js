@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useLocation, useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
@@ -16,50 +16,48 @@ function View() {
     const cartData = useSelector((state) => state.cart.cartList);
     const [updatedLocalCart, setUpdatedLocalCart] = useState([]);
     const [isPopupActive, setIsPopupActive] = useState(false);
+    const [selectedOptionId, setSelectedOptionId] = useState();
     const [selectedOptions, setSelectedOptions] = useState([]);
-    const [productInfo, setProductInfo] = useState({ price: 0 });
+    const [productInfo, setProductInfo] = useState({});
     const [totalPrice, setTotalPrice] = useState(0);
     const [isAdding, setIsAdding] = useState(false);
-    const [duplicateConfirm, setDuplicateConfirm] = useState(false);
 
     const params = useParams();
     const location = useLocation();
     const productId = params.id;
     const pageTitle = location.state?.title || ["전상품"];
 
-    useEffect(() => {
-        if (userInfo.token && productInfo.id) {
-            const updateRecentView = async () => {
-                try {
-                    await axios.post(
-                        "http://localhost:4000/api/updateRecentView",
-                        {
-                            userId: userInfo.userId,
-                            recentViewItem: productInfo,
-                        }
-                    );
-                } catch (error) {
-                    console.error("Error updating cart:", error);
-                }
-            };
-            updateRecentView();
+    const {
+        title,
+        summary,
+        price,
+        config,
+        deliveryType,
+        deliveryCharge,
+        detail,
+        view,
+    } = productInfo;
+
+    const options = useMemo(
+        () => productInfo.options || [],
+        [productInfo.options]
+    );
+
+    const getProductDetail = useCallback(async () => {
+        try {
+            const response = await axios.post(
+                "http://localhost:4000/api/product",
+                { id: productId }
+            );
+            setProductInfo(response.data.productView[0]);
+        } catch (error) {
+            console.error("Error fetching product details:", error);
         }
-    }, [productInfo, userInfo]);
+    }, [productId]);
 
     useEffect(() => {
-        const getProductDetail = async () => {
-            try {
-                const response = await axios.post(
-                    "http://localhost:4000/api/product",
-                    { id: productId }
-                );
-                setProductInfo(response.data.productView[0]);
-            } catch (error) {
-                console.error("Error fetching product details:", error);
-            }
-        };
         getProductDetail();
-    }, [productId]);
+    }, [getProductDetail]);
 
     useEffect(() => {
         const newTotalPrice = selectedOptions.reduce((total, option) => {
@@ -73,34 +71,57 @@ function View() {
         setTotalPrice(newTotalPrice);
     }, [selectedOptions, productInfo.price]);
 
-    const handleOptionSelect = (selectedOptionValue, key) => {
-        setSelectedOptions((prev) => {
-            const existingOptionIndex = prev.findIndex(
-                (option) => option.key === key
-            );
-            if (existingOptionIndex === -1) {
-                return [
-                    ...prev,
-                    {
-                        key: key,
-                        value: {
-                            ...selectedOptionValue,
-                            quantity: 1,
-                        },
-                    },
-                ];
-            }
-            return prev;
-        });
-    };
+    const handleSelectChange = useCallback(
+        (e) => {
+            setSelectedOptionId(e.target.value);
+            let selectedOption;
+            options.some((option) => {
+                return Object.keys(option).some((key) => {
+                    return option[key].data.some((o) => {
+                        if (o.id === e.target.value) {
+                            selectedOption = o;
+                            return true;
+                        }
+                        return false;
+                    });
+                });
+            });
 
-    const handleDeleteOption = (key) => {
+            if (selectedOption) {
+                setSelectedOptions((prev) => {
+                    const existingOptionIndex = prev.findIndex(
+                        (option) => option.key === selectedOption.id
+                    );
+
+                    if (existingOptionIndex === -1) {
+                        return [
+                            ...prev,
+                            {
+                                key: e.target.value,
+                                value: {
+                                    ...selectedOption,
+                                    quantity: 1,
+                                },
+                            },
+                        ];
+                    }
+
+                    return prev;
+                });
+            }
+
+            setSelectedOptionId("");
+        },
+        [options]
+    );
+
+    const handleDeleteOption = useCallback((key) => {
         setSelectedOptions((prev) =>
             prev.filter((option) => option.key !== key)
         );
-    };
+    }, []);
 
-    const handleQuantityChange = (key, change) => {
+    const handleQuantityChange = useCallback((key, change) => {
         setSelectedOptions((prev) =>
             prev.map((option) => {
                 if (option.key === key) {
@@ -124,52 +145,10 @@ function View() {
                 }
             })
         );
-    };
+    }, []);
 
-    const handleDuplicateOptions = (existingCartItems) => {
-        existingCartItems.forEach((item) => {
-            const selectedOptionKeys = selectedOptions.map(
-                (option) => option.key
-            );
-            const existingOptionKeys = item.options.map((option) => option.key);
-
-            if (
-                existingOptionKeys.some((key) =>
-                    selectedOptionKeys.includes(key)
-                )
-            ) {
-                selectedOptions.forEach((selectedOption) => {
-                    const existingOption = item.options.find(
-                        (option) => option.key === selectedOption.key
-                    );
-                    if (existingOption) {
-                        // Create a new object for selectedOption.value
-                        selectedOption.value = {
-                            ...selectedOption.value,
-                            quantity:
-                                selectedOption.value.quantity +
-                                existingOption.value.quantity,
-                        };
-                    }
-                });
-            }
-        });
-    };
-
-    const handleAddToCart = async (confirm) => {
-        if (isAdding) return;
-        if (selectedOptions.length <= 0) {
-            alert("옵션을 선택해 주세요.");
-            return;
-        }
-
-        setIsAdding(true);
-
-        try {
-            const existingCartItems = cartData || [];
-            let isDuplicate = false;
-
-            // 장바구니 내 중복 옵션 확인
+    const handleDuplicateOptions = useCallback(
+        (existingCartItems) => {
             existingCartItems.forEach((item) => {
                 const selectedOptionKeys = selectedOptions.map(
                     (option) => option.key
@@ -183,44 +162,129 @@ function View() {
                         selectedOptionKeys.includes(key)
                     )
                 ) {
-                    isDuplicate = true;
+                    selectedOptions.forEach((selectedOption) => {
+                        const existingOption = item.options.find(
+                            (option) => option.key === selectedOption.key
+                        );
+                        if (existingOption) {
+                            // Create a new object for selectedOption.value
+                            selectedOption.value = {
+                                ...selectedOption.value,
+                                quantity:
+                                    selectedOption.value.quantity +
+                                    existingOption.value.quantity,
+                            };
+                        }
+                    });
                 }
             });
+        },
+        [selectedOptions]
+    );
 
-            if (isDuplicate) {
-                const isConfirmed =
-                    confirm &&
-                    window.confirm(
-                        "동일한 상품이 장바구니에 있습니다. 장바구니에 추가하시겠습니까?"
-                    );
-                if (!isConfirmed) {
-                    return;
-                }
+    const openLayerPopup = useCallback(() => {
+        setIsPopupActive(true);
+    }, []);
+
+    const closeLayerPopup = useCallback(() => {
+        setIsPopupActive(false);
+    }, []);
+
+    const handleAddToCart = useCallback(
+        async (confirm) => {
+            if (isAdding) return;
+            if (selectedOptions.length <= 0) {
+                alert("옵션을 선택해 주세요.");
+                return;
             }
 
-            const product = {
-                id: productInfo.id,
-                options: selectedOptions,
-                price: productInfo.price,
-                data: { ...productInfo },
-            };
+            setIsAdding(true);
 
-            dispatch(addCartItem(product));
-            setUpdatedLocalCart((prev) => [...prev, product]);
-            openLayerPopup(true);
-        } catch (error) {
-            console.error("Failed to add to cart:", error);
-        } finally {
-            setIsAdding(false);
-        }
-    };
+            try {
+                const existingCartItems = cartData || [];
+                let isDuplicate = false;
 
-    const goToPayment = () => {
+                existingCartItems.forEach((item) => {
+                    const selectedOptionKeys = selectedOptions.map(
+                        (option) => option.key
+                    );
+                    const existingOptionKeys = item.options.map(
+                        (option) => option.key
+                    );
+
+                    if (
+                        existingOptionKeys.some((key) =>
+                            selectedOptionKeys.includes(key)
+                        )
+                    ) {
+                        isDuplicate = true;
+                    }
+                });
+
+                if (isDuplicate) {
+                    const isConfirmed =
+                        confirm &&
+                        window.confirm(
+                            "동일한 상품이 장바구니에 있습니다. 장바구니에 추가하시겠습니까?"
+                        );
+                    if (!isConfirmed) {
+                        return;
+                    }
+                }
+
+                const product = {
+                    id: productInfo.id,
+                    options: selectedOptions,
+                    price: productInfo.price,
+                    data: { ...productInfo },
+                };
+
+                dispatch(addCartItem(product));
+                setUpdatedLocalCart((prev) => [...prev, product]);
+                openLayerPopup(true);
+            } catch (error) {
+                console.error("Failed to add to cart:", error);
+            } finally {
+                setIsAdding(false);
+            }
+        },
+        [
+            cartData,
+            dispatch,
+            isAdding,
+            openLayerPopup,
+            productInfo,
+            selectedOptions,
+        ]
+    );
+
+    const goToPayment = useCallback(() => {
         let updateCart = true;
         const existingCartItems = cartData || [];
-        const confirm = window.confirm(
-            "동일한 상품이 장바구니에 있습니다. 함께 구매하시겠습니까?"
-        );
+        let isDuplicate = false;
+
+        existingCartItems.forEach((item) => {
+            const selectedOptionKeys = selectedOptions.map(
+                (option) => option.key
+            );
+            const existingOptionKeys = item.options.map((option) => option.key);
+
+            if (
+                existingOptionKeys.some((key) =>
+                    selectedOptionKeys.includes(key)
+                )
+            ) {
+                isDuplicate = true;
+            }
+        });
+
+        let confirm = false;
+        if (isDuplicate) {
+            confirm = window.confirm(
+                "동일한 상품이 장바구니에 있습니다. 함께 구매하시겠습니까?"
+            );
+        }
+
         if (confirm) {
             handleDuplicateOptions(existingCartItems);
         } else {
@@ -244,48 +308,36 @@ function View() {
                 state: { title: ["로그인"], prevPage: location.pathname },
             });
         }
-    };
-
-    const {
-        title,
-        summary,
-        price,
-        config,
-        deliveryType,
-        deliveryCharge,
-        detail,
-        view,
-    } = productInfo;
-
-    const options = productInfo.options || [];
+    }, [
+        selectedOptions,
+        userInfo,
+        location,
+        cartData,
+        dispatch,
+        handleDuplicateOptions,
+        navigate,
+    ]);
 
     const layerPopupRef = useRef();
 
-    function openLayerPopup() {
-        setIsPopupActive(true);
-    }
-
-    function closeLayerPopup() {
-        setIsPopupActive(false);
-    }
+    const updateDbCart = useCallback(async () => {
+        try {
+            await axios.post("http://localhost:4000/api/userCart", {
+                loginData: { id: userInfo.userId },
+                localCart: updatedLocalCart,
+            });
+        } catch (error) {
+            console.error("Error updating cart:", error);
+        }
+    }, [userInfo.userId, updatedLocalCart]);
 
     useEffect(() => {
         if (userInfo.state === "member") {
-            const updateDbCart = async () => {
-                try {
-                    await axios.post("http://localhost:4000/api/userCart", {
-                        loginData: { id: userInfo.userId },
-                        localCart: updatedLocalCart,
-                    });
-                } catch (error) {
-                    console.error("Error updating cart:", error);
-                }
-            };
             updateDbCart();
         }
-    }, [updatedLocalCart, userInfo]);
+    }, [userInfo.state, updateDbCart]);
 
-    const addWishListItem = async () => {
+    const addWishListItem = useCallback(async () => {
         if (userInfo.token) {
             try {
                 let wishList;
@@ -322,7 +374,30 @@ function View() {
                 console.error("Error updating wish list:", error);
             }
         }
-    };
+    }, [
+        userInfo.token,
+        productInfo,
+        selectedOptions,
+        totalPrice,
+        userInfo.userId,
+    ]);
+
+    const updateRecentView = useCallback(async () => {
+        try {
+            await axios.post("http://localhost:4000/api/updateRecentView", {
+                userId: userInfo.userId,
+                recentViewItem: productInfo,
+            });
+        } catch (error) {
+            console.error("Error updating cart:", error);
+        }
+    }, [userInfo.userId, productInfo]);
+
+    useEffect(() => {
+        if (userInfo.token && productInfo.id) {
+            updateRecentView();
+        }
+    }, [userInfo.token, productInfo.id, updateRecentView]);
 
     return (
         <SubContentsSmall>
@@ -411,20 +486,23 @@ function View() {
                                         </span>
                                         <select
                                             name={key}
-                                            onChange={(e) => {
-                                                const value = JSON.parse(
-                                                    e.target.value
-                                                );
-                                                const selectedOptionValueId =
-                                                    JSON.parse(
-                                                        e.target.value
-                                                    ).id;
-                                                handleOptionSelect(
-                                                    value,
-                                                    selectedOptionValueId
-                                                );
-                                                e.target.value = ""; // 선택 후 초기화
-                                            }}
+                                            // onChange={(e) => {
+                                            //     const value = JSON.parse(
+                                            //         e.target.value
+                                            //     );
+                                            //     const selectedOptionValueId =
+                                            //         JSON.parse(
+                                            //             e.target.value
+                                            //         ).id;
+                                            //     handleOptionSelect(
+                                            //         value,
+                                            //         selectedOptionValueId
+                                            //     );
+                                            //     e.target.value = "";
+                                            // }}
+                                            key={option[key].title}
+                                            value={selectedOptionId}
+                                            onChange={handleSelectChange}
                                         >
                                             <option value="">
                                                 - [선택] 옵션을 선택해 주세요 -
@@ -432,9 +510,7 @@ function View() {
                                             {option[key].data.map(
                                                 (optionValue) => (
                                                     <option
-                                                        value={JSON.stringify(
-                                                            optionValue
-                                                        )}
+                                                        value={optionValue.id}
                                                         key={optionValue.id}
                                                     >
                                                         {optionValue.label} (
@@ -452,14 +528,14 @@ function View() {
                             <span>(최소주문수량 1개 이상)</span>
                         </div>
                         {selectedOptions.length > 0 &&
-                            selectedOptions.map((option) => {
+                            selectedOptions.map((option, index) => {
                                 const displayPrice =
                                     (Number(price) +
                                         (Number(option.value.price) || 0)) *
                                     Number(option.value.quantity);
                                 return (
                                     <div
-                                        key={option.key}
+                                        key={`${index}-${option.key}`}
                                         className={styles["detail-view__calc"]}
                                     >
                                         <div>
