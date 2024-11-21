@@ -91,7 +91,7 @@ function AgreementForm() {
                                 id="agreementAllCheck"
                                 name="agreementAllCheck"
                                 checked={checkboxValue.agreementAllCheck}
-                                onClick={handleCheckbox}
+                                onChange={handleCheckbox}
                             />
                             <label htmlFor="agreementAllCheck">
                                 <strong>
@@ -120,7 +120,7 @@ function AgreementForm() {
                                 id="agreement1"
                                 name="agreement1"
                                 checked={checkboxValue.agreement1}
-                                onClick={handleCheckbox}
+                                onChange={handleCheckbox}
                             />
                             <label htmlFor="agreement1">
                                 이용약관 동의 (필수)
@@ -245,7 +245,7 @@ function AgreementForm() {
                                 id="agreement2"
                                 name="agreement2"
                                 checked={checkboxValue.agreement2}
-                                onClick={handleCheckbox}
+                                onChange={handleCheckbox}
                             />
                             <label htmlFor="agreement2">
                                 개인정보 수집 및 이용 동의 (필수)
@@ -370,7 +370,7 @@ function AgreementForm() {
                                 id="agreement3"
                                 name="agreement3"
                                 checked={checkboxValue.agreement3}
-                                onClick={handleCheckbox}
+                                onChange={handleCheckbox}
                             />
                             <label htmlFor="agreement3">
                                 쇼핑정보 수신 동의 (선택)
@@ -390,7 +390,7 @@ function AgreementForm() {
                                         id="agreement4"
                                         name="agreement4"
                                         checked={checkboxValue.agreement4}
-                                        onClick={handleCheckbox}
+                                        onChange={handleCheckbox}
                                     />
                                     <label htmlFor="agreement4">
                                         SMS 수신 동의 (선택)
@@ -404,7 +404,7 @@ function AgreementForm() {
                                         id="agreement5"
                                         name="agreement5"
                                         checked={checkboxValue.agreement5}
-                                        onClick={handleCheckbox}
+                                        onChange={handleCheckbox}
                                     />
                                     <label htmlFor="agreement5">
                                         이메일 수신 동의 (선택)

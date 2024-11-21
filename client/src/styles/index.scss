@@ -1245,6 +1245,11 @@ table {
     margin-top: 50px;
 }
 
+.radio-column {
+    display: flex;
+    column-gap: 20px;
+}
+
 .step {
     padding: 0 0 45px 0;
     ol {

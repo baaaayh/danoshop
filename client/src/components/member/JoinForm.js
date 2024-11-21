@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
@@ -22,6 +22,8 @@ function JoinForm({ userInfo }) {
         birthDay: "",
         recommand: "",
     });
+    const [birthValue, setBirthValue] = useState("birthType1");
+    const [memberTypeValue, setMemberTypeValue] = useState("personal");
 
     useEffect(() => {
         if (isModifyPage && user) {
@@ -208,6 +210,14 @@ function JoinForm({ userInfo }) {
         }
     };
 
+    const handleBirthValue = useCallback((e) => {
+        setBirthValue(e.target.value);
+    }, []);
+
+    const handleMemberType = useCallback((e) => {
+        setMemberTypeValue(e.target.id);
+    }, []);
+
     return (
         <div className="join">
             <div className="join__inner">
@@ -230,15 +240,48 @@ function JoinForm({ userInfo }) {
                                                 회원구분
                                             </th>
                                             <td>
-                                                <span className="radio-group">
-                                                    <input
-                                                        type="radio"
-                                                        id="memberType"
-                                                    />
-                                                    <label htmlFor="memberType">
-                                                        개인회원
-                                                    </label>
-                                                </span>
+                                                <ul className="radio-column">
+                                                    <li>
+                                                        <span className="radio-group">
+                                                            <input
+                                                                type="radio"
+                                                                id="personal"
+                                                                value="personal"
+                                                                name="memberType"
+                                                                onChange={
+                                                                    handleMemberType
+                                                                }
+                                                                checked={
+                                                                    memberTypeValue ===
+                                                                    "personal"
+                                                                }
+                                                            />
+                                                            <label htmlFor="personal">
+                                                                개인회원
+                                                            </label>
+                                                        </span>
+                                                    </li>
+                                                    <li>
+                                                        <span className="radio-group">
+                                                            <input
+                                                                type="radio"
+                                                                id="enterprise"
+                                                                value="enterprise"
+                                                                name="memberType"
+                                                                onChange={
+                                                                    handleMemberType
+                                                                }
+                                                                checked={
+                                                                    memberTypeValue ===
+                                                                    "enterprise"
+                                                                }
+                                                            />
+                                                            <label htmlFor="enterprise">
+                                                                기업회원
+                                                            </label>
+                                                        </span>
+                                                    </li>
+                                                </ul>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -448,7 +491,16 @@ function JoinForm({ userInfo }) {
                                                     <span className="radio-group">
                                                         <input
                                                             type="radio"
+                                                            name="birthGroup"
                                                             id="birthType1"
+                                                            value={"birthType1"}
+                                                            onChange={
+                                                                handleBirthValue
+                                                            }
+                                                            checked={
+                                                                birthValue ===
+                                                                "birthType1"
+                                                            }
                                                         />
                                                         <label htmlFor="birthType1">
                                                             양력
@@ -457,7 +509,16 @@ function JoinForm({ userInfo }) {
                                                     <span className="radio-group">
                                                         <input
                                                             type="radio"
+                                                            name="birthGroup"
                                                             id="birthType2"
+                                                            value={"birthType2"}
+                                                            onChange={
+                                                                handleBirthValue
+                                                            }
+                                                            checked={
+                                                                birthValue ===
+                                                                "birthType2"
+                                                            }
                                                         />
                                                         <label htmlFor="birthType2">
                                                             음력
