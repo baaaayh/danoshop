@@ -45,6 +45,9 @@ const SideOrder = forwardRef((props, ref) => {
             getProductInfo(itemId);
             sidePanel.current.classList.add("active");
         },
+        reset: () => {
+            setSelectedOptions([]);
+        },
     }));
 
     const closePanel = useCallback(() => {

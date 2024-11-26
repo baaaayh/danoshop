@@ -18,20 +18,6 @@ function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
         }
     });
 
-    const handlePageClick = useCallback(
-        (index) => {
-            setActivePage(index);
-            setCurrentPage(index);
-
-            if (index >= endNumber) {
-                setCurrentPageGroup((prevGroup) => prevGroup + 1);
-            } else if (index <= startNumber) {
-                setCurrentPageGroup((prevGroup) => Math.max(prevGroup - 1, 0));
-            }
-        },
-        [endNumber, startNumber, setCurrentPage]
-    );
-
     const renderButton = () => {
         let buttonArray = [];
         for (let i = startNumber; i < endNumber; i++) {
@@ -59,6 +45,62 @@ function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
         setActivePage(currentPage);
     }, [currentPage]);
 
+    const handlePageClick = useCallback(
+        (index) => {
+            setActivePage(index);
+            setCurrentPage(index);
+
+            if (index >= endNumber) {
+                setCurrentPageGroup((prevGroup) => prevGroup + 1);
+            } else if (index <= startNumber) {
+                setCurrentPageGroup((prevGroup) => Math.max(prevGroup - 1, 0));
+            }
+        },
+        [setActivePage, setCurrentPage, endNumber, startNumber]
+    );
+
+    const goFirstPage = useCallback(() => {
+        setCurrentPage(0);
+        setCurrentPageGroup(0);
+    }, [setCurrentPage, setCurrentPageGroup]);
+
+    const goPrevGroup = useCallback(() => {
+        if (currentPageGroup > 0) {
+            setCurrentPageGroup((prevGroup) => prevGroup - 1);
+            setCurrentPage(currentPageGroup * itemsPerPageGroup - 1);
+        } else {
+            setCurrentPage(currentPageGroup * itemsPerPageGroup);
+        }
+    }, [
+        setCurrentPageGroup,
+        setCurrentPage,
+        currentPageGroup,
+        itemsPerPageGroup,
+    ]);
+
+    const goNextGruop = useCallback(() => {
+        if (currentPageGroup < totalGroups - 1) {
+            setCurrentPageGroup((prevGroup) => prevGroup + 1);
+            setCurrentPage((currentPageGroup + 1) * itemsPerPageGroup);
+        } else {
+            const lastPage = pagingButtons - 1;
+            setCurrentPage(lastPage);
+        }
+    }, [
+        setCurrentPageGroup,
+        setCurrentPage,
+        currentPageGroup,
+        itemsPerPageGroup,
+        totalGroups,
+        pagingButtons,
+    ]);
+
+    const goLastPage = useCallback(() => {
+        const lastPage = pagingButtons - 1;
+        setCurrentPage(lastPage);
+        setCurrentPageGroup(Math.floor(lastPage / itemsPerPageGroup));
+    }, [pagingButtons, setCurrentPage, setCurrentPageGroup, itemsPerPageGroup]);
+
     return (
         <div className={`pagination ${styles.pagination}`}>
             <ul>
@@ -66,10 +108,7 @@ function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
                     <button
                         type="button"
                         className={`${styles.pagination__button} ${styles.pagination__first} ${styles.pagination__nav}`}
-                        onClick={() => {
-                            setCurrentPage(0);
-                            setCurrentPageGroup(0);
-                        }}
+                        onClick={goFirstPage}
                     >
                         FIRST
                     </button>
@@ -78,16 +117,7 @@ function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
                     <button
                         type="button"
                         className={`${styles.pagination__button} ${styles.pagination__prev} ${styles.pagination__nav}`}
-                        onClick={() => {
-                            if (currentPageGroup > 0) {
-                                setCurrentPageGroup(
-                                    (prevGroup) => prevGroup - 1
-                                );
-                                setCurrentPage(
-                                    currentPageGroup * itemsPerPageGroup - 1
-                                );
-                            }
-                        }}
+                        onClick={goPrevGroup}
                     >
                         PREV
                     </button>
@@ -99,16 +129,7 @@ function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
                     <button
                         type="button"
                         className={`${styles.pagination__button} ${styles.pagination__next} ${styles.pagination__nav}`}
-                        onClick={() => {
-                            if (currentPageGroup < totalGroups - 1) {
-                                setCurrentPageGroup(
-                                    (prevGroup) => prevGroup + 1
-                                );
-                                setCurrentPage(
-                                    (currentPageGroup + 1) * itemsPerPageGroup
-                                );
-                            }
-                        }}
+                        onClick={goNextGruop}
                     >
                         NEXT
                     </button>
@@ -117,13 +138,7 @@ function Pagination({ currentPage, setCurrentPage, pagingButtons }) {
                     <button
                         type="button"
                         className={`${styles.pagination__button} ${styles.pagination__last} ${styles.pagination__nav}`}
-                        onClick={() => {
-                            const lastPage = pagingButtons - 1;
-                            setCurrentPage(lastPage);
-                            setCurrentPageGroup(
-                                Math.floor(lastPage / itemsPerPageGroup)
-                            );
-                        }}
+                        onClick={goLastPage}
                     >
                         LAST
                     </button>

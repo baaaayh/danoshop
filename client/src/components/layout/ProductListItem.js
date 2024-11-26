@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
+import SidePanel from "./SidePanel";
 import styles from "./ProductListItem.module.scss";
 
 function ProductListItem({ list, title, prevPage }) {
     return (
         <>
-            {list.map((item) => (
+            {list.map((item, index) => (
                 <li className={styles.product__item} key={item.id}>
                     <div className={styles.product__figure}>
                         <Link
@@ -25,6 +26,7 @@ function ProductListItem({ list, title, prevPage }) {
                                 alt={item.title}
                             />
                         </Link>
+                        <SidePanel productId={item.id} index={index} />
                     </div>
                     <div className={styles.product__desc}>
                         <Link

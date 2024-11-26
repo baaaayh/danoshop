@@ -5,7 +5,7 @@ import ItemDetail from "../layout/ItemDetail";
 import axios from "axios";
 import Pagination from "../layout/Pagination";
 
-function RecentView({ setSideOrderItem }) {
+function RecentView() {
     const [pagingButtons, setPagingButtons] = useState(0);
     const [recentView, setRecentView] = useState([]);
     const [checkedOptions, setCheckedOptions] = useState({});

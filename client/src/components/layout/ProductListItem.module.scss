@@ -4,6 +4,17 @@
     }
     &__figure {
         font-size: 0;
+        position: relative;
+        a {
+            display: block;
+        }
+        &:hover {
+            :global(.side-panel) {
+                right: 20px;
+                opacity: 1;
+                visibility: visible;
+            }
+        }
     }
     &__title {
         font-size: 14px;
