@@ -30,11 +30,7 @@ function Validation() {
             setPassword("");
             alert("비밀번호가 일치하지 않습니다. 다시 입력해 주세요.");
         }
-    }, [userInfo.token, userInfo.userId, navigate, password]);
-
-    useEffect(() => {
-        validateUser();
-    }, [validateUser]);
+    }, [password, userInfo.userId, userInfo.token, navigate]);
 
     const handleInput = useCallback((e) => {
         setPassword(e.target.value);

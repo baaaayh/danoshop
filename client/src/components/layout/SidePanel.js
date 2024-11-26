@@ -178,9 +178,13 @@ function SidePanel({ productId, index }) {
                                         if (!option[key].data) {
                                             return null;
                                         }
-                                        return option[key].data.map((o) => (
-                                            <li>{o.label}</li>
-                                        ));
+                                        return option[key].data.map(
+                                            (o, idx) => (
+                                                <li key={`${o.id}-${o.idx}`}>
+                                                    {o.label}
+                                                </li>
+                                            )
+                                        );
                                     })}
                             </ul>
                         </div>

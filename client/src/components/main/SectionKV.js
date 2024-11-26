@@ -50,10 +50,20 @@ function SectionKV() {
                                     className={styles["swiper-slide"]}
                                     key={kvInfo.id}
                                 >
-                                    <img
-                                        src={`uploads/kv/${kvInfo.image}`}
-                                        alt=""
-                                    />
+                                    <picture key={kvInfo.id}>
+                                        <source
+                                            media="(min-width: 769px)"
+                                            srcSet={`uploads/kv/${kvInfo.images["pc"]}`}
+                                        />
+                                        <source
+                                            media="(max-width: 768px)"
+                                            srcSet={`uploads/kv/${kvInfo.images["mo"]}`}
+                                        />
+                                        <img
+                                            src={`uploads/kv/${kvInfo.images["pc"]}`}
+                                            alt=""
+                                        />
+                                    </picture>
                                 </SwiperSlide>
                             );
                         })}
