@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const KVSchema = new mongoose.Schema({
     id: String,
-    image: String,
+    image: Object,
 });
 
-const KV = mongoose.model('kv', KVSchema);
+const KV = mongoose.model("kv", KVSchema);
 
 module.exports = KV;

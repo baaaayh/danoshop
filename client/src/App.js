@@ -49,7 +49,9 @@ function App() {
     const { data, error, isLoading } = useQuery({
         queryKey: ["menu"],
         queryFn: async () => {
-            const response = await axios.get("http://localhost:4000/api/menu");
+            const response = await axios.get(
+                "http://baaaayh.sytes.net/api/menu"
+            );
             return response.data;
         },
     });

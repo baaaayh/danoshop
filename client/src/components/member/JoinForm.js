@@ -80,7 +80,7 @@ function JoinForm({ userInfo }) {
         ) {
             const joinDataFetch = async () => {
                 const response = await axios.post(
-                    "http://localhost:4000/api/checkId",
+                    "http://baaaayh.sytes.net/api/checkId",
                     { userId: inputValue.userId }
                 );
                 setCheckValidId(
@@ -186,7 +186,7 @@ function JoinForm({ userInfo }) {
                     grade: "습관성형 비기너",
                 };
                 const response = await axios.post(
-                    "http://localhost:4000/api/join",
+                    "http://baaaayh.sytes.net/api/join",
                     {
                         userForm: userForm,
                         isModifyMode: isModifyPage ? true : false,

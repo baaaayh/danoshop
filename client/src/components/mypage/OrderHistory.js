@@ -14,7 +14,7 @@ function OrderHistory() {
 
     const getOrderHistory = useCallback(async () => {
         const response = await axios.post(
-            "http://localhost:4000/api/getOrderHistory",
+            "http://baaaayh.sytes.net/api/getOrderHistory",
             {
                 userId: userInfo.userId,
                 page: currentPage,

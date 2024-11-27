@@ -46,7 +46,7 @@ function View() {
     const getProductDetail = useCallback(async () => {
         try {
             const response = await axios.post(
-                "http://localhost:4000/api/product",
+                "http://baaaayh.sytes.net/api/product",
                 { id: productId }
             );
             setProductInfo(response.data.productView[0]);
@@ -321,7 +321,7 @@ function View() {
 
     const updateDbCart = useCallback(async () => {
         try {
-            await axios.post("http://localhost:4000/api/userCart", {
+            await axios.post("http://baaaayh.sytes.net/api/userCart", {
                 loginData: { id: userInfo.userId },
                 localCart: updatedLocalCart,
             });
@@ -363,7 +363,7 @@ function View() {
                     ];
                 }
 
-                await axios.post("http://localhost:4000/api/addWishList", {
+                await axios.post("http://baaaayh.sytes.net/api/addWishList", {
                     userId: userInfo.userId,
                     wishList: wishList,
                 });
@@ -383,7 +383,7 @@ function View() {
 
     const updateRecentView = useCallback(async () => {
         try {
-            await axios.post("http://localhost:4000/api/updateRecentView", {
+            await axios.post("http://baaaayh.sytes.net/api/updateRecentView", {
                 userId: userInfo.userId,
                 recentViewItem: productInfo,
             });

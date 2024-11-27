@@ -17,7 +17,7 @@ function FindPass() {
 
     const validateUser = async () => {
         const response = await axios.post(
-            "http://localhost:4000/api/validateUser",
+            "http://baaaayh.sytes.net/api/validateUser",
             {
                 userId: userInfo.userId,
                 password,

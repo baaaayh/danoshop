@@ -20,7 +20,7 @@ function WishList() {
             try {
                 if (userInfo.token) {
                     const response = await axios.post(
-                        "http://localhost:4000/api/getWishList",
+                        "http://baaaayh.sytes.net/api/getWishList",
                         {
                             userId: userInfo.userId,
                             page: currentPage,
@@ -53,7 +53,7 @@ function WishList() {
             if (window.confirm("관심상품을 비우시겠습니까?")) {
                 if (userInfo.token) {
                     const response = await axios.post(
-                        "http://localhost:4000/api/clearWishList",
+                        "http://baaaayh.sytes.net/api/clearWishList",
                         {
                             userId: userInfo.userId,
                         }
@@ -72,7 +72,7 @@ function WishList() {
             if (window.confirm("해당 상품을 삭제하시겠습니까?")) {
                 if (userInfo.token) {
                     const response = await axios.post(
-                        "http://localhost:4000/api/removeWishListItem",
+                        "http://baaaayh.sytes.net/api/removeWishListItem",
                         {
                             userId: userInfo.userId,
                             itemUniqueId: uniqueId,
@@ -104,7 +104,7 @@ function WishList() {
             if (window.confirm("해당 상품을 삭제하시겠습니까?")) {
                 if (userInfo.token) {
                     const response = await axios.post(
-                        "http://localhost:4000/api/removeWishListItem",
+                        "http://baaaayh.sytes.net/api/removeWishListItem",
                         {
                             itemUniqueId: checkedOptionsArray,
                             userId: userInfo.userId,

@@ -284,7 +284,7 @@ function Order({ previousPath }) {
                 };
 
                 const response = await axios.post(
-                    "http://localhost:4000/api/makeOrderHistory",
+                    "http://baaaayh.sytes.net/api/makeOrderHistory",
                     {
                         userId: userInfo.userId,
                         orderInfo: orderObj,
@@ -304,7 +304,7 @@ function Order({ previousPath }) {
                     await Promise.all(
                         orderList.map((option) =>
                             axios.post(
-                                "http://localhost:4000/api/removeCartOption",
+                                "http://baaaayh.sytes.net/api/removeCartOption",
                                 {
                                     loginData: { id: userInfo.userId },
                                     optionKey: option.key,

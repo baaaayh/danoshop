@@ -69,6 +69,9 @@
         border-top: 1px solid #e8e8e8;
     }
     &__chk {
+        position: absolute;
+        top: 0px;
+        left: 0;
         flex-basis: 35px;
         flex-shrink: 0;
     }
@@ -78,10 +81,15 @@
     &__detail {
         display: flex;
         column-gap: 20px;
+        padding-left: 35px;
+        padding-right: 30px;
     }
     &__thumb {
         flex-basis: 120px;
         flex-shrink: 0;
+        a {
+            display: block;
+        }
         img {
             width: 100%;
         }
@@ -200,6 +208,37 @@
         li {
             & + li {
                 margin-top: 5px;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .cart {
+        flex-direction: column;
+        &__calc {
+            ul {
+                li {
+                    font-size: 14px;
+                }
+            }
+        }
+        &__total {
+            font-size: 14px;
+        }
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .cart {
+        &__thumb {
+            flex-basis: 80px;
+        }
+        &__button {
+            > button {
+                span {
+                    font-size: 12px;
+                }
             }
         }
     }

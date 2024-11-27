@@ -1,7 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const path = require("path");
 const dotenv = require("dotenv").config();
 const dbConnection = require("./db");
 const { v4: uuidv4 } = require("uuid");
@@ -23,6 +25,8 @@ app.use(cors());
 // body-parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(express.static(path.join(__dirname, "build")));
 
 // GET KV
 app.get("/api/menu", async (req, res) => {
@@ -601,6 +605,10 @@ app.post("/api/searchItems", async (req, res) => {
     } catch (error) {
         console.log(error);
     }
+});
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 app.listen(PORT, () => {

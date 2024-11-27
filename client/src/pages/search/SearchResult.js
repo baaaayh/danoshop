@@ -22,7 +22,7 @@ function SearchResult() {
     const getSearchResults = useCallback(async () => {
         try {
             const response = await axios.post(
-                "http://localhost:4000/api/searchItems",
+                "http://baaaayh.sytes.net/api/searchItems",
                 {
                     searchText: text,
                     page: currentPage,

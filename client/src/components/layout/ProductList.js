@@ -50,7 +50,7 @@ function ProductList({ type, path, title, productList }) {
     return (
         <>
             {menuList &&
-                menuList.menu.map((item) => {
+                menuList?.menu?.map((item) => {
                     return params && params.category === item.category ? (
                         <TabMenu
                             pageType={item.pageType}

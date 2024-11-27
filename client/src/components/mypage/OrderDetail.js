@@ -15,7 +15,7 @@ function OrderDetail() {
         try {
             if (userInfo.token) {
                 const response = await axios.post(
-                    "http://localhost:4000/api/getOrderHistory",
+                    "http://baaaayh.sytes.net/api/getOrderHistory",
                     {
                         userId: userInfo.userId,
                         orderId,

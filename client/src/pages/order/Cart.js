@@ -99,7 +99,7 @@ function Cart() {
 
         if (userInfo.userId) {
             try {
-                await axios.post("http://localhost:4000/api/userCart", {
+                await axios.post("http://baaaayh.sytes.net/api/userCart", {
                     loginData: { id: userInfo.userId },
                     localCart: updatedCartList,
                     type: "overwrite",
@@ -191,7 +191,7 @@ function Cart() {
             if (userInfo.token) {
                 try {
                     await axios.post(
-                        "http://localhost:4000/api/removeCartOption",
+                        "http://baaaayh.sytes.net/api/removeCartOption",
                         {
                             loginData: { id: userInfo.userId },
                             optionKey: optionKey,
@@ -213,7 +213,7 @@ function Cart() {
             if (userInfo.token) {
                 try {
                     await axios.post(
-                        "http://localhost:4000/api/removeCartOption",
+                        "http://baaaayh.sytes.net/api/removeCartOption",
                         {
                             loginData: { id: userInfo.userId },
                             optionKey: selectedOptionList.map(
@@ -250,7 +250,7 @@ function Cart() {
                         .filter(Boolean);
                 });
 
-                await axios.post("http://localhost:4000/api/addWishList", {
+                await axios.post("http://baaaayh.sytes.net/api/addWishList", {
                     userId: userInfo.userId,
                     wishList: wishList,
                 });
@@ -502,7 +502,7 @@ function Cart() {
                                                                     </button>
                                                                     <button
                                                                         type="button"
-                                                                        className="btn btn-square"
+                                                                        className="btn btn-square btn-square--black"
                                                                         onClick={() =>
                                                                             goToPayment(
                                                                                 option.key

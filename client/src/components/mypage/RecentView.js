@@ -18,7 +18,7 @@ function RecentView() {
         try {
             if (userInfo.token) {
                 const response = await axios.post(
-                    "http://localhost:4000/api/getRecentView",
+                    "http://baaaayh.sytes.net/api/getRecentView",
                     {
                         userId: userInfo.userId,
                         page: currentPage,
@@ -49,7 +49,7 @@ function RecentView() {
             if (window.confirm("해당 상품을 삭제하시겠습니까?")) {
                 if (userInfo.token) {
                     const response = await axios.post(
-                        "http://localhost:4000/api/removeRecentViewItem",
+                        "http://baaaayh.sytes.net/api/removeRecentViewItem",
                         {
                             userId: userInfo.userId,
                             itemUniqueId: uniqueId,

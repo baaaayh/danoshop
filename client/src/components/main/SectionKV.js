@@ -12,23 +12,24 @@ import styles from "./SectionKV.module.scss";
 function SectionKV() {
     const [kvList, setKvList] = useState([]);
 
-    const getKVList = useCallback(async () => {
-        try {
-            const response = await axios.get("http://localhost:4000/api/kv");
-            setKvList(response.data);
-        } catch (error) {
-            console.error("Error fetching KV list:", error);
-        }
-    }, []);
-
     useEffect(() => {
+        const getKVList = async () => {
+            try {
+                const response = await axios.get(
+                    "http://baaaayh.sytes.net/api/kv"
+                );
+                setKvList(response.data);
+            } catch (error) {
+                console.error("Error fetching KV list:", error);
+            }
+        };
         getKVList();
-    }, [getKVList]);
+    }, []);
 
     return (
         <section className="section section--kv">
             <div className={styles.section__inner}>
-                {kvList.length > 0 && (
+                {kvList && kvList.length > 0 && (
                     <Swiper
                         modules={[Autoplay, EffectFade, Pagination]}
                         effect={"fade"}
@@ -44,11 +45,11 @@ function SectionKV() {
                         loop={true}
                         className={styles.kv}
                     >
-                        {kvList.map((kvInfo) => {
+                        {kvList.map((kvInfo, index) => {
                             return (
                                 <SwiperSlide
                                     className={styles["swiper-slide"]}
-                                    key={kvInfo.id}
+                                    key={`${kvInfo.id}-${index}`}
                                 >
                                     <picture key={kvInfo.id}>
                                         <source

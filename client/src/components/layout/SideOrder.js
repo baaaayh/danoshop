@@ -31,7 +31,7 @@ const SideOrder = forwardRef((props, ref) => {
     const getProductInfo = useCallback(async (itemId) => {
         try {
             const response = await axios.post(
-                "http://localhost:4000/api/product",
+                "http://baaaayh.sytes.net/api/product",
                 { id: itemId }
             );
             setProductInfo(response.data.productView[0]);

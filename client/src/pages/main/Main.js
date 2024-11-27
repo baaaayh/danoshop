@@ -13,7 +13,7 @@ function Main({ menu }) {
     const getProductList = useCallback(async () => {
         try {
             const response = await axios.post(
-                "http://localhost:4000/api/product"
+                "http://baaaayh.sytes.net/api/product"
             );
             setProductList(response.data.productView);
         } catch (error) {

@@ -2718,6 +2718,10 @@ table {
     .side-panel {
         display: none;
     }
+    .step ol li {
+        font-size: 12px;
+        padding: 0 10px;
+    }
 }
 
 @media screen and (max-width: 768px) {

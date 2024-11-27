@@ -14,7 +14,7 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
     const [scrolled, setScrolled] = useState();
     const menuListData = useSelector((state) => state.menu.menuList);
     const itemsOptions = useSelector((state) =>
-        state.cart.cartList?.map((item) => item.options)
+        state.cart?.cartList?.map((item) => item.options)
     );
     const userInfo = useSelector((state) => state.user);
     const localCart = useSelector((state) => state.cart.cartList);
@@ -28,7 +28,7 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
             }
 
             const response = await axios.post(
-                "http://localhost:4000/api/userCart",
+                "http://baaaayh.sytes.net/api/userCart",
                 {
                     loginData: { id: userInfo.userId },
                     localCart: localCart,
@@ -331,7 +331,7 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
                             <nav className="gnb">
                                 <ul>
                                     {menuList &&
-                                        menuList.menu.map((item, index) => (
+                                        menuList?.menu?.map((item, index) => (
                                             <li
                                                 key={index}
                                                 ref={(el) =>
@@ -350,7 +350,7 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
                                                 {item.depth2.length > 0 && (
                                                     <div className="depth2">
                                                         <ul>
-                                                            {item.depth2.map(
+                                                            {item?.depth2?.map(
                                                                 (dep2) => (
                                                                     <li
                                                                         key={
@@ -479,7 +479,7 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
                     <nav className="mob-menu__gnb">
                         <ul>
                             {menuList &&
-                                menuList.menu.map((item, index) => (
+                                menuList?.menu?.map((item, index) => (
                                     <li key={index}>
                                         {item.depth2.length > 0 ? (
                                             <button
@@ -508,24 +508,26 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
                                         {item.depth2.length > 0 && (
                                             <div className="depth2">
                                                 <ul>
-                                                    {item.depth2.map((dep2) => (
-                                                        <li key={dep2.name}>
-                                                            <Link
-                                                                to={`/${item.pageType}/${item.category}/${dep2.type}`}
-                                                                state={{
-                                                                    title: [
-                                                                        item.depth1,
-                                                                        dep2.name,
-                                                                    ],
-                                                                }}
-                                                                onClick={
-                                                                    closeMobileMenu
-                                                                }
-                                                            >
-                                                                {dep2.name}
-                                                            </Link>
-                                                        </li>
-                                                    ))}
+                                                    {item?.depth2?.map(
+                                                        (dep2) => (
+                                                            <li key={dep2.name}>
+                                                                <Link
+                                                                    to={`/${item.pageType}/${item.category}/${dep2.type}`}
+                                                                    state={{
+                                                                        title: [
+                                                                            item.depth1,
+                                                                            dep2.name,
+                                                                        ],
+                                                                    }}
+                                                                    onClick={
+                                                                        closeMobileMenu
+                                                                    }
+                                                                >
+                                                                    {dep2.name}
+                                                                </Link>
+                                                            </li>
+                                                        )
+                                                    )}
                                                 </ul>
                                             </div>
                                         )}
