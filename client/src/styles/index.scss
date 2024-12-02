@@ -2641,9 +2641,11 @@ table {
                 font-size: 0;
                 li {
                     display: inline-block;
+                    padding: 25px;
                     &:first-child {
                         width: 100%;
                         border-bottom: 1px solid #e3e3e3;
+                        padding: 25px;
                     }
                     &:nth-child(2) {
                         border-left: none;
@@ -2720,6 +2722,13 @@ table {
         }
         &__desc {
             column-gap: 15px;
+        }
+    }
+    .order-box {
+        &--state {
+            ul {
+                padding: 25px 0 30px;
+            }
         }
     }
     .side-panel {
