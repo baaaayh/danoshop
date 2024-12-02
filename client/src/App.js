@@ -198,6 +198,7 @@ function App() {
                         <Footer
                             mobileMenu={mobileMenu}
                             openSearchFunc={openSearchFunc}
+                            loggedIn={loggedIn}
                         />
                     )}
                 </div>

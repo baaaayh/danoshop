@@ -164,6 +164,7 @@ function Header({
     const openMobileMenu = useCallback(() => {
         dispatch(showDim());
         mobileMenu.current.classList.add("active");
+        document.body.style.overflow = "hidden";
     }, [dispatch, mobileMenu]);
 
     const closeMobileMenu = useCallback(() => {
@@ -174,6 +175,7 @@ function Header({
             $sibling.style.height = "0px";
         });
         mobileMenu.current.classList.remove("active");
+        document.body.style.overflow = "";
     }, [dispatch, mobileMenu]);
 
     return (
