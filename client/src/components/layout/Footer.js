@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { showDim } from "../../modules/dimToggle";
 import styles from "./Footer.module.scss";
 
-function Footer({ mobileMenu }) {
+function Footer({ mobileMenu, openSearchFunc, loggedIn }) {
     const dispatch = useDispatch();
     const [totalQuantity, setTotalQuantity] = useState(0);
     const itemsOptions = useSelector((state) =>
@@ -297,7 +297,11 @@ function Footer({ mobileMenu }) {
                             </button>
                         </li>
                         <li>
-                            <button type="button" className="btn btn-search">
+                            <button
+                                type="button"
+                                className="btn btn-search"
+                                onClick={openSearchFunc}
+                            >
                                 <span>검색</span>
                             </button>
                         </li>
@@ -317,7 +321,11 @@ function Footer({ mobileMenu }) {
                         </li>
                         <li>
                             <Link
-                                to="/mypage/dashboard"
+                                to={
+                                    loggedIn === "member"
+                                        ? "/mypage/dashboard"
+                                        : "/member/login"
+                                }
                                 className="btn btn-user"
                                 state={{ title: ["마이쇼핑"] }}
                             >

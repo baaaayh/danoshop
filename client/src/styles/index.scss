@@ -1963,9 +1963,6 @@ table {
         .header__nav {
             display: none;
         }
-        .search-form {
-            top: 110px;
-        }
     }
     &__inner {
         max-width: 1780px;
@@ -2121,18 +2118,18 @@ table {
         }
     }
 }
-
 .search-form {
-    display: none;
-    position: absolute;
+    position: fixed;
     top: 160px;
     width: 100%;
     border-top: 1px solid #e8e8e8;
     background-color: #fff;
     z-index: 11;
-
+    h2 {
+        display: none;
+    }
     &--active {
-        display: block;
+        top: 110px;
     }
 
     &__inner {
@@ -2722,6 +2719,11 @@ table {
         font-size: 12px;
         padding: 0 10px;
     }
+    .search-form {
+        h2 {
+            display: block;
+        }
+    }
 }
 
 @media screen and (max-width: 768px) {
@@ -2750,6 +2752,12 @@ table {
                     }
                 }
             }
+        }
+        .btn-close {
+            top: 25px;
+            right: 20px;
+            width: 20px;
+            height: 20px;
         }
     }
     .gnb {
@@ -2782,6 +2790,14 @@ table {
                     font-size: 12px;
                 }
             }
+        }
+    }
+    .search-form {
+        &__inner {
+            padding: 25px 15px;
+        }
+        &__box {
+            padding: 20px 0 0;
         }
     }
 }

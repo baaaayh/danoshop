@@ -26,6 +26,8 @@ import "./styles/index.scss";
 import SideOrder from "./components/layout/SideOrder";
 import Membership from "./pages/events/Membership";
 import SearchResult from "./pages/search/SearchResult";
+import SearchForm from "./components/layout/SearchForm";
+import { showDim, hiddenDim } from "./modules/dimToggle";
 export const SidePanelContext = createContext(null);
 
 function App() {
@@ -35,6 +37,7 @@ function App() {
     const location = useLocation();
     const { pathname } = location;
     const [previousPath, setPreviousPath] = useState("");
+    const [searchFormVisible, setSearchFormVisible] = useState(false);
 
     useEffect(() => {
         setPreviousPath(location.pathname);
@@ -77,16 +80,42 @@ function App() {
 
     const mobileMenu = useRef(null);
 
+    const openSearchFunc = useCallback(() => {
+        dispatch(showDim());
+        setSearchFormVisible(true);
+        document.body.style.overflow = "hidden";
+    }, [dispatch]);
+
+    const closeSearchFunc = useCallback(() => {
+        dispatch(hiddenDim());
+        setSearchFormVisible(false);
+        document.body.style.overflow = "";
+    }, [dispatch]);
+
+    const [headerState, setHeaderState] = useState(false);
+
     return (
         <>
             <SidePanelContext.Provider value={sidePanel}>
                 <div className="container">
                     {!isOrderPage && !isResultPage && (
-                        <Header
-                            loggedIn={loggedIn}
-                            removeToken={removeToken}
-                            mobileMenu={mobileMenu}
-                        />
+                        <>
+                            <Header
+                                loggedIn={loggedIn}
+                                removeToken={removeToken}
+                                mobileMenu={mobileMenu}
+                                openSearchFunc={openSearchFunc}
+                                closeSearchFunc={closeSearchFunc}
+                                setHeaderState={setHeaderState}
+                            />
+                            {searchFormVisible && (
+                                <SearchForm
+                                    closeSearchFunc={closeSearchFunc}
+                                    headerState={headerState}
+                                    loggedIn={loggedIn}
+                                />
+                            )}
+                        </>
                     )}
                     {isOrderPage ? (
                         <Order previousPath={previousPath} />
@@ -166,7 +195,10 @@ function App() {
                         </>
                     )}
                     {!isOrderPage && !isResultPage && (
-                        <Footer mobileMenu={mobileMenu} />
+                        <Footer
+                            mobileMenu={mobileMenu}
+                            openSearchFunc={openSearchFunc}
+                        />
                     )}
                 </div>
                 <SideOrder ref={sidePanel} />

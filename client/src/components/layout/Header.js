@@ -3,10 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addCartItem, clearCart } from "../../modules/cartList";
 import { showDim, hiddenDim } from "../../modules/dimToggle";
-
 import axios from "axios";
 
-function Header({ loggedIn, removeToken, mobileMenu }) {
+function Header({
+    loggedIn,
+    removeToken,
+    mobileMenu,
+    openSearchFunc,
+    setHeaderState,
+    closeSearchFunc,
+}) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [totalQuantity, setTotalQuantity] = useState(0);
@@ -18,7 +24,7 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
     );
     const userInfo = useSelector((state) => state.user);
     const localCart = useSelector((state) => state.cart.cartList);
-    const [searchText, setSearchText] = useState("");
+
     const dimState = useSelector((state) => state.dim.dimVisible);
 
     const fetchCartData = useCallback(async () => {
@@ -78,8 +84,10 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
         const handleScroll = () => {
             if (window.scrollY > 0) {
                 setScrolled("active");
+                setHeaderState(true);
             } else {
                 setScrolled();
+                setHeaderState(false);
             }
         };
 
@@ -125,34 +133,15 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
         }
     }, [ww, menuList, dispatch]);
 
-    const searchForm = useRef();
-    const openSearchForm = useRef();
-    const closeSearchForm = useRef();
+    const openSearchForm = useRef([]);
 
     useEffect(() => {
-        openSearchForm.current.addEventListener("click", (e) => {
-            dispatch(showDim());
-            searchForm.current.classList.add("search-form--active");
+        openSearchForm.current.forEach((button) => {
+            button.addEventListener("click", function () {
+                openSearchFunc();
+            });
         });
-        closeSearchForm.current.addEventListener("click", (e) => {
-            dispatch(hiddenDim());
-            searchForm.current.classList.remove("search-form--active");
-        });
-    }, [dispatch]);
-
-    const onSubmit = (e) => {
-        e.preventDefault();
-        dispatch(hiddenDim());
-        searchForm.current.classList.remove("search-form--active");
-        navigate(
-            `/search/searchResult?search=${encodeURIComponent(searchText)}`
-        );
-        setSearchText("");
-    };
-
-    const handleChange = (e) => {
-        setSearchText(e.target.value);
-    };
+    }, [dispatch, openSearchFunc]);
 
     const toggleButtons = useRef([]);
 
@@ -277,6 +266,9 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
                                         <button
                                             type="button"
                                             className="btn btn-search"
+                                            ref={(el) =>
+                                                (openSearchForm.current[1] = el)
+                                            }
                                         ></button>
                                     </li>
                                 </ul>
@@ -319,7 +311,9 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
                                         <button
                                             type="button"
                                             className="btn btn-search"
-                                            ref={openSearchForm}
+                                            ref={(el) =>
+                                                (openSearchForm.current[0] = el)
+                                            }
                                         >
                                             검색
                                         </button>
@@ -380,35 +374,6 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
                                         ))}
                                 </ul>
                             </nav>
-                        </div>
-                    </div>
-                </div>
-                <div className="search-form " ref={searchForm}>
-                    <div className="search-form__inner">
-                        <h2>SEARCH</h2>
-                        <div className="search-form__box">
-                            <div className="search-form__input">
-                                <input
-                                    type="text"
-                                    placeholder="검색어를 입력해 주세요."
-                                    value={searchText}
-                                    onChange={handleChange}
-                                />
-                                <button
-                                    type="submit"
-                                    className="btn btn-search"
-                                    onClick={onSubmit}
-                                >
-                                    검색
-                                </button>
-                            </div>
-                            <button
-                                type="button"
-                                className="btn btn-close"
-                                ref={closeSearchForm}
-                            >
-                                <span>닫기</span>
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -539,7 +504,10 @@ function Header({ loggedIn, removeToken, mobileMenu }) {
             </aside>
             <div
                 className={`dim ${dimState ? "visible" : ""}`}
-                onClick={closeMobileMenu}
+                onClick={() => {
+                    closeMobileMenu();
+                    closeSearchFunc();
+                }}
             ></div>
         </>
     );
