@@ -52,6 +52,7 @@ const SideOrder = forwardRef((props, ref) => {
 
     const closePanel = useCallback(() => {
         sidePanel.current.classList.remove("active");
+        document.body.style.overflow = "";
     }, []);
 
     useEffect(() => {

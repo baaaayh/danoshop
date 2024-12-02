@@ -80,6 +80,7 @@ function ItemDetail({ itemValue, handleCheckbox, checkedOptions, removeItem }) {
     const callSideOrder = (itemId) => {
         if (sidePanel && sidePanel.current) {
             sidePanel.current.open(itemId);
+            document.body.style.overflow = "hidden";
         } else {
             console.error("sidePanel ref가 설정되지 않았습니다.");
         }
