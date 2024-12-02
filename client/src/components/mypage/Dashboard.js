@@ -56,7 +56,7 @@ function Dashboard() {
                                 <span>배송중</span>
                             </li>
                             <li>
-                                <b>{orderObj && orderObj.length + 1}</b>
+                                <b>{orderObj && orderObj.length}</b>
                                 <span>배송완료</span>
                             </li>
                         </ul>

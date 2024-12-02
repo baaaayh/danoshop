@@ -1822,6 +1822,7 @@ table {
     &__button {
         ul {
             display: flex;
+            column-gap: 5px;
             button {
                 padding: 0 20px;
                 span {
@@ -2455,8 +2456,17 @@ table {
     input[type="text"],
     input[type="password"],
     input[type="number"] {
+        width: 100%;
+        height: 38px;
         line-height: 38px;
-        height: 40px;
+    }
+    .email-form {
+        > div {
+            select {
+                height: 38px;
+                line-height: 38px;
+            }
+        }
     }
     .header {
         &__nav {
@@ -2722,6 +2732,53 @@ table {
     .search-form {
         h2 {
             display: block;
+        }
+    }
+
+    .order__payment {
+        ul {
+            li {
+                label {
+                    padding: 0 15px;
+                    height: 38px;
+                    line-height: 38px;
+                }
+            }
+        }
+    }
+    .zip-code {
+        button {
+            span {
+                line-height: 38px;
+            }
+        }
+    }
+    .form {
+        &__tit {
+            flex-basis: 85px;
+            font-size: 13px;
+        }
+    }
+    .order {
+        &__result {
+            .order__product {
+                padding: 20px 0px;
+            }
+        }
+        &__nav {
+            .user-area {
+                right: 10px;
+            }
+        }
+    }
+    .join {
+        &__row {
+            margin-top: 35px;
+            button {
+                span {
+                    line-height: 45px;
+                }
+            }
         }
     }
 }
