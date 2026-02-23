@@ -11,18 +11,30 @@
       "config": { "distDir": "build" }
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/:path*",
-      "destination": "/server/server.js"
+      "src": "/api/(.*)",
+      "dest": "/server/server.js"
     },
     {
-      "source": "/uploads/:path*",
-      "destination": "/server/server.js"
+      "src": "/uploads/(.*)",
+      "dest": "/server/server.js"
     },
     {
-      "source": "/((?!api|uploads|static|.*\\..*).*)",
-      "destination": "/client/index.html"
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "/manifest.json"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/favicon.ico"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
