@@ -21,7 +21,7 @@
       "destination": "/server/server.js"
     },
     {
-      "source": "/((?!api|uploads).*)",
+      "source": "/((?!api|uploads|static|.*\\..*).*)",
       "destination": "/client/index.html"
     }
   ]
