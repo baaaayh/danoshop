@@ -20,6 +20,6 @@
       "source": "/uploads/:path*",
       "destination": "/server/server.js"
     },
-    [{ "source": "/(.*)", "destination": "/" }]
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
