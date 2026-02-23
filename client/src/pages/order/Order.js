@@ -283,7 +283,7 @@ function Order({ previousPath }) {
         };
 
         const response = await axios.post(
-          "http://baaaayh.sytes.nethttp://localhost:4000/api/makeOrderHistory",
+          "http://baaaayh.sytes.net/api/makeOrderHistory",
           {
             userId: userInfo.userId,
             orderInfo: orderObj,
@@ -299,13 +299,10 @@ function Order({ previousPath }) {
         if (userInfo.state === "member" && userInfo.token) {
           await Promise.all(
             orderList.map((option) =>
-              axios.post(
-                "http://baaaayh.sytes.nethttp://localhost:4000/api/removeCartOption",
-                {
-                  loginData: { id: userInfo.userId },
-                  optionKey: option.key,
-                },
-              ),
+              axios.post("http://baaaayh.sytes.net/api/removeCartOption", {
+                loginData: { id: userInfo.userId },
+                optionKey: option.key,
+              }),
             ),
           );
         }

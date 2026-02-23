@@ -15,7 +15,7 @@ function SectionKV() {
   useEffect(() => {
     const getKVList = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/kv");
+        const response = await axios.get("/api/kv");
         if (Array.isArray(response.data)) {
           setKvList(response.data);
         } else {

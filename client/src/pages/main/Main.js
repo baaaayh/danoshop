@@ -12,7 +12,7 @@ function Main({ menu }) {
 
   const getProductList = useCallback(async () => {
     try {
-      const response = await axios.post("http://localhost:4000/api/product");
+      const response = await axios.post("/api/product");
       setProductList(response.data.productView || []);
     } catch (error) {
       console.error("Error fetching product list:", error);

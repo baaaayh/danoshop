@@ -32,10 +32,7 @@ function LoginForm() {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:4000/api/login",
-        loginData,
-      );
+      const response = await axios.post("/api/login", loginData);
       setValidUser(response.data.msg);
 
       if (response.data.success) {

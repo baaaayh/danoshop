@@ -17,12 +17,9 @@ function Modify() {
   useEffect(() => {
     const userDataFetch = async () => {
       try {
-        const response = await axios.post(
-          "http://localhost:4000/api/userInfo",
-          {
-            userId: userId,
-          },
-        );
+        const response = await axios.post("/api/userInfo", {
+          userId: userId,
+        });
         setUserInfo(response.data.user);
       } catch (error) {
         console.error("User data fetch error:", error);

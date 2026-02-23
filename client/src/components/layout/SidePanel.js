@@ -27,7 +27,7 @@ function SidePanel({ productId, index }) {
 
   const getProductDetail = useCallback(async () => {
     try {
-      const response = await axios.post("http://localhost:4000/api/product", {
+      const response = await axios.post("/api/product", {
         id: productId,
       });
       setProductInfo(response.data.productView[0]);
@@ -62,7 +62,7 @@ function SidePanel({ productId, index }) {
           ];
         }
 
-        await axios.post("http://localhost:4000/api/addWishList", {
+        await axios.post("/api/addWishList", {
           userId: userInfo.userId,
           wishList: wishList,
         });

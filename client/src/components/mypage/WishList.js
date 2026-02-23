@@ -19,14 +19,11 @@ function WishList() {
     async (page) => {
       try {
         if (userInfo.token) {
-          const response = await axios.post(
-            "http://localhost:4000/api/getWishList",
-            {
-              userId: userInfo.userId,
-              page: currentPage,
-              itemsPerPage: itemsPerPage,
-            },
-          );
+          const response = await axios.post("/api/getWishList", {
+            userId: userInfo.userId,
+            page: currentPage,
+            itemsPerPage: itemsPerPage,
+          });
           setPagingButtons(response.data.pagingButtons);
           setWishList(response.data.wishList);
         }
@@ -52,12 +49,9 @@ function WishList() {
     try {
       if (window.confirm("관심상품을 비우시겠습니까?")) {
         if (userInfo.token) {
-          const response = await axios.post(
-            "http://localhost:4000/api/clearWishList",
-            {
-              userId: userInfo.userId,
-            },
-          );
+          const response = await axios.post("/api/clearWishList", {
+            userId: userInfo.userId,
+          });
           setPagingButtons(response.data.pagingButtons);
           setWishList(response.data.wishList);
         }
@@ -71,15 +65,12 @@ function WishList() {
     try {
       if (window.confirm("해당 상품을 삭제하시겠습니까?")) {
         if (userInfo.token) {
-          const response = await axios.post(
-            "http://localhost:4000/api/removeWishListItem",
-            {
-              userId: userInfo.userId,
-              itemUniqueId: uniqueId,
-              page: currentPage,
-              itemsPerPage: itemsPerPage,
-            },
-          );
+          const response = await axios.post("/api/removeWishListItem", {
+            userId: userInfo.userId,
+            itemUniqueId: uniqueId,
+            page: currentPage,
+            itemsPerPage: itemsPerPage,
+          });
           setPagingButtons(response.data.pagingButtons);
           setWishList(response.data.wishList);
         }
@@ -103,15 +94,12 @@ function WishList() {
 
       if (window.confirm("해당 상품을 삭제하시겠습니까?")) {
         if (userInfo.token) {
-          const response = await axios.post(
-            "http://localhost:4000/api/removeWishListItem",
-            {
-              itemUniqueId: checkedOptionsArray,
-              userId: userInfo.userId,
-              page: currentPage,
-              itemsPerPage: itemsPerPage,
-            },
-          );
+          const response = await axios.post("/api/removeWishListItem", {
+            itemUniqueId: checkedOptionsArray,
+            userId: userInfo.userId,
+            page: currentPage,
+            itemsPerPage: itemsPerPage,
+          });
           setPagingButtons(response.data.pagingButtons);
           setWishList(response.data.wishList);
         }
