@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
 import axios from "axios";

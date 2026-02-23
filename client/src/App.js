@@ -41,7 +41,7 @@ function App() {
 
   useEffect(() => {
     setPreviousPath(location.pathname);
-  }, []);
+  }, []); // eslint-disable-line
 
   useEffect(() => {
     window.scrollTo(0, 0);

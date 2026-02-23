@@ -21,7 +21,7 @@ const SideOrder = forwardRef((props, ref) => {
   const userInfo = useSelector((state) => state.user);
   const cartList = useSelector((state) => state.cart.cartList);
   const [isPopupActive, setIsPopupActive] = useState(false);
-  const [updatedLocalCart, setUpdatedLocalCart] = useState([]);
+  const [, setUpdatedLocalCart] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [productInfo, setProductInfo] = useState({ price: 0 });
   const [totalPrice, setTotalPrice] = useState(0);

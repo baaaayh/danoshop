@@ -91,7 +91,7 @@ function Header({
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, []); // eslint-disable-line
 
   useEffect(() => {
     setMenuList(menuListData[0]);

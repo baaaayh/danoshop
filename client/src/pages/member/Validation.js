@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import SubContentsXsmall from "../../components/layout/SubContentsXsmall";

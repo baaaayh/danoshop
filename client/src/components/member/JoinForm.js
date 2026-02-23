@@ -46,9 +46,9 @@ function JoinForm({ userInfo }) {
   }, [isModifyPage, user]);
 
   const [checkValidId, setCheckValidId] = useState("");
-  const [validPassword, setValidPassword] = useState(false);
-  const [validPhoneNumber, setValidPhoneNumber] = useState(false);
-  const [validEmail, setValidEmail] = useState(false);
+  const [, setValidPassword] = useState(false);
+  const [, setValidPhoneNumber] = useState(false);
+  const [, setValidEmail] = useState(false);
 
   useEffect(() => {
     if (userInfo) {

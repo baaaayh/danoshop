@@ -12,9 +12,9 @@ import axios from "axios";
 function SidePanel({ productId, index }) {
   const userInfo = useSelector((state) => state.user);
   const sidePanel = useContext(SidePanelContext);
-  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [selectedOptions] = useState([]);
   const [productInfo, setProductInfo] = useState({});
-  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalPrice] = useState(0);
 
   const callSideOrder = (itemId) => {
     if (sidePanel && sidePanel.current) {
@@ -90,7 +90,7 @@ function SidePanel({ productId, index }) {
 
   useEffect(() => {
     getProductDetail();
-  }, []);
+  }, []); // eslint-disable-line
 
   const activeOptionButton = useRef([]);
   const optionList = useRef([]);
