@@ -22,7 +22,7 @@
     },
     {
       "source": "/((?!api|uploads).*)",
-      "destination": "/index.html"
+      "destination": "/client/index.html"
     }
   ]
 }
