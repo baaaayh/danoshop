@@ -17,6 +17,10 @@
       "destination": "/server/server.js"
     },
     {
+      "source": "/uploads/:path*",
+      "destination": "/server/server.js"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/client/$1"
     }
