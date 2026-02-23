@@ -20,6 +20,9 @@
       "source": "/uploads/:path*",
       "destination": "/server/server.js"
     },
-    { "source": "/(.*)", "destination": "/" }
+    {
+      "source": "/((?!api|uploads|static|.*\\..*).*)",
+      "destination": "/client/index.html"
+    }
   ]
 }
