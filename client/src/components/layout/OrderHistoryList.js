@@ -124,7 +124,7 @@ function OrderHistory({ orderObj }) {
         </div>
       ) : (
         <p className="mypage-box__noitem">
-          <img src="../images/icons/icon_no_item.svg" alt="" />
+          <img src="/images/icons/icon_no_item.svg" alt="" />
           주문 내역이 없습니다.
         </p>
       )}

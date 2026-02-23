@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server/server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "client/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "build" }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/server/server.js"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "/server/server.js"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/client/$1"
+    }
+  ]
+}
