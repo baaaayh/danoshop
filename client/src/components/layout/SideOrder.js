@@ -30,7 +30,10 @@ const SideOrder = forwardRef((props, ref) => {
 
   const getProductInfo = useCallback(async (itemId) => {
     try {
-      const response = await axios.post("/api/product", { id: itemId });
+      const response = await axios.post(
+        "http://baaaayh.sytes.nethttp://localhost:4000/api/product",
+        { id: itemId },
+      );
       setProductInfo(response.data.productView[0]);
     } catch (error) {
       console.error("Failed to update cart on server:", error);

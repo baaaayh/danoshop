@@ -14,10 +14,13 @@ function Validation() {
   const params = useParams();
 
   const validateUser = useCallback(async () => {
-    const response = await axios.post("/api/validateUser", {
-      userId: userInfo.userId,
-      password,
-    });
+    const response = await axios.post(
+      "http://localhost:4000/api/validateUser",
+      {
+        userId: userInfo.userId,
+        password,
+      },
+    );
 
     if (userInfo.token && response.data.success) {
       navigate("/member/modify", {

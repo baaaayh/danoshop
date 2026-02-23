@@ -24,28 +24,22 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// static 경로 수정: Vercel 배포 시 빌드된 리액트 파일 위치
-app.use(express.static(path.join(__dirname, "../client/build")));
-
-// --- API 라우트들 (기존 로직 유지) ---
-
 app.get("/api/menu", async (req, res) => {
   try {
     const menuItem = await MENU.find();
-    res.json(menuItem[0]);
+    res.json(menuItem[0] || {});
   } catch (error) {
-    console.error("Error fetching menu item:", error);
-    res.status(500).send("Error fetching menu item");
+    res.status(500).json({});
   }
 });
 
 app.get("/api/kv", async (req, res) => {
   try {
     const kvItems = await KV.find();
-    res.json(kvItems);
+    res.json(kvItems || []);
   } catch (error) {
-    console.error("Error fetching KV items:", error);
-    res.status(500).send("Error fetching KV items");
+    console.error("KV 에러:", error);
+    res.status(500).json([]);
   }
 });
 
@@ -53,30 +47,16 @@ app.post("/api/product", async (req, res) => {
   try {
     const { id, page, itemsPerPage } = req.body;
     const skip = page * itemsPerPage;
-
     const productItems = id ? await Product.find({ id }) : await Product.find();
-
     const pagingButtons = Math.ceil(productItems.length / itemsPerPage);
+    const result =
+      !page || !itemsPerPage
+        ? productItems
+        : productItems.reverse().slice(skip, skip + itemsPerPage);
 
-    const paginatedProductList = productItems
-      .reverse()
-      .slice(skip, skip + itemsPerPage);
-
-    let result;
-    if (!page || !itemsPerPage) {
-      result = productItems;
-    } else {
-      result = paginatedProductList;
-    }
-
-    res.json({
-      success: true,
-      productView: result,
-      pagingButtons: pagingButtons,
-    });
+    res.json({ success: true, productView: result, pagingButtons });
   } catch (error) {
-    console.error("Error fetching main product items:", error);
-    res.status(500).send("Error fetching product items");
+    res.status(500).json({ success: false, productView: [] });
   }
 });
 
@@ -123,29 +103,31 @@ app.post("/api/userInfo", async (req, res) => {
 app.post("/api/userCart", async (req, res) => {
   try {
     const { loginData, localCart, type } = req.body;
+    if (!loginData?.id)
+      return res.status(400).json({ success: false, msg: "로그인 필요" });
+
     const user = await User.findOne({ userId: loginData.id });
+    if (!user)
+      return res.status(404).json({ success: false, msg: "유저 없음" });
 
-    if (user.state === "guest") {
-      return res.send({ user: "GUEST" });
-    }
+    if (user.state === "guest") return res.json({ user: "GUEST" });
 
-    if (localCart.length > 0) {
+    // 장바구니 병합 로직 (기존 유지)
+    if (Array.isArray(localCart) && localCart.length > 0) {
       localCart.forEach((localItem) => {
         const existingDBItem = user.cart.find(
           (item) => item.id === localItem.id,
         );
-
         if (existingDBItem) {
           localItem.options.forEach((localOption) => {
             const existingOption = existingDBItem.options.find(
-              (option) => option.key === localOption.key,
+              (opt) => opt.key === localOption.key,
             );
             if (existingOption) {
-              if (type === "update") {
+              if (type === "update")
                 existingOption.value.quantity += localOption.value.quantity;
-              } else if (type === "overwrite") {
+              else if (type === "overwrite")
                 existingOption.value.quantity = localOption.value.quantity;
-              }
             } else {
               existingDBItem.options.push(localOption);
             }
@@ -158,11 +140,10 @@ app.post("/api/userCart", async (req, res) => {
 
     user.markModified("cart");
     await user.save();
-
     res.json({ success: true, cart: user.cart });
   } catch (error) {
-    console.error("Error saving cart data", error);
-    res.status(500).send("Error saving cart data");
+    console.error("Cart error:", error);
+    res.status(500).json({ success: false, msg: "서버 에러" });
   }
 });
 
@@ -597,15 +578,16 @@ app.post("/api/searchItems", async (req, res) => {
   }
 });
 
+// 리액트 빌드 파일 제공 (가장 마지막에 위치)
+app.use(express.static(path.join(__dirname, "../client/build")));
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "..", "client", "build", "index.html"));
 });
 
+// 서버 실행 (Vercel 환경이 아닐 때만 listen)
 if (process.env.NODE_ENV !== "production") {
   const PORT = 4000;
-  app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  });
+  app.listen(PORT, () => console.log(`서버 작동 중: http://localhost:${PORT}`));
 }
 
 module.exports = app;

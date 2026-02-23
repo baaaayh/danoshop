@@ -14,10 +14,13 @@ function OrderDetail() {
   const fetchOrder = useCallback(async () => {
     try {
       if (userInfo.token) {
-        const response = await axios.post("/api/getOrderHistory", {
-          userId: userInfo.userId,
-          orderId,
-        });
+        const response = await axios.post(
+          "http://baaaayh.sytes.nethttp://localhost:4000/api/getOrderHistory",
+          {
+            userId: userInfo.userId,
+            orderId,
+          },
+        );
         const [order] = response.data.orderObj;
         serOrderObj(order);
       }

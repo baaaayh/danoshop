@@ -17,11 +17,14 @@ function RecentView() {
   const fetchRecentView = useCallback(async () => {
     try {
       if (userInfo.token) {
-        const response = await axios.post("/api/getRecentView", {
-          userId: userInfo.userId,
-          page: currentPage,
-          itemsPerPage: itemsPerPage,
-        });
+        const response = await axios.post(
+          "http://localhost:4000/api/getRecentView",
+          {
+            userId: userInfo.userId,
+            page: currentPage,
+            itemsPerPage: itemsPerPage,
+          },
+        );
         setPagingButtons(response.data.pagingButtons);
         setRecentView(response.data.recentView);
       }
@@ -45,12 +48,15 @@ function RecentView() {
     try {
       if (window.confirm("해당 상품을 삭제하시겠습니까?")) {
         if (userInfo.token) {
-          const response = await axios.post("/api/removeRecentViewItem", {
-            userId: userInfo.userId,
-            itemUniqueId: uniqueId,
-            page: currentPage,
-            itemsPerPage: itemsPerPage,
-          });
+          const response = await axios.post(
+            "http://localhost:4000/api/removeRecentViewItem",
+            {
+              userId: userInfo.userId,
+              itemUniqueId: uniqueId,
+              page: currentPage,
+              itemsPerPage: itemsPerPage,
+            },
+          );
           setPagingButtons(response.data.pagingButtons);
           setRecentView(response.data.recentView);
         }

@@ -33,7 +33,7 @@ function Header({
         return;
       }
 
-      const response = await axios.post("/api/userCart", {
+      const response = await axios.post("http://localhost:4000/api/userCart", {
         loginData: { id: userInfo.userId },
         localCart: localCart,
         type: "update",

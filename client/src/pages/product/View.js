@@ -45,7 +45,9 @@ function View() {
 
   const getProductDetail = useCallback(async () => {
     try {
-      const response = await axios.post("/api/product", { id: productId });
+      const response = await axios.post("http://localhost:4000/api/product", {
+        id: productId,
+      });
       setProductInfo(response.data.productView[0]);
     } catch (error) {
       console.error("Error fetching product details:", error);
@@ -298,7 +300,7 @@ function View() {
 
   const updateDbCart = useCallback(async () => {
     try {
-      await axios.post("/api/userCart", {
+      await axios.post("http://localhost:4000/api/userCart", {
         loginData: { id: userInfo.userId },
         localCart: updatedLocalCart,
       });
@@ -340,7 +342,7 @@ function View() {
           ];
         }
 
-        await axios.post("/api/addWishList", {
+        await axios.post("http://localhost:4000/api/addWishList", {
           userId: userInfo.userId,
           wishList: wishList,
         });
@@ -360,7 +362,7 @@ function View() {
 
   const updateRecentView = useCallback(async () => {
     try {
-      await axios.post("/api/updateRecentView", {
+      await axios.post("http://localhost:4000/api/updateRecentView", {
         userId: userInfo.userId,
         recentViewItem: productInfo,
       });

@@ -16,10 +16,13 @@ function FindPass() {
   console.log(params);
 
   const validateUser = async () => {
-    const response = await axios.post("/api/validateUser", {
-      userId: userInfo.userId,
-      password,
-    });
+    const response = await axios.post(
+      "http://localhost:4000/api/validateUser",
+      {
+        userId: userInfo.userId,
+        password,
+      },
+    );
 
     if (userInfo.token && response.data.success) {
       navigate("/member/modify", {

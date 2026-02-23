@@ -15,10 +15,15 @@ function SectionKV() {
   useEffect(() => {
     const getKVList = async () => {
       try {
-        const response = await axios.get("/api/kv");
-        setKvList(response.data);
+        const response = await axios.get("http://localhost:4000/api/kv");
+        if (Array.isArray(response.data)) {
+          setKvList(response.data);
+        } else {
+          setKvList([]);
+        }
       } catch (error) {
         console.error("Error fetching KV list:", error);
+        setKvList([]); // 에러 시 빈 배열로 방어
       }
     };
     getKVList();

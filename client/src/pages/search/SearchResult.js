@@ -21,11 +21,14 @@ function SearchResult() {
 
   const getSearchResults = useCallback(async () => {
     try {
-      const response = await axios.post("/api/searchItems", {
-        searchText: text,
-        page: currentPage,
-        itemsPerPage,
-      });
+      const response = await axios.post(
+        "http://localhost:4000/api/searchItems",
+        {
+          searchText: text,
+          page: currentPage,
+          itemsPerPage,
+        },
+      );
       setPagingButtons(response.data.pagingButtons);
       setProductList(response.data.searchResult);
     } catch (error) {

@@ -52,7 +52,7 @@ function App() {
   const { data, error, isLoading } = useQuery({
     queryKey: ["menu"],
     queryFn: async () => {
-      const response = await axios.get("/api/menu");
+      const response = await axios.get("http://localhost:4000/api/menu");
       return response.data;
     },
   });

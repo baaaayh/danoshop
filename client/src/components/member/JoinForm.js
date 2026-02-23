@@ -79,7 +79,7 @@ function JoinForm({ userInfo }) {
       regex.test(inputValue.userId)
     ) {
       const joinDataFetch = async () => {
-        const response = await axios.post("/api/checkId", {
+        const response = await axios.post("http://localhost:4000/api/checkId", {
           userId: inputValue.userId,
         });
         setCheckValidId(
@@ -183,7 +183,7 @@ function JoinForm({ userInfo }) {
           recommand: inputValue.recommand,
           grade: "습관성형 비기너",
         };
-        const response = await axios.post("/api/join", {
+        const response = await axios.post("http://localhost:4000/api/join", {
           userForm: userForm,
           isModifyMode: isModifyPage ? true : false,
         });

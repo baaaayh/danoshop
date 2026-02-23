@@ -15,11 +15,14 @@ function Dashboard() {
   const itemsPerPage = 5;
 
   const getOrderHistory = useCallback(async () => {
-    const response = await axios.post("/api/getOrderHistory", {
-      userId: userInfo.userId,
-      page: currentPage,
-      itemsPerPage,
-    });
+    const response = await axios.post(
+      "http://localhost:4000/api/getOrderHistory",
+      {
+        userId: userInfo.userId,
+        page: currentPage,
+        itemsPerPage,
+      },
+    );
     setOrderObj(response.data.orderObj);
     setPagingButtons(response.data.pagingButtons);
   }, [userInfo.userId, currentPage, itemsPerPage]);

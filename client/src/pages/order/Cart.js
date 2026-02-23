@@ -99,7 +99,7 @@ function Cart() {
 
     if (userInfo.userId) {
       try {
-        await axios.post("/api/userCart", {
+        await axios.post("http://localhost:4000/api/userCart", {
           loginData: { id: userInfo.userId },
           localCart: updatedCartList,
           type: "overwrite",
@@ -190,7 +190,7 @@ function Cart() {
 
       if (userInfo.token) {
         try {
-          await axios.post("/api/removeCartOption", {
+          await axios.post("http://localhost:4000/api/removeCartOption", {
             loginData: { id: userInfo.userId },
             optionKey: optionKey,
           });
@@ -209,7 +209,7 @@ function Cart() {
 
       if (userInfo.token) {
         try {
-          await axios.post("/api/removeCartOption", {
+          await axios.post("http://localhost:4000/api/removeCartOption", {
             loginData: { id: userInfo.userId },
             optionKey: selectedOptionList.map((option) => option.key),
           });
@@ -242,7 +242,7 @@ function Cart() {
             .filter(Boolean);
         });
 
-        await axios.post("/api/addWishList", {
+        await axios.post("http://localhost:4000/api/addWishList", {
           userId: userInfo.userId,
           wishList: wishList,
         });

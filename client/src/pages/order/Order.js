@@ -282,10 +282,13 @@ function Order({ previousPath }) {
           totalPrice: totalPrice,
         };
 
-        const response = await axios.post("/api/makeOrderHistory", {
-          userId: userInfo.userId,
-          orderInfo: orderObj,
-        });
+        const response = await axios.post(
+          "http://baaaayh.sytes.nethttp://localhost:4000/api/makeOrderHistory",
+          {
+            userId: userInfo.userId,
+            orderInfo: orderObj,
+          },
+        );
 
         if (!location.state.passRemoveCart || previousPath === "/order/cart") {
           orderList.forEach((option) => {
@@ -296,10 +299,13 @@ function Order({ previousPath }) {
         if (userInfo.state === "member" && userInfo.token) {
           await Promise.all(
             orderList.map((option) =>
-              axios.post("/api/removeCartOption", {
-                loginData: { id: userInfo.userId },
-                optionKey: option.key,
-              }),
+              axios.post(
+                "http://baaaayh.sytes.nethttp://localhost:4000/api/removeCartOption",
+                {
+                  loginData: { id: userInfo.userId },
+                  optionKey: option.key,
+                },
+              ),
             ),
           );
         }

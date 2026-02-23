@@ -18,7 +18,7 @@ function Product() {
 
   const getProductList = useCallback(async () => {
     try {
-      const response = await axios.post("/api/product", {
+      const response = await axios.post("http://localhost:4000/api/product", {
         page: currentPage,
         itemsPerPage: itemsPerPage,
       });

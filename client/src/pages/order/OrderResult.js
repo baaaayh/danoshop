@@ -26,10 +26,13 @@ function OrderResult() {
   const orderId = location.state.orderId;
 
   const fetchOrderData = useCallback(async () => {
-    const response = await axios.post("/api/getOrderHistory", {
-      userId: userInfo.userId,
-      orderId,
-    });
+    const response = await axios.post(
+      "http://baaaayh.sytes.nethttp://localhost:4000/api/getOrderHistory",
+      {
+        userId: userInfo.userId,
+        orderId,
+      },
+    );
 
     if (response.data.success) {
       setOrderInfo(...response.data.orderObj);
