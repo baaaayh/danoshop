@@ -7,62 +7,59 @@ import SubTitle from "../../components/layout/SubTitle";
 import axios from "axios";
 
 function Validation() {
-    const [password, setPassword] = useState("");
-    const location = useLocation();
-    const navigate = useNavigate();
-    const userInfo = useSelector((state) => state.user);
-    const params = useParams();
+  const [password, setPassword] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const userInfo = useSelector((state) => state.user);
+  const params = useParams();
 
-    const validateUser = useCallback(async () => {
-        const response = await axios.post(
-            "http://baaaayh.sytes.net/api/validateUser",
-            {
-                userId: userInfo.userId,
-                password,
-            }
-        );
+  const validateUser = useCallback(async () => {
+    const response = await axios.post("/api/validateUser", {
+      userId: userInfo.userId,
+      password,
+    });
 
-        if (userInfo.token && response.data.success) {
-            navigate("/member/modify", {
-                state: { title: ["회원 정보 수정"] },
-            });
-        } else {
-            setPassword("");
-            alert("비밀번호가 일치하지 않습니다. 다시 입력해 주세요.");
-        }
-    }, [password, userInfo.userId, userInfo.token, navigate]);
+    if (userInfo.token && response.data.success) {
+      navigate("/member/modify", {
+        state: { title: ["회원 정보 수정"] },
+      });
+    } else {
+      setPassword("");
+      alert("비밀번호가 일치하지 않습니다. 다시 입력해 주세요.");
+    }
+  }, [password, userInfo.userId, userInfo.token, navigate]);
 
-    const handleInput = useCallback((e) => {
-        setPassword(e.target.value);
-    }, []);
+  const handleInput = useCallback((e) => {
+    setPassword(e.target.value);
+  }, []);
 
-    return (
-        <SubContentsXsmall>
-            <BreadCrumb title={location.state.title} path={params} />
-            <SubTitle title={location.state.title} />
-            <div className="input-form">
-                <ul>
-                    <li>
-                        <input
-                            type="password"
-                            value={password}
-                            placeholder="비밀번호 입력"
-                            onChange={handleInput}
-                        />
-                    </li>
-                </ul>
-                <div className="input-form__button">
-                    <button
-                        type="button"
-                        className="btn btn-square btn-square--black"
-                        onClick={validateUser}
-                    >
-                        <span className="btn btn-square__text">확인</span>
-                    </button>
-                </div>
-            </div>
-        </SubContentsXsmall>
-    );
+  return (
+    <SubContentsXsmall>
+      <BreadCrumb title={location.state.title} path={params} />
+      <SubTitle title={location.state.title} />
+      <div className="input-form">
+        <ul>
+          <li>
+            <input
+              type="password"
+              value={password}
+              placeholder="비밀번호 입력"
+              onChange={handleInput}
+            />
+          </li>
+        </ul>
+        <div className="input-form__button">
+          <button
+            type="button"
+            className="btn btn-square btn-square--black"
+            onClick={validateUser}
+          >
+            <span className="btn btn-square__text">확인</span>
+          </button>
+        </div>
+      </div>
+    </SubContentsXsmall>
+  );
 }
 
 export default Validation;

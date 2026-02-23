@@ -31,181 +31,143 @@ import { showDim, hiddenDim } from "./modules/dimToggle";
 export const SidePanelContext = createContext(null);
 
 function App() {
-    const dispatch = useDispatch();
-    const loggedIn = useSelector((state) => state.user.state);
-    const token = useSelector((state) => state.user.token);
-    const location = useLocation();
-    const { pathname } = location;
-    const [previousPath, setPreviousPath] = useState("");
-    const [searchFormVisible, setSearchFormVisible] = useState(false);
+  const dispatch = useDispatch();
+  const loggedIn = useSelector((state) => state.user.state);
+  const token = useSelector((state) => state.user.token);
+  const location = useLocation();
+  const { pathname } = location;
+  const [previousPath, setPreviousPath] = useState("");
+  const [searchFormVisible, setSearchFormVisible] = useState(false);
 
-    useEffect(() => {
-        setPreviousPath(location.pathname);
-    }, []);
+  useEffect(() => {
+    setPreviousPath(location.pathname);
+  }, []);
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [pathname]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
-    const sidePanel = useRef();
+  const sidePanel = useRef();
 
-    const { data, error, isLoading } = useQuery({
-        queryKey: ["menu"],
-        queryFn: async () => {
-            const response = await axios.get(
-                "http://baaaayh.sytes.net/api/menu"
-            );
-            return response.data;
-        },
-    });
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["menu"],
+    queryFn: async () => {
+      const response = await axios.get("/api/menu");
+      return response.data;
+    },
+  });
 
-    useEffect(() => {
-        !isLoading && dispatch(addMenuItem(data));
-    }, [data, error, isLoading, dispatch]);
+  useEffect(() => {
+    !isLoading && dispatch(addMenuItem(data));
+  }, [data, error, isLoading, dispatch]);
 
-    const checkValidToken = useCallback((token) => {
-        if (!token) return true;
-        const decoded = jwtDecode(token);
-        return decoded.exp * 1000 < Date.now();
-    }, []);
+  const checkValidToken = useCallback((token) => {
+    if (!token) return true;
+    const decoded = jwtDecode(token);
+    return decoded.exp * 1000 < Date.now();
+  }, []);
 
-    useEffect(() => {
-        if (checkValidToken(token)) {
-            dispatch(removeToken());
-        }
-    }, [checkValidToken, dispatch, token]);
+  useEffect(() => {
+    if (checkValidToken(token)) {
+      dispatch(removeToken());
+    }
+  }, [checkValidToken, dispatch, token]);
 
-    const isOrderPage = location.pathname === "/order/order";
-    const isResultPage = location.pathname === "/order/orderResult";
+  const isOrderPage = location.pathname === "/order/order";
+  const isResultPage = location.pathname === "/order/orderResult";
 
-    const mobileMenu = useRef(null);
+  const mobileMenu = useRef(null);
 
-    const openSearchFunc = useCallback(() => {
-        dispatch(showDim());
-        setSearchFormVisible(true);
-        document.body.style.overflow = "hidden";
-    }, [dispatch]);
+  const openSearchFunc = useCallback(() => {
+    dispatch(showDim());
+    setSearchFormVisible(true);
+    document.body.style.overflow = "hidden";
+  }, [dispatch]);
 
-    const closeSearchFunc = useCallback(() => {
-        dispatch(hiddenDim());
-        setSearchFormVisible(false);
-        document.body.style.overflow = "";
-    }, [dispatch]);
+  const closeSearchFunc = useCallback(() => {
+    dispatch(hiddenDim());
+    setSearchFormVisible(false);
+    document.body.style.overflow = "";
+  }, [dispatch]);
 
-    const [headerState, setHeaderState] = useState(false);
+  const [headerState, setHeaderState] = useState(false);
 
-    return (
-        <>
-            <SidePanelContext.Provider value={sidePanel}>
-                <div className="container">
-                    {!isOrderPage && !isResultPage && (
-                        <>
-                            <Header
-                                loggedIn={loggedIn}
-                                removeToken={removeToken}
-                                mobileMenu={mobileMenu}
-                                openSearchFunc={openSearchFunc}
-                                closeSearchFunc={closeSearchFunc}
-                                setHeaderState={setHeaderState}
-                            />
-                            {searchFormVisible && (
-                                <SearchForm
-                                    closeSearchFunc={closeSearchFunc}
-                                    headerState={headerState}
-                                    loggedIn={loggedIn}
-                                />
-                            )}
-                        </>
-                    )}
-                    {isOrderPage ? (
-                        <Order previousPath={previousPath} />
-                    ) : isResultPage ? (
-                        <OrderResult />
-                    ) : (
-                        <>
-                            <div className="wrap">
-                                <Routes>
-                                    <Route exact path="/" element={<Main />} />
-                                    <Route
-                                        path="/product"
-                                        element={<Product />}
-                                    />
-                                    <Route
-                                        path="/product/:category"
-                                        element={<Product />}
-                                    />
-                                    <Route
-                                        path="/product/:category/:type"
-                                        element={<Product />}
-                                    />
-                                    <Route
-                                        path="/events/membership"
-                                        element={<Membership />}
-                                    />
-                                    <Route
-                                        path="/product/detail/:category/:id"
-                                        element={<View />}
-                                    />
-                                    <Route
-                                        path="/product/detail/:category/:type/:id"
-                                        element={<View />}
-                                    />
-                                    <Route
-                                        path="/order/cart"
-                                        element={<Cart />}
-                                    />
-                                    <Route
-                                        path="/member/agreement"
-                                        element={<Agreement />}
-                                    />
-                                    <Route
-                                        path="/member/join"
-                                        element={<Join />}
-                                    />
-                                    <Route
-                                        path="/member/result"
-                                        element={<JoinResult />}
-                                    />
-                                    <Route
-                                        path="/member/login"
-                                        element={<Login />}
-                                    />
-                                    <Route
-                                        path="/member/validation"
-                                        element={<Validation />}
-                                    />
-                                    <Route
-                                        path="/member/modify"
-                                        element={<Modify />}
-                                    />
-                                    <Route
-                                        path="/member/findPass"
-                                        element={<FindPass />}
-                                    />
-                                    <Route
-                                        path="/mypage/*"
-                                        element={<MyPage />}
-                                    />
-                                    <Route
-                                        path="/search/searchResult"
-                                        element={<SearchResult />}
-                                    />
-                                </Routes>
-                            </div>
-                        </>
-                    )}
-                    {!isOrderPage && !isResultPage && (
-                        <Footer
-                            mobileMenu={mobileMenu}
-                            openSearchFunc={openSearchFunc}
-                            loggedIn={loggedIn}
-                        />
-                    )}
-                </div>
-                <SideOrder ref={sidePanel} />
-            </SidePanelContext.Provider>
-        </>
-    );
+  return (
+    <>
+      <SidePanelContext.Provider value={sidePanel}>
+        <div className="container">
+          {!isOrderPage && !isResultPage && (
+            <>
+              <Header
+                loggedIn={loggedIn}
+                removeToken={removeToken}
+                mobileMenu={mobileMenu}
+                openSearchFunc={openSearchFunc}
+                closeSearchFunc={closeSearchFunc}
+                setHeaderState={setHeaderState}
+              />
+              {searchFormVisible && (
+                <SearchForm
+                  closeSearchFunc={closeSearchFunc}
+                  headerState={headerState}
+                  loggedIn={loggedIn}
+                />
+              )}
+            </>
+          )}
+          {isOrderPage ? (
+            <Order previousPath={previousPath} />
+          ) : isResultPage ? (
+            <OrderResult />
+          ) : (
+            <>
+              <div className="wrap">
+                <Routes>
+                  <Route exact path="/" element={<Main />} />
+                  <Route path="/product" element={<Product />} />
+                  <Route path="/product/:category" element={<Product />} />
+                  <Route
+                    path="/product/:category/:type"
+                    element={<Product />}
+                  />
+                  <Route path="/events/membership" element={<Membership />} />
+                  <Route
+                    path="/product/detail/:category/:id"
+                    element={<View />}
+                  />
+                  <Route
+                    path="/product/detail/:category/:type/:id"
+                    element={<View />}
+                  />
+                  <Route path="/order/cart" element={<Cart />} />
+                  <Route path="/member/agreement" element={<Agreement />} />
+                  <Route path="/member/join" element={<Join />} />
+                  <Route path="/member/result" element={<JoinResult />} />
+                  <Route path="/member/login" element={<Login />} />
+                  <Route path="/member/validation" element={<Validation />} />
+                  <Route path="/member/modify" element={<Modify />} />
+                  <Route path="/member/findPass" element={<FindPass />} />
+                  <Route path="/mypage/*" element={<MyPage />} />
+                  <Route
+                    path="/search/searchResult"
+                    element={<SearchResult />}
+                  />
+                </Routes>
+              </div>
+            </>
+          )}
+          {!isOrderPage && !isResultPage && (
+            <Footer
+              mobileMenu={mobileMenu}
+              openSearchFunc={openSearchFunc}
+              loggedIn={loggedIn}
+            />
+          )}
+        </div>
+        <SideOrder ref={sidePanel} />
+      </SidePanelContext.Provider>
+    </>
+  );
 }
 
 export default App;

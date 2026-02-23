@@ -4,31 +4,31 @@ const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const path = require("path");
+const dotenv = require("dotenv").config();
 const dbConnection = require("./db");
 const { v4: uuidv4 } = require("uuid");
+dbConnection();
+const PORT = 4000;
+
+const app = express();
 const bodyParser = require("body-parser");
 
-// 모델 스키마 임포트
+// schema
 const MENU = require("../models/menu");
 const KV = require("../models/kv");
 const Product = require("../models/product");
 const User = require("../models/user");
 
-const app = express();
-
-// DB 연결 실행
-dbConnection();
-
-// 미들웨어 설정
+// CORS
 app.use(cors());
+
+// body-parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// static 경로 수정: Vercel 배포 시 빌드된 리액트 파일 위치
-app.use(express.static(path.join(__dirname, "../client/build")));
+app.use(express.static(path.join(__dirname, "build")));
 
-// --- API 라우트들 (기존 로직 유지) ---
-
+// GET KV
 app.get("/api/menu", async (req, res) => {
   try {
     const menuItem = await MENU.find();
@@ -598,14 +598,9 @@ app.post("/api/searchItems", async (req, res) => {
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "..", "client", "build", "index.html"));
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
-if (process.env.NODE_ENV !== "production") {
-  const PORT = 4000;
-  app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  });
-}
-
-module.exports = app;
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});

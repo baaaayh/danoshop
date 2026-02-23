@@ -9,38 +9,35 @@ import JoinForm from "../../components/member/JoinForm";
 import axios from "axios";
 
 function Modify() {
-    const params = useParams();
-    const location = useLocation();
-    const userId = useSelector((state) => state.user.userId);
-    const [userInfo, setUserInfo] = useState(null);
+  const params = useParams();
+  const location = useLocation();
+  const userId = useSelector((state) => state.user.userId);
+  const [userInfo, setUserInfo] = useState(null);
 
-    useEffect(() => {
-        const userDataFetch = async () => {
-            try {
-                const response = await axios.post(
-                    "http://baaaayh.sytes.net/api/userInfo",
-                    {
-                        userId: userId,
-                    }
-                );
-                setUserInfo(response.data.user);
-            } catch (error) {
-                console.error("User data fetch error:", error);
-            }
-        };
-        userDataFetch();
-    }, [userId]);
+  useEffect(() => {
+    const userDataFetch = async () => {
+      try {
+        const response = await axios.post("/api/userInfo", {
+          userId: userId,
+        });
+        setUserInfo(response.data.user);
+      } catch (error) {
+        console.error("User data fetch error:", error);
+      }
+    };
+    userDataFetch();
+  }, [userId]);
 
-    return (
-        <SubContentsXsmall>
-            <BreadCrumb title={location.state.title} path={params} />
-            <SubTitle title={location.state.title} />
-            <>
-                <ResultForm userInfo={userInfo} />
-                <JoinForm userInfo={userInfo} />
-            </>
-        </SubContentsXsmall>
-    );
+  return (
+    <SubContentsXsmall>
+      <BreadCrumb title={location.state.title} path={params} />
+      <SubTitle title={location.state.title} />
+      <>
+        <ResultForm userInfo={userInfo} />
+        <JoinForm userInfo={userInfo} />
+      </>
+    </SubContentsXsmall>
+  );
 }
 
 export default Modify;
