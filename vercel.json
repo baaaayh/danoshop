@@ -10,19 +10,5 @@
       "use": "@vercel/static-build",
       "config": { "distDir": "build" }
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/server/server.js"
-    },
-    {
-      "source": "/uploads/(.*)",
-      "destination": "/server/server.js"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/client/index.html"
-    }
   ]
 }
